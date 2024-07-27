@@ -141,7 +141,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include=".gitattributes" />
-  </ItemGroup>
 </Project>

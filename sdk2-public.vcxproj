@@ -180,9 +180,6 @@
     <ClInclude Include="sdk\interfaces\interfaces.h" />
     <ClInclude Include="sdk\math\math.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include=".gitattributes" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
