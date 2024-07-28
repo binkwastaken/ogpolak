@@ -5,7 +5,11 @@
 
 #include "../interfaces/manager.h"
 
-#include <d3d11.h>
+#include "../../extensions/imgui.h"
+
+#include "../gui/gui.h"
+
+#include "../renderer/renderer.h"
 
 class CHooksManager {
 public:
@@ -36,7 +40,12 @@ private:
 		ID3D11DeviceContext* context{ };
 		ID3D11RenderTargetView* renderTargetView;
 	};
-
-
+	PresentScene m_PresentScene;
+	class WindowProc {
+	public:
+		WNDPROC WndProc;
+		static LRESULT CALLBACK Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	};
+	WindowProc m_WindowProc;
 };
 inline CHooksManager* g_pHooksManager = new CHooksManager();

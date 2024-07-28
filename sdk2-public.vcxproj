@@ -136,9 +136,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\gui\gui.cpp" />
     <ClCompile Include="engine\hooks\hooks.cpp" />
     <ClCompile Include="engine\interfaces\manager.cpp" />
     <ClCompile Include="engine\main.cpp" />
+    <ClCompile Include="engine\renderer\renderer.cpp" />
     <ClCompile Include="engine\utils\utils.cpp" />
     <ClCompile Include="extensions\imgui\imgui.cpp" />
     <ClCompile Include="extensions\imgui\imgui_draw.cpp" />
@@ -156,10 +158,13 @@
     <ClCompile Include="sdk\math\math.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\gui\gui.h" />
     <ClInclude Include="engine\hooks\hooks.h" />
     <ClInclude Include="engine\interfaces\manager.h" />
+    <ClInclude Include="engine\renderer\renderer.h" />
     <ClInclude Include="engine\utils\utils.h" />
     <ClInclude Include="extensions\fonts.h" />
+    <ClInclude Include="extensions\imgui.h" />
     <ClInclude Include="extensions\imgui\imconfig.h" />
     <ClInclude Include="extensions\imgui\imgui.h" />
     <ClInclude Include="extensions\imgui\imgui_impl_dx11.h" />
@@ -179,6 +184,9 @@
     <ClInclude Include="sdk\classes\entities.h" />
     <ClInclude Include="sdk\interfaces\interfaces.h" />
     <ClInclude Include="sdk\math\math.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

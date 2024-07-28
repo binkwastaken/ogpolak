@@ -2,6 +2,7 @@
 
 CHooksManager::CreateMove::oCreateMoveFn CHooksManager::CreateMove::oCreateMove = nullptr;
 CHooksManager::PresentScene::oPresentSceneFn CHooksManager::PresentScene::oPresentScene = nullptr;
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 uint8_t* CHooksManager::FindAddress(const char* moduleName, const char* pattern, const char* addressName) {
 	uint8_t* address = g_pUtils->m_Memory.PatternScan(moduleName, pattern);
@@ -43,6 +44,7 @@ bool CHooksManager::Init()
 
 void CHooksManager::Destroy()
 {
+	reinterpret_cast<WNDPROC>(SetWindowLongPtr(m_PresentScene.outputWindow, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(m_WindowProc.WndProc)));
 	MH_DisableHook(MH_ALL_HOOKS);
 	MH_RemoveHook(MH_ALL_HOOKS);
 	MH_Uninitialize();
@@ -51,11 +53,86 @@ void CHooksManager::Destroy()
 void __fastcall CHooksManager::CreateMove::Hook(void* ecx, int edx, char a2)
 {
 	oCreateMove(ecx, edx, a2);
-
-	C_BaseEntity* entity = g_pInterfaces->m_Interfaces.pEntityList->GetClientEntity(0);
 }
 
 HRESULT __stdcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
+	if (!g_pHooksManager->m_PresentScene.init)
+	{
+		ID3D11Device* device{ };
+		if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D11Device), (void**)&device)))
+		{
+			device->GetImmediateContext(&g_pHooksManager->m_PresentScene.context);
+			DXGI_SWAP_CHAIN_DESC sd;
+			pSwapChain->GetDesc(&sd);
+			g_pHooksManager->m_PresentScene.outputWindow = sd.OutputWindow;
+			g_pHooksManager->m_WindowProc.WndProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(g_pHooksManager->m_PresentScene.outputWindow, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(g_pHooksManager->m_WindowProc.Hook)));
+
+			ID3D11Texture2D* pBackBuffer;
+			pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+
+			if (pBackBuffer) {
+				device->CreateRenderTargetView(pBackBuffer, NULL, &g_pHooksManager->m_PresentScene.renderTargetView);
+				pBackBuffer->Release();
+
+				g_pRenderer->Init(g_pHooksManager->m_PresentScene.outputWindow, device, g_pHooksManager->m_PresentScene.context);
+
+				g_pHooksManager->m_PresentScene.init = true;
+			}
+		}
+
+		else
+			return oPresentScene(pSwapChain, SyncInterval, Flags);
+	}
+
+
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::EndFrame();
+	ImGui::Render();
+
+	if (g_pHooksManager->m_PresentScene.context)
+		g_pHooksManager->m_PresentScene.context->OMSetRenderTargets(1, &g_pHooksManager->m_PresentScene.renderTargetView, NULL);
+
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 	return oPresentScene(pSwapChain, SyncInterval, Flags);
+}
+
+LRESULT CALLBACK CHooksManager::WindowProc::Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if (uMsg == WM_KEYDOWN && wParam == VK_INSERT) {
+		g_pGui->IsOpen = !g_pGui->IsOpen;
+		if (g_pInterfaces->m_Interfaces.pEngineClient->IsInGame()) {
+			if (g_pInterfaces->m_Interfaces.pSystemInput->IsRelativeMouseMode()) {
+				g_pUtils->m_Memory.fnSetRelativeMouseMode(!g_pGui->IsOpen);
+				SetCursorPos(GetSystemMetrics(SM_CXSCREEN) / 2, GetSystemMetrics(SM_CYSCREEN) / 2);
+			}
+		}
+	}
+
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam) || g_pGui->IsOpen)
+		return true;
+
+	if (g_pGui->IsOpen) {
+		switch (uMsg) {
+		case WM_MOUSEMOVE:
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+		case WM_MOUSEWHEEL:
+		case WM_XBUTTONDOWN:
+		case WM_XBUTTONUP:
+			return 0;
+
+		default:
+			break;
+		}
+	}
+	return CallWindowProcA(g_pHooksManager->m_WindowProc.WndProc, hWnd, uMsg, wParam, lParam);
 }

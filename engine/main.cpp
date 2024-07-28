@@ -4,6 +4,7 @@
 unsigned long EntryPoint(void* entryPoint)
 {
 	g_pUtils->m_Console.Init();
+	g_pUtils->m_Memory.Init();
 	g_pInterfaces->Init();
 	g_pHooksManager->Init();
 

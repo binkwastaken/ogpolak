@@ -10,6 +10,8 @@ public:
 	class CInterfaces {
 	public:
 		IEntityListSystem* pEntityList;
+        IEngineClient* pEngineClient;
+        ISystemInput* pSystemInput;
 	};
 
 	CInterfaces m_Interfaces;
@@ -30,7 +32,7 @@ private:
             g_pUtils->m_Console.Error("Interface", iface, "not found!");
         }
         else
-            g_pUtils->m_Console.Log("Interface", iface, "found at", iface_addr);
+            g_pUtils->m_Console.Success("Interface", iface, "found at", iface_addr);
 
         gIface = iface_addr;
 

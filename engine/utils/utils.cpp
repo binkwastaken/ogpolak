@@ -99,3 +99,34 @@ std::uint8_t* CUtils::Memory::PatternScan(const char* module_name, const char* s
 
 	return nullptr;
 }
+
+bool CUtils::Memory::Init()
+{
+	HMODULE hSDL3 = GetModuleHandle("SDL3.dll");
+	if (!hSDL3)
+	{
+	g_pUtils->m_Console.Error("Failed to get SDL3.dll");
+		return false;
+	}
+	HMODULE hTier0 = GetModuleHandle("tier0.dll");
+	if (!hTier0)
+	{
+		g_pUtils->m_Console.Error("Failed to get tier0.dll");
+		return false;
+	}
+	fnSetRelativeMouseMode = reinterpret_cast<decltype(fnSetRelativeMouseMode)>(GetProcAddress(hSDL3, "SDL_SetRelativeMouseMode"));
+	if (!fnSetRelativeMouseMode)
+	{
+		g_pUtils->m_Console.Error("Failed to get SDL_SetRelativeMouseMode from SDL3.dll");
+		return false;
+	}
+	fnCreateMaterial = reinterpret_cast<decltype(fnCreateMaterial)>(this->PatternScan("materialsystem2.dll", "48 89 5C 24 ? 48 89 6C 24 ? 56 57 41 56 48 81 EC ? ? ? ? 48 8B 05"));
+	if (!fnCreateMaterial)
+	{
+		g_pUtils->m_Console.Error("Failed to get CreateMaterial from materialsystem2.dll");
+		return false;
+	}
+	g_pUtils->m_Console.Success("Memory Export initialized");
+
+	return true;
+}

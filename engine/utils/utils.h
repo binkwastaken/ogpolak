@@ -42,6 +42,12 @@ public:
 
     class Memory {
     public:
+        bool Init();
+        int(__stdcall* fnSetRelativeMouseMode)(int) = nullptr;
+        int(__stdcall* fnSetWindowGrab)(void*, int) = nullptr;
+        int(__stdcall* fnWarpMouseInWindow)(void*, float, float) = nullptr;
+        bool(__stdcall* fnGetRelativeMouseMode)(void) = nullptr;
+        int(__fastcall* fnCreateMaterial)(void*, void*, const char*, void*, unsigned int, unsigned int);
         std::uint8_t* ResolveRip(std::uint8_t* address, std::uint32_t rva_offset, std::uint32_t rip_offset);
         std::vector<std::uint32_t> PatternToByte(const char* pattern);
         std::uint8_t* PatternScan(const char* module_name, const char* signature);
