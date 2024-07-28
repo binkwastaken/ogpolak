@@ -43,5 +43,6 @@ public:
 
 class C_PlayerController {
 public:
-
+	C_BaseHandle GetHandlePawn();
+	static C_PlayerController* GetLocalPlayerController();
 };

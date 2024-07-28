@@ -53,6 +53,18 @@ void CHooksManager::Destroy()
 void __fastcall CHooksManager::CreateMove::Hook(void* ecx, int edx, char a2)
 {
 	oCreateMove(ecx, edx, a2);
+
+	Globals::LocalPlayerController = C_PlayerController::GetLocalPlayerController();
+	if (!Globals::LocalPlayerController)
+		return oCreateMove(ecx, edx, a2);
+	Globals::LocalPlayerPawn = (C_PlayerPawn*)g_pInterfaces->m_Interfaces.pEntityList->GetClientEntityFromHandle(Globals::LocalPlayerController->GetHandlePawn());
+	if (!Globals::LocalPlayerPawn)
+		return oCreateMove(ecx, edx, a2);
+
+
+	std::cout<<"pawn: "<<Globals::LocalPlayerPawn<<std::endl;
+	std::cout<<"controller: "<<Globals::LocalPlayerController<<std::endl;
+
 }
 
 HRESULT __stdcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
@@ -89,6 +101,10 @@ HRESULT __stdcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain, 
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+
+	g_pFeatures->m_ESP.Players();
+
+	g_pGui->DrawGui();
 
 	ImGui::EndFrame();
 	ImGui::Render();
@@ -134,5 +150,5 @@ LRESULT CALLBACK CHooksManager::WindowProc::Hook(HWND hWnd, UINT uMsg, WPARAM wP
 			break;
 		}
 	}
-	return CallWindowProcA(g_pHooksManager->m_WindowProc.WndProc, hWnd, uMsg, wParam, lParam);
+	return CallWindowProc(g_pHooksManager->m_WindowProc.WndProc, hWnd, uMsg, wParam, lParam);
 }

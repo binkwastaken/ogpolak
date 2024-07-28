@@ -1,11 +1,13 @@
 #include "utils/utils.h"
 #include "hooks/hooks.h"
 #include "interfaces/manager.h"
+#include "schema/schema.h"
 unsigned long EntryPoint(void* entryPoint)
 {
 	g_pUtils->m_Console.Init();
 	g_pUtils->m_Memory.Init();
 	g_pInterfaces->Init();
+	g_pSchemaManager->Init();
 	g_pHooksManager->Init();
 
 	while (!GetAsyncKeyState(VK_DELETE) & 1)

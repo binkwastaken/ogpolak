@@ -1,6 +1,15 @@
 #pragma once
 #include "../classes/entities.h"
 
+#include "../../sdk/structs/structs.h"
+
+class ISchemaSystem
+{
+public:
+	SchemaSystemTypeScope* GlobalTypeScope();
+	SchemaSystemTypeScope* FindTypeScopeForModule(const char* module);
+};
+
 class IEntityListSystem {
 public:
 	C_BaseEntity* GetClientEntity(int index)
@@ -18,6 +27,9 @@ public:
 	{
 		return *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(this) + 0x1510);
 	}
+
+	void UpdateEntities(std::vector<EntityListInfo>& entities);
+
 private:
 	void* pGetEntityByIndex(int Index);
 

@@ -6,7 +6,7 @@ void CUtils::Console::Init()
 	AllocConsole();
 	SetConsoleTitle("cmd");
 	freopen_s(&m_Console, "CONOUT$", "w", stdout);
-	Success("Console initialized");
+	Log("Console initialized");
 }
 
 void CUtils::Console::Destroy()
@@ -126,7 +126,7 @@ bool CUtils::Memory::Init()
 		g_pUtils->m_Console.Error("Failed to get CreateMaterial from materialsystem2.dll");
 		return false;
 	}
-	g_pUtils->m_Console.Success("Memory Export initialized");
+	g_pUtils->m_Console.Log("Memory Export initialized");
 
 	return true;
 }

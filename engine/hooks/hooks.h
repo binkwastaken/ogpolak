@@ -11,6 +11,10 @@
 
 #include "../renderer/renderer.h"
 
+#include "../features/features.h"
+
+#include "../../sdk/globals.h"
+
 class CHooksManager {
 public:
 	bool Init();

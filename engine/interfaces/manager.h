@@ -12,6 +12,7 @@ public:
 		IEntityListSystem* pEntityList;
         IEngineClient* pEngineClient;
         ISystemInput* pSystemInput;
+        ISchemaSystem* pSchemaSystem;
 	};
 
 	CInterfaces m_Interfaces;

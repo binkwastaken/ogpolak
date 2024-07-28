@@ -136,11 +136,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\features\features.cpp" />
+    <ClCompile Include="engine\gui\framework.cpp" />
     <ClCompile Include="engine\gui\gui.cpp" />
     <ClCompile Include="engine\hooks\hooks.cpp" />
     <ClCompile Include="engine\interfaces\manager.cpp" />
     <ClCompile Include="engine\main.cpp" />
     <ClCompile Include="engine\renderer\renderer.cpp" />
+    <ClCompile Include="engine\schema\schema.cpp" />
     <ClCompile Include="engine\utils\utils.cpp" />
     <ClCompile Include="extensions\imgui\imgui.cpp" />
     <ClCompile Include="extensions\imgui\imgui_draw.cpp" />
@@ -154,14 +157,19 @@
     <ClCompile Include="extensions\minhook\hook.c" />
     <ClCompile Include="extensions\minhook\trampoline.c" />
     <ClCompile Include="sdk\classes\entities.cpp" />
+    <ClCompile Include="sdk\globals.cpp" />
     <ClCompile Include="sdk\interfaces\interfaces.cpp" />
     <ClCompile Include="sdk\math\math.cpp" />
+    <ClCompile Include="sdk\structs\structs.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\features\features.h" />
+    <ClInclude Include="engine\gui\framework.h" />
     <ClInclude Include="engine\gui\gui.h" />
     <ClInclude Include="engine\hooks\hooks.h" />
     <ClInclude Include="engine\interfaces\manager.h" />
     <ClInclude Include="engine\renderer\renderer.h" />
+    <ClInclude Include="engine\schema\schema.h" />
     <ClInclude Include="engine\utils\utils.h" />
     <ClInclude Include="extensions\fonts.h" />
     <ClInclude Include="extensions\imgui.h" />
@@ -182,8 +190,10 @@
     <ClInclude Include="extensions\minhook\minhook.h" />
     <ClInclude Include="extensions\minhook\trampoline.h" />
     <ClInclude Include="sdk\classes\entities.h" />
+    <ClInclude Include="sdk\globals.h" />
     <ClInclude Include="sdk\interfaces\interfaces.h" />
     <ClInclude Include="sdk\math\math.h" />
+    <ClInclude Include="sdk\structs\structs.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
