@@ -108,7 +108,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <SDLCheck>false</SDLCheck>
+      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -159,7 +159,7 @@
     <ClCompile Include="sdk\classes\entities.cpp" />
     <ClCompile Include="sdk\globals.cpp" />
     <ClCompile Include="sdk\interfaces\interfaces.cpp" />
-    <ClCompile Include="sdk\math\math.cpp" />
+    <ClCompile Include="sdk\math\mathematics.cpp" />
     <ClCompile Include="sdk\structs\structs.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +169,7 @@
     <ClInclude Include="engine\hooks\hooks.h" />
     <ClInclude Include="engine\interfaces\manager.h" />
     <ClInclude Include="engine\renderer\renderer.h" />
+    <ClInclude Include="engine\schema\info.h" />
     <ClInclude Include="engine\schema\schema.h" />
     <ClInclude Include="engine\utils\utils.h" />
     <ClInclude Include="extensions\fonts.h" />
@@ -192,7 +193,7 @@
     <ClInclude Include="sdk\classes\entities.h" />
     <ClInclude Include="sdk\globals.h" />
     <ClInclude Include="sdk\interfaces\interfaces.h" />
-    <ClInclude Include="sdk\math\math.h" />
+    <ClInclude Include="sdk\math\mathematics.h" />
     <ClInclude Include="sdk\structs\structs.h" />
   </ItemGroup>
   <ItemGroup>

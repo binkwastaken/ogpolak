@@ -22,11 +22,11 @@ void CFramework::CreatePolygon(int x, int y, int w, int h)
 
         g_pRenderer->DrawOutlinedString("ogpolak", Vector2D(poseidonTextX, poseidonTextY), color_t(120, 150, 255, 255), color_t(0, 0, 0, 255), false);
 
-        ImVec2 dateTextSize = ImGui::CalcTextSize("wednesday, 27 july 2024");
+        ImVec2 dateTextSize = ImGui::CalcTextSize("monday, 29 july 2024");
         float dateTextX = x + w - 5 - dateTextSize.x;
         float dateTextY = poseidonTextY;
 
-        g_pRenderer->DrawOutlinedString("wednesday, 27 july 2024",Vector2D(dateTextX, dateTextY), color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
+        g_pRenderer->DrawOutlinedString("monday, 29 july 2024",Vector2D(dateTextX, dateTextY), color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
 
         ImGui::PopFont();
 }

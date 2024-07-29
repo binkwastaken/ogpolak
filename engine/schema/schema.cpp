@@ -1,7 +1,5 @@
 #include "schema.h"
-#include "../../sdk/structs/structs.h"
-
-
+#include "../utils/utils.h"
 
 bool CSchemaManager::Init()
 {

@@ -1,8 +1,18 @@
 #pragma once
 #include <cstdlib>
 #include <cstdint>
+#include <string>
 
-#include "../math/math.h"	
+#include "../math/mathematics.h"
+#include "../structs/structs.h"
+
+class CGameSceneNode;
+class CCollision;
+class SchemaClassInfoData;
+class C_BaseWeapon;
+class C_BaseWeaponServices;
+class C_PlayerItemServices;
+class CCSPlayerController_InGameMoneyServices;
 
 class C_BaseHandle {
 public:
@@ -29,15 +39,41 @@ private:
 	uint32_t nIndex;
 };
 
-
-
-class C_BaseEntity {
+class CEntityInstance {
 public:
+	void GetSchemaClassInfo(SchemaClassInfoData** pReturn);
+	bool IsEntityPlayer();
+};
 
+class C_BaseEntity : public CEntityInstance {
+public:
+	CGameSceneNode* GetGameSceneNode();
+	CCollision* GetCollision();
+};
+
+class C_BasePlayerController {
+public:
+	std::string GetPlayerName();
 };
 
 class C_PlayerPawn {
 public:
+	C_BaseEntity* GetBaseEntity();
+	int GetHealth();
+	int GetTeam();
+	int GetFlags();
+	bool IsAlive();
+
+	bool IsDefusing();
+
+	bool IsScoped();
+	C_BaseHandle GetHandleController();
+
+	C_BaseWeapon* GetCurrentActiveWeapon();
+
+	C_BaseWeaponServices* GetWeaponServices();
+
+	C_PlayerItemServices* GetItemServices();
 
 };
 
@@ -45,4 +81,7 @@ class C_PlayerController {
 public:
 	C_BaseHandle GetHandlePawn();
 	static C_PlayerController* GetLocalPlayerController();
+	const char* GetPlayerName();
+
+	CCSPlayerController_InGameMoneyServices* GetMoneyServices();
 };

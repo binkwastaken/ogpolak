@@ -13,3 +13,110 @@ C_PlayerController* C_PlayerController::GetLocalPlayerController()
 	const int nIndex = g_pInterfaces->m_Interfaces.pEngineClient->GetLocalPlayerIndex();
 	return (C_PlayerController*)g_pInterfaces->m_Interfaces.pEntityList->GetClientEntity(nIndex);
 }
+
+CGameSceneNode* C_BaseEntity::GetGameSceneNode()
+{
+	return g_pSchemaManager->GetOffset<CGameSceneNode*>("C_BaseEntity", "m_pGameSceneNode", this);
+}
+
+CCollision* C_BaseEntity::GetCollision()
+{
+	return g_pSchemaManager->GetOffset<CCollision*>("C_BaseEntity", "m_pCollision", this);
+}
+
+const char* C_PlayerController::GetPlayerName()
+{
+	return g_pSchemaManager->GetOffset<const char*>("CCSPlayerController", "m_sSanitizedPlayerName", this);
+}
+
+CCSPlayerController_InGameMoneyServices* C_PlayerController::GetMoneyServices()
+{
+return g_pSchemaManager->GetOffset<CCSPlayerController_InGameMoneyServices*>("CCSPlayerController", "m_pInGameMoneyServices", this);
+}
+
+C_BaseEntity* C_PlayerPawn::GetBaseEntity()
+{
+	return (C_BaseEntity*)(this);
+}
+
+int C_PlayerPawn::GetHealth()
+{
+	return g_pSchemaManager->GetOffset<int32_t>("C_BaseEntity", "m_iHealth", this);
+}
+
+
+int C_PlayerPawn::GetTeam()
+{
+	return g_pSchemaManager->GetOffset<int32_t>("C_BaseEntity", "m_iTeamNum", this);
+}
+
+int C_PlayerPawn::GetFlags()
+{
+	return g_pSchemaManager->GetOffset<int32_t>("C_BaseEntity", "m_fFlags", this);
+}
+
+bool C_PlayerPawn::IsAlive()
+{
+	if (this->GetHealth() <= 0)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool C_PlayerPawn::IsDefusing()
+{
+	return g_pSchemaManager->GetOffset<bool>("C_CSPlayerPawn", "m_bIsDefusing", this);
+}
+
+bool C_PlayerPawn::IsScoped()
+{
+	return g_pSchemaManager->GetOffset<bool>("C_CSPlayerPawn", "m_bIsScoped", this);
+}
+
+C_BaseHandle C_PlayerPawn::GetHandleController()
+{
+	return g_pSchemaManager->GetOffset<C_BaseHandle>("C_BasePlayerPawn", "m_hController", this);
+}
+
+void CEntityInstance::GetSchemaClassInfo(SchemaClassInfoData** pReturn)
+{
+	return g_pUtils->m_VMT.CallVMT<void, 38>(this, pReturn);
+}
+
+bool CEntityInstance::IsEntityPlayer()
+{
+	SchemaClassInfoData* cigan;
+
+	this->GetSchemaClassInfo(&cigan);
+
+	auto hash = FNV1A::Hash(cigan->name);
+
+	if (hash != FNV1A::Hash("C_CSPlayerPawn"))
+		return false;
+	else
+		return true;
+
+}
+
+C_BaseWeapon* C_PlayerPawn::GetCurrentActiveWeapon()
+{
+	return   g_pSchemaManager->GetOffset<C_BaseWeapon*>("C_CSPlayerPawnBase", "m_pClippingWeapon", this);
+}
+
+C_BaseWeaponServices* C_PlayerPawn::GetWeaponServices()
+{
+	return g_pSchemaManager->GetOffset<C_BaseWeaponServices*>("C_BasePlayerPawn", "m_pWeaponServices", this);
+}
+
+C_PlayerItemServices* C_PlayerPawn::GetItemServices()
+{
+	return g_pSchemaManager->GetOffset<C_PlayerItemServices*>("C_BasePlayerPawn", "m_pItemServices", this);
+}
+
+std::string C_BasePlayerController::GetPlayerName()
+{
+	const char* name = g_pSchemaManager->GetOffset<const char*>("CBasePlayerController", "m_iszPlayerName", this);
+	 return std::string(name);
+}

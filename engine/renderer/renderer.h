@@ -3,8 +3,7 @@
 #include "../../extensions/imgui.h"
 #include "../../extensions/fonts.h"
 
-#include "../../sdk/math/math.h"
-#include "../../sdk/structs/structs.h"
+#include "../../sdk/math/mathematics.h"
 
 #include <D3DX11.h>
 #include <d3d11.h>

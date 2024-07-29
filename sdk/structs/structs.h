@@ -1,187 +1,16 @@
 #pragma once
-#include "../../engine/utils/utils.h"
+#include "../math/mathematics.h"
 #include "../classes/entities.h"
 
 #include <d3d9.h>
 
+#include <string>
 
-struct SchemaClassInfoData;
-class SchemaSystemTypeScope;
+class Vector3D;
+class Vector2D;
+class Vector4D;
 
-class SchemaType
-{
-public:
-    bool GetSizes(int* outSize1, uint8_t* unkProbablyNotSize)
-    {
-        return reinterpret_cast<int(__thiscall*)(void*, int*, uint8_t*)>(m_vtable[3])(this, outSize1, unkProbablyNotSize);
-    }
-
-    bool GetSize(int* outSize)
-    {
-        uint8_t smh = 0;
-        return GetSizes(outSize, &smh);
-    }
-
-    SchemaType* GetRefClass()
-    {
-        if (m_typeCategory != 1)
-            return nullptr;
-
-        SchemaType* ptr = m_schemaType;
-
-        while (ptr && ptr->m_typeCategory == 1)
-            ptr = ptr->m_schemaType;
-
-        return ptr;
-    }
-
-    typedef struct ArrayT
-    {
-        std::uint32_t arraySize;
-        std::uint32_t unknown;
-        SchemaType* elementType;
-    } ArrayT;
-
-    typedef struct AtomicT
-    {
-        std::uint64_t gap[2];
-        SchemaType* templateTypename;
-    } AtomicT;
-
-    typedef struct AtomicTT
-    {
-        std::uint64_t gap[2];
-        SchemaType* templates[2];
-    } AtomicTT;
-
-    typedef struct AtomicI
-    {
-        std::uint64_t gap[2];
-        std::uint64_t integer;
-    } AtomicI;
-
-    union
-    {
-        SchemaType* m_schemaType;
-        SchemaClassInfoData* m_classInfo;
-        void* m_enumBinding;
-        ArrayT m_array;
-        AtomicT m_atomicT;
-        AtomicTT m_atomicTT;
-        AtomicI m_atomicI;
-    };
-
-public:
-    std::uintptr_t* m_vtable;
-    const char* m_name;
-    SchemaSystemTypeScope* m_typeScope;
-    std::uint8_t m_typeCategory;
-    std::uint8_t m_atomicCategory;
-};
-
-struct SchemaClassFieldData
-{
-    const char* name;
-    SchemaType* type;
-    short offset;
-    unsigned char pad1[0xE];
-};
-
-struct SchemaClassInfoData
-{
-    unsigned char pad1[0x8];
-    const char* name;
-    char* module;
-    std::int32_t size;
-    std::int16_t fieldSize;
-    std::int16_t staticSize;
-    std::int16_t metadataSize;
-    std::int16_t iUnk1;
-    std::int16_t iUnk2;
-    std::int16_t iUnk3;
-    SchemaClassFieldData* fields;
-};
-
-struct SchemaTypeT
-{
-    std::uintptr_t* vtable;
-    const char* name;
-};
-
-struct SchemaClassBindingT
-{
-    SchemaClassBindingT* parent;
-    const char* binaryName;
-    const char* moduleName;
-    const char* className;
-    void* classInfoOldSynthesized;
-    void* classInfo;
-    void* thisModuleBindingPointer;
-    SchemaTypeT* schemaType;
-};
-
-class SchemaField
-{
-public:
-    const char* name;
-    SchemaType* type;
-    uint32_t singleInheritanceOffset;
-    uint32_t metadataSize;
-    void* metadata;
-};
-
-class SchemaClass
-{
-public:
-    char Padding_141[0x8];
-    const char* name;
-    const char* moduleName;
-    uint32_t size;
-    uint16_t fieldsCount;
-    char Padding_146[0x2];
-    uint16_t staticSize;
-    uint16_t metadataSize;
-    char Padding_149[0x4];
-    SchemaField* fields;
-};
-
-class SchemaDeclaredClass
-{
-public:
-    char Padding_156[0x8];
-    const char* name;
-    const char* moduleName;
-    char Padding_159[0x4];
-    SchemaClass* classPtr;
-};
-
-class SchemaDeclaredClassEntry
-{
-public:
-    char Padding_166[0x10];
-    SchemaDeclaredClass* declaratedClass;
-};
-
-class SchemaSystemTypeScope
-{
-public:
-    char pad_0x0008[0x8];
-    char m_szName[256];
-    char pad_0x0338[0x338];
-    SchemaDeclaredClassEntry* m_pDeclaredClasses;
-    char pad_0x000E[0xE];
-    uint16_t m_nNumDeclaredClasses;
-
-public:
-    void GetDeclaratedClasses(std::vector<SchemaDeclaredClass*>& declaratedClasses_)
-    {
-        if (!m_pDeclaredClasses)
-            return;
-
-        for (int i = 0; i < m_nNumDeclaredClasses; ++i)
-            declaratedClasses_.push_back(m_pDeclaredClasses[i].declaratedClass);
-    }
-};
+class C_BaseHandle;
 
 struct color_t {
     int a, r, g, b;
@@ -215,11 +44,276 @@ struct color_t {
     static color_t blue(const int  a = 255) { return { 0, 0, 255, a }; }
 };
 
-struct EntityListInfo {
-    C_PlayerController* Controller;
-    C_PlayerPawn* Pawn;
-    C_BaseEntity* Entity;
-    int index;
-    bool IsCheater = false;
+enum EItemDefinitionIndexes : std::uint16_t
+{
+    WEAPON_NONE,
+    WEAPON_DESERT_EAGLE,
+    WEAPON_DUAL_BERETTAS,
+    WEAPON_FIVE_SEVEN,
+    WEAPON_GLOCK_18,
+    WEAPON_AK_47 = 7,
+    WEAPON_AUG,
+    WEAPON_AWP,
+    WEAPON_FAMAS,
+    WEAPON_G3SG1,
+    WEAPON_GALIL_AR = 13,
+    WEAPON_M249,
+    WEAPON_M4A4 = 16,
+    WEAPON_MAC_10,
+    WEAPON_P90 = 19,
+    WEAPON_REPULSOR_DEVICE,
+    WEAPON_MP5_SD = 23,
+    WEAPON_UMP_45,
+    WEAPON_XM1014,
+    WEAPON_PP_BIZON,
+    WEAPON_MAG_7,
+    WEAPON_NEGEV,
+    WEAPON_SAWED_OFF,
+    WEAPON_TEC_9,
+    WEAPON_ZEUS_X27,
+    WEAPON_P2000,
+    WEAPON_MP7,
+    WEAPON_MP9,
+    WEAPON_NOVA,
+    WEAPON_P250,
+    WEAPON_RIOT_SHIELD,
+    WEAPON_SCAR_20,
+    WEAPON_SG_553,
+    WEAPON_SSG_08,
+    WEAPON_KNIFE0,
+    WEAPON_KNIFE1,
+    WEAPON_FLASHBANG,
+    WEAPON_HIGH_EXPLOSIVE_GRENADE,
+    WEAPON_SMOKE_GRENADE,
+    WEAPON_MOLOTOV,
+    WEAPON_DECOY_GRENADE,
+    WEAPON_INCENDIARY_GRENADE,
+    WEAPON_C4_EXPLOSIVE,
+    WEAPON_KEVLAR_VEST,
+    WEAPON_KEVLAR_and_HELMET,
+    WEAPON_HEAVY_ASSAULT_SUIT,
+    WEAPON_NO_LOCALIZED_NAME0 = 54,
+    WEAPON_DEFUSE_KIT,
+    WEAPON_RESCUE_KIT,
+    WEAPON_MEDI_SHOT,
+    WEAPON_MUSIC_KIT,
+    WEAPON_KNIFE2,
+    WEAPON_M4A1_S,
+    WEAPON_USP_S,
+    WEAPON_TRADE_UP_CONTRACT,
+    WEAPON_CZ75_AUTO,
+    WEAPON_R8_REVOLVER,
+    WEAPON_TACTICAL_AWARENESS_GRENADE = 68,
+    WEAPON_BARE_HANDS,
+    WEAPON_BREACH_CHARGE,
+    WEAPON_TABLET = 72,
+    WEAPON_KNIFE3 = 74,
+    WEAPON_AXE,
+    WEAPON_HAMMER,
+    WEAPON_WRENCH = 78,
+    WEAPON_SPECTRAL_SHIV = 80,
+    WEAPON_FIRE_BOMB,
+    WEAPON_DIVERSION_DEVICE,
+    WEAPON_FRAG_GRENADE,
+    WEAPON_SNOWBALL,
+    WEAPON_BUMP_MINE,
+    WEAPON_BAYONET = 500,
+    WEAPON_CLASSIC_KNIFE = 503,
+    WEAPON_FLIP_KNIFE = 505,
+    WEAPON_GUT_KNIFE,
+    WEAPON_KARAMBIT,
+    WEAPON_M9_BAYONET,
+    WEAPON_HUNTSMAN_KNIFE,
+    WEAPON_FALCHION_KNIFE = 512,
+    WEAPON_BOWIE_KNIFE = 514,
+    WEAPON_BUTTERFLY_KNIFE,
+    WEAPON_SHADOW_DAGGERS,
+    WEAPON_PARACORD_KNIFE,
+    WEAPON_SURVIVAL_KNIFE,
+    WEAPON_URSUS_KNIFE,
+    WEAPON_NAVAJA_KNIFE,
+    WEAPON_NOMAD_KNIFE,
+    WEAPON_STILETTO_KNIFE,
+    WEAPON_TALON_KNIFE,
+    WEAPON_SKELETON_KNIFE = 525,
+};
 
+
+class FNV1A {
+public:
+    static constexpr uint32_t Hash(const char* string) {
+        uint32_t hash = FNV_OFFSET_BASIS;
+        for (size_t i = 0; string[i]; ++i) {
+            hash = FNV_PRIME * (hash ^ static_cast<uint8_t>(string[i]));
+        }
+
+        return hash;
+    }
+
+    static consteval uint32_t HashConst(const char* string) {
+        uint32_t hash = FNV_OFFSET_BASIS;
+        for (size_t i = 0; string[i]; ++i) {
+            hash = FNV_PRIME * (hash ^ static_cast<uint8_t>(string[i]));
+        }
+
+        return hash;
+    }
+
+private:
+    static constexpr uint32_t FNV_PRIME = 0x01000193, FNV_OFFSET_BASIS = 0x811c9dc5;
+};
+
+
+class CGameSceneNode {
+public:
+    Vector3D GetVecOrigin();
+};
+
+class CCollision {
+public:
+    Vector3D VecMaxs();
+    Vector3D VecMins();
+};
+
+class CCSWeaponData {
+public:
+	int GetMaxClip();
+};
+
+
+class C_EconItemView
+{
+public:
+	short& GetItemDefinitionIndex();
+};
+
+class C_AttributeContainer
+{
+public:
+	C_EconItemView& GetItem();
+};
+
+class C_BaseWeapon {
+public:
+	C_AttributeContainer& GetManagerAttribute();
+
+	int GetClip1();
+
+	CCSWeaponData* GetWeaponDataInfo();
+
+    bool IsReloading();
+
+	std::string GetWeaponString(int index) {
+		switch (index) {
+		case WEAPON_NONE: return "None";
+		case WEAPON_DESERT_EAGLE: return "Desert Eagle";
+		case WEAPON_DUAL_BERETTAS: return "Dual Berettas";
+		case WEAPON_FIVE_SEVEN: return "Five-SeveN";
+		case WEAPON_GLOCK_18: return "Glock-18";
+		case WEAPON_AK_47: return "AK-47";
+		case WEAPON_AUG: return "AUG";
+		case WEAPON_AWP: return "AWP";
+		case WEAPON_FAMAS: return "FAMAS";
+		case WEAPON_G3SG1: return "G3SG1";
+		case WEAPON_GALIL_AR: return "Galil AR";
+		case WEAPON_M249: return "M249";
+		case WEAPON_M4A4: return "M4A4";
+		case WEAPON_MAC_10: return "MAC-10";
+		case WEAPON_P90: return "P90";
+		case WEAPON_REPULSOR_DEVICE: return "Repulsor Device";
+		case WEAPON_MP5_SD: return "MP5-SD";
+		case WEAPON_UMP_45: return "UMP-45";
+		case WEAPON_XM1014: return "XM1014";
+		case WEAPON_PP_BIZON: return "PP-Bizon";
+		case WEAPON_MAG_7: return "MAG-7";
+		case WEAPON_NEGEV: return "Negev";
+		case WEAPON_SAWED_OFF: return "Sawed-Off";
+		case WEAPON_TEC_9: return "Tec-9";
+		case WEAPON_ZEUS_X27: return "Zeus x27";
+		case WEAPON_P2000: return "P2000";
+		case WEAPON_MP7: return "MP7";
+		case WEAPON_MP9: return "MP9";
+		case WEAPON_NOVA: return "Nova";
+		case WEAPON_P250: return "P250";
+		case WEAPON_RIOT_SHIELD: return "Riot Shield";
+		case WEAPON_SCAR_20: return "SCAR-20";
+		case WEAPON_SG_553: return "SG 553";
+		case WEAPON_SSG_08: return "SSG 08";
+		case WEAPON_KNIFE0: return "Knife";
+		case WEAPON_KNIFE1: return "Knife";
+		case WEAPON_FLASHBANG: return "Flashbang";
+		case WEAPON_HIGH_EXPLOSIVE_GRENADE: return "High Explosive Grenade";
+		case WEAPON_SMOKE_GRENADE: return "Smoke Grenade";
+		case WEAPON_MOLOTOV: return "Molotov";
+		case WEAPON_DECOY_GRENADE: return "Decoy Grenade";
+		case WEAPON_INCENDIARY_GRENADE: return "Incendiary Grenade";
+		case WEAPON_C4_EXPLOSIVE: return "C4 Explosive";
+		case WEAPON_KEVLAR_VEST: return "Kevlar Vest";
+		case WEAPON_KEVLAR_and_HELMET: return "Kevlar and Helmet";
+		case WEAPON_HEAVY_ASSAULT_SUIT: return "Heavy Assault Suit";
+		case WEAPON_NO_LOCALIZED_NAME0: return "Unnamed Weapon";
+		case WEAPON_DEFUSE_KIT: return "Defuse Kit";
+		case WEAPON_RESCUE_KIT: return "Rescue Kit";
+		case WEAPON_MEDI_SHOT: return "Medi-Shot";
+		case WEAPON_MUSIC_KIT: return "Music Kit";
+		case WEAPON_KNIFE2: return "Knife";
+		case WEAPON_M4A1_S: return "M4A1-S";
+		case WEAPON_USP_S: return "USP-S";
+		case WEAPON_TRADE_UP_CONTRACT: return "Trade-Up Contract";
+		case WEAPON_CZ75_AUTO: return "CZ75-Auto";
+		case WEAPON_R8_REVOLVER: return "R8 Revolver";
+		case WEAPON_TACTICAL_AWARENESS_GRENADE: return "Tactical Awareness Grenade";
+		case WEAPON_BARE_HANDS: return "Bare Hands";
+		case WEAPON_BREACH_CHARGE: return "Breach Charge";
+		case WEAPON_TABLET: return "Tablet";
+		case WEAPON_KNIFE3: return "Knife";
+		case WEAPON_AXE: return "Axe";
+		case WEAPON_HAMMER: return "Hammer";
+		case WEAPON_WRENCH: return "Wrench";
+		case WEAPON_SPECTRAL_SHIV: return "Spectral Shiv";
+		case WEAPON_FIRE_BOMB: return "Fire Bomb";
+		case WEAPON_DIVERSION_DEVICE: return "Diversion Device";
+		case WEAPON_FRAG_GRENADE: return "Frag Grenade";
+		case WEAPON_SNOWBALL: return "Snowball";
+		case WEAPON_BUMP_MINE: return "Bump Mine";
+		case WEAPON_BAYONET: return "Bayonet";
+		case WEAPON_CLASSIC_KNIFE: return "Classic Knife";
+		case WEAPON_FLIP_KNIFE: return "Flip Knife";
+		case WEAPON_GUT_KNIFE: return "Gut Knife";
+		case WEAPON_KARAMBIT: return "Karambit";
+		case WEAPON_M9_BAYONET: return "M9 Bayonet";
+		case WEAPON_HUNTSMAN_KNIFE: return "Huntsman Knife";
+		case WEAPON_FALCHION_KNIFE: return "Falchion Knife";
+		case WEAPON_BOWIE_KNIFE: return "Bowie Knife";
+		case WEAPON_BUTTERFLY_KNIFE: return "Butterfly Knife";
+		case WEAPON_SHADOW_DAGGERS: return "Shadow Daggers";
+		case WEAPON_PARACORD_KNIFE: return "Paracord Knife";
+		case WEAPON_SURVIVAL_KNIFE: return "Survival Knife";
+		case WEAPON_URSUS_KNIFE: return "Ursus Knife";
+		case WEAPON_NAVAJA_KNIFE: return "Navaja Knife";
+		case WEAPON_NOMAD_KNIFE: return "Nomad Knife";
+		case WEAPON_STILETTO_KNIFE: return "Stiletto Knife";
+		case WEAPON_TALON_KNIFE: return "Talon Knife";
+		case WEAPON_SKELETON_KNIFE: return "Skeleton Knife";
+		default: return "Unknown";
+		}
+	}
+
+};
+
+class C_BaseWeaponServices {
+public:
+	C_BaseHandle GetWeaponHandle();
+	int GetAmmo();
+};
+
+class C_PlayerItemServices {
+public:
+    bool HasHelmet();
+};
+
+class CCSPlayerController_InGameMoneyServices
+{
+public:
+    int GetMoney();
 };

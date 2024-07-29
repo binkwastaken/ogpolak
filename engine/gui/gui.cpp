@@ -1,5 +1,5 @@
 #include "gui.h"
-bool test = false;
+
 void CGui::DrawGui()
 {
 	if (!IsOpen)
@@ -13,7 +13,7 @@ void CGui::DrawGui()
     g_pFramework->CreatePolygon(WindowPostion.x, WindowPostion.y, WindowSize.x, WindowSize.y);
 
     ImGui::SetCursorPos(ImVec2(6, 31));
-    g_pFramework->GroupBox("tabs", ImVec2(84, 460), { "aimbot","anti aim","visuals","misc","players"}, clickedItem, 7);
+    g_pFramework->GroupBox("tabs", ImVec2(84, 458), { "aimbot","anti aim","visuals","misc","players"}, clickedItem, 7);
 
     switch (clickedItem)
     {
@@ -38,30 +38,24 @@ void CGui::DrawGui()
         ImGui::SetCursorPos(ImVec2(246, 91));
         ImGui::ColorEdit4("##NamePlayerColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_ESP.NameColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
 
-
-
         ImGui::SetCursorPos(ImVec2(107, 106));
 		g_pFramework->CheckBox("Bounding Box", &g_pGui->m_Vars.m_ESP.boxes);
         ImGui::SetCursorPos(ImVec2(246, 106));
         ImGui::ColorEdit4("##BoundingBoxColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_ESP.BoxesColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
 
-
-
-		ImGui::SetCursorPos(ImVec2(107, 121));
+   		ImGui::SetCursorPos(ImVec2(107, 121));
 		g_pFramework->CheckBox("Health", &g_pGui->m_Vars.m_ESP.health);
 		ImGui::SetCursorPos(ImVec2(107, 136));
 		g_pFramework->CheckBox("Weapon", &g_pGui->m_Vars.m_ESP.weapon);
         ImGui::SetCursorPos(ImVec2(246, 136));
         ImGui::ColorEdit4("##WeaponPlayerColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_ESP.WeaponColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
 
-
 		ImGui::SetCursorPos(ImVec2(107, 151));
 		g_pFramework->CheckBox("Ammo", &g_pGui->m_Vars.m_ESP.ammo);
         ImGui::SetCursorPos(ImVec2(246, 151));
         ImGui::ColorEdit4("##AmmoPlayerColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_ESP.AmmoColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
 
-
-		ImGui::SetCursorPos(ImVec2(107, 166));
+        ImGui::SetCursorPos(ImVec2(107, 166));
 		g_pFramework->CheckBox("Distance", &g_pGui->m_Vars.m_ESP.distance);
 		ImGui::SetCursorPos(ImVec2(107, 181));
 		g_pFramework->CheckBox("Flags", &g_pGui->m_Vars.m_ESP.flags);
@@ -72,24 +66,18 @@ void CGui::DrawGui()
         ImGui::SetCursorPos(ImVec2(246, 211));
         ImGui::ColorEdit4("##GlowPlayerColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_ESP.GlowColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
 
-
-
-		ImGui::SetCursorPos(ImVec2(107, 226));
+        ImGui::SetCursorPos(ImVec2(107, 226));
 		g_pFramework->CheckBox("Skeletons", &g_pGui->m_Vars.m_ESP.skeletons);
         ImGui::SetCursorPos(ImVec2(246, 226));
-        ImGui::ColorEdit4("##GlowPlayerColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_ESP.GlowColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
+        ImGui::ColorEdit4("##SkeletonPlayerColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_ESP.GlowColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
 
-
-		ImGui::SetCursorPos(ImVec2(107, 241));
+        ImGui::SetCursorPos(ImVec2(107, 241));
 		g_pFramework->CheckBox("Snaplines", &g_pGui->m_Vars.m_ESP.snaplines);
         ImGui::SetCursorPos(ImVec2(246, 241));
         ImGui::ColorEdit4("##SnaplinesColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_ESP.SnapLinesColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
 
-
-
-
         ImGui::SetCursorPos(ImVec2(100, 272));
-        g_pFramework->Tab("World", ImVec2(175, 219));
+        g_pFramework->Tab("World", ImVec2(175, 217));
         ImGui::SetCursorPos(ImVec2(107, 287));
         g_pFramework->CheckBox("Enable", &g_pGui->m_Vars.m_ESP.world);
 		ImGui::SetCursorPos(ImVec2(107, 302));
@@ -109,10 +97,8 @@ void CGui::DrawGui()
         ImGui::SetCursorPos(ImVec2(107, 407));
 		g_pFramework->CheckBox("Hostage", &g_pGui->m_Vars.m_ESP.hostages);
 
-
-
-        ImGui::SetCursorPos(ImVec2(313, 31));
-        g_pFramework->Tab("Chams", ImVec2(175, 200));
+        //ImGui::SetCursorPos(ImVec2(313, 31));
+        //g_pFramework->Tab("Chams", ImVec2(175, 200));
     }
         break;
 

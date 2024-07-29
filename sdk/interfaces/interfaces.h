@@ -1,7 +1,16 @@
 #pragma once
 #include "../classes/entities.h"
 
-#include "../../sdk/structs/structs.h"
+#include "../../engine/schema/info.h"
+
+struct EntityListInfo {
+	C_PlayerController* Controller;
+	C_PlayerPawn* Pawn;
+	C_BaseEntity* Entity;
+	int index;
+	bool IsCheater = false;
+};
+
 
 class ISchemaSystem
 {

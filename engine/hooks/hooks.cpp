@@ -60,11 +60,6 @@ void __fastcall CHooksManager::CreateMove::Hook(void* ecx, int edx, char a2)
 	Globals::LocalPlayerPawn = (C_PlayerPawn*)g_pInterfaces->m_Interfaces.pEntityList->GetClientEntityFromHandle(Globals::LocalPlayerController->GetHandlePawn());
 	if (!Globals::LocalPlayerPawn)
 		return oCreateMove(ecx, edx, a2);
-
-
-	std::cout<<"pawn: "<<Globals::LocalPlayerPawn<<std::endl;
-	std::cout<<"controller: "<<Globals::LocalPlayerController<<std::endl;
-
 }
 
 HRESULT __stdcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
@@ -102,7 +97,7 @@ HRESULT __stdcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain, 
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	g_pFeatures->m_ESP.Players();
+	g_pFeatures->m_ESP.m_Players.Draw();
 
 	g_pGui->DrawGui();
 

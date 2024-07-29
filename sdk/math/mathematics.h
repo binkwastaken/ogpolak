@@ -6,9 +6,10 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-class CMath {
-public:
-};
+#include "../classes/entities.h"
+
+
+class C_PlayerPawn;
 
 class Vector4D {
 public:
@@ -166,8 +167,8 @@ public:
 
 class Vector3D {
 public:
-	float x, y, z;
 
+	float x, y, z;
 	Vector3D(float x, float y, float z) {
 		this->x = x;
 		this->y = y;
@@ -251,3 +252,19 @@ public:
 		return *this;
 	}
 };
+
+class CMath {
+public:
+
+	struct BoundingBox {
+
+		int x, y, w, h;
+
+		BoundingBox() = default;
+		BoundingBox(const int x, const int y, const int w, const int h) : x(x), y(y), w(w), h(h) {}
+	};
+
+	bool WorldToScreen(Vector3D& Position, Vector2D& ScreenPosition);
+	bool GetPlayerBoundingBox(C_PlayerPawn* ent, BoundingBox& in);
+};
+inline CMath* g_pMath = new CMath();

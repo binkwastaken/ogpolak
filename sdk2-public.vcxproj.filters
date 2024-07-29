@@ -60,7 +60,7 @@
     <ClCompile Include="sdk\classes\entities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sdk\math\math.cpp">
+    <ClCompile Include="sdk\math\mathematics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sdk\interfaces\interfaces.cpp">
@@ -152,7 +152,7 @@
     <ClInclude Include="sdk\classes\entities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sdk\math\math.h">
+    <ClInclude Include="sdk\math\mathematics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sdk\interfaces\interfaces.h">
@@ -183,6 +183,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sdk\globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\schema\info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -44,7 +44,7 @@ bool CRenderer::Init(HWND hWnd, ID3D11Device* pDevice, ID3D11DeviceContext* pCon
 		g_pUtils->m_Console.Log("Logo loaded successfully.");
 	}
 
-	Fonts::Verdana = io.Fonts->AddFontFromMemoryTTF(Verdana, sizeof(Verdana), 12.f, NULL, Fonts::FontRanges);
+	Fonts::Verdana = io.Fonts->AddFontFromMemoryTTF(Verdana, sizeof(Verdana), 11.f, NULL, Fonts::FontRanges);
 
 	Fonts::Pixel = io.Fonts->AddFontFromMemoryTTF(SmallestPixel, sizeof(SmallestPixel), 10.f, NULL, Fonts::FontRanges);
 
