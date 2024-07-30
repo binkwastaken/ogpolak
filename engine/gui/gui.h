@@ -23,6 +23,7 @@ public:
 			ImVec4 SkeletonsColor = ImVec4(1.f, 1.f, 1.f, 1.f);
 			ImVec4 GlowColor = ImVec4(1.f, 1.f, 1.f, 1.f);
 			ImVec4 AmmoColor = ImVec4(1.f, 1.f, 1.f, 1.f);
+			int SnaplinesRadius = 1;
 		};
 		ESP m_ESP;
 	};

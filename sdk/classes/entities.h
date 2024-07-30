@@ -6,6 +6,8 @@
 #include "../math/mathematics.h"
 #include "../structs/structs.h"
 
+#include "../math/vectors.h"
+
 class CGameSceneNode;
 class CCollision;
 class SchemaClassInfoData;
@@ -49,6 +51,7 @@ class C_BaseEntity : public CEntityInstance {
 public:
 	CGameSceneNode* GetGameSceneNode();
 	CCollision* GetCollision();
+	Vector3D GetBonePosition(int boneIndex);
 };
 
 class C_BasePlayerController {

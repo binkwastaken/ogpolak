@@ -1,5 +1,4 @@
 #include "gui.h"
-
 void CGui::DrawGui()
 {
 	if (!IsOpen)
@@ -26,7 +25,7 @@ void CGui::DrawGui()
     case 2:
     {
 		ImGui::SetCursorPos(ImVec2(100, 31));
-		g_pFramework->Tab("Players", ImVec2(175, 230));
+		g_pFramework->Tab("Players", ImVec2(175, 245));
         ImGui::SetCursorPos(ImVec2(107, 46));
 		g_pFramework->CheckBox("Enable", &g_pGui->m_Vars.m_ESP.players);
 		ImGui::SetCursorPos(ImVec2(107, 61));
@@ -69,34 +68,37 @@ void CGui::DrawGui()
         ImGui::SetCursorPos(ImVec2(107, 226));
 		g_pFramework->CheckBox("Skeletons", &g_pGui->m_Vars.m_ESP.skeletons);
         ImGui::SetCursorPos(ImVec2(246, 226));
-        ImGui::ColorEdit4("##SkeletonPlayerColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_ESP.GlowColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
+        ImGui::ColorEdit4("##SkeletonPlayerColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_ESP.SkeletonsColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
 
         ImGui::SetCursorPos(ImVec2(107, 241));
 		g_pFramework->CheckBox("Snaplines", &g_pGui->m_Vars.m_ESP.snaplines);
         ImGui::SetCursorPos(ImVec2(246, 241));
         ImGui::ColorEdit4("##SnaplinesColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_ESP.SnapLinesColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
+		ImGui::SetCursorPos(ImVec2(107, 256));
 
-        ImGui::SetCursorPos(ImVec2(100, 272));
-        g_pFramework->Tab("World", ImVec2(175, 217));
-        ImGui::SetCursorPos(ImVec2(107, 287));
+        g_pFramework->SliderInt("Radius", &g_pGui->m_Vars.m_ESP.SnaplinesRadius, 1, 10,g_pGui->m_Vars.m_ESP.snaplines);
+
+
+        ImGui::SetCursorPos(ImVec2(100, 287));
+        g_pFramework->Tab("World", ImVec2(175, 202));
+        ImGui::SetCursorPos(ImVec2(107, 302));
         g_pFramework->CheckBox("Enable", &g_pGui->m_Vars.m_ESP.world);
-		ImGui::SetCursorPos(ImVec2(107, 302));
-		g_pFramework->CheckBox("Dropped weapons", &g_pGui->m_Vars.m_ESP.droppedweapons);
 		ImGui::SetCursorPos(ImVec2(107, 317));
-		g_pFramework->CheckBox("Planted C4", &g_pGui->m_Vars.m_ESP.plantedc4);
+		g_pFramework->CheckBox("Dropped weapons", &g_pGui->m_Vars.m_ESP.droppedweapons);
 		ImGui::SetCursorPos(ImVec2(107, 332));
-		g_pFramework->CheckBox("Projectiles", &g_pGui->m_Vars.m_ESP.projectiles);
+		g_pFramework->CheckBox("Planted C4", &g_pGui->m_Vars.m_ESP.plantedc4);
 		ImGui::SetCursorPos(ImVec2(107, 347));
+		g_pFramework->CheckBox("Projectiles", &g_pGui->m_Vars.m_ESP.projectiles);
+		ImGui::SetCursorPos(ImVec2(107, 362));
 		g_pFramework->CheckBox("Bomb", &g_pGui->m_Vars.m_ESP.droppedbomb);
-        ImGui::SetCursorPos(ImVec2(107, 362));
-        g_pFramework->CheckBox("Defuse Kit",&g_pGui->m_Vars.m_ESP.defusekit);
         ImGui::SetCursorPos(ImVec2(107, 377));
-        g_pFramework->CheckBox("Health Shot", &g_pGui->m_Vars.m_ESP.healthshot);
+        g_pFramework->CheckBox("Defuse Kit",&g_pGui->m_Vars.m_ESP.defusekit);
         ImGui::SetCursorPos(ImVec2(107, 392));
-        g_pFramework->CheckBox("Chicken", &g_pGui->m_Vars.m_ESP.chicken);
+        g_pFramework->CheckBox("Health Shot", &g_pGui->m_Vars.m_ESP.healthshot);
         ImGui::SetCursorPos(ImVec2(107, 407));
+        g_pFramework->CheckBox("Chicken", &g_pGui->m_Vars.m_ESP.chicken);
+        ImGui::SetCursorPos(ImVec2(107, 422));
 		g_pFramework->CheckBox("Hostage", &g_pGui->m_Vars.m_ESP.hostages);
-
         //ImGui::SetCursorPos(ImVec2(313, 31));
         //g_pFramework->Tab("Chams", ImVec2(175, 200));
     }

@@ -29,9 +29,30 @@ public:
 
 			void Flags(const EntityListInfo& playerInfo, CMath::BoundingBox& pos);
 
-			void Money(const EntityListInfo& playerInfo, CMath::BoundingBox& pos);
+			void SnapLines(const EntityListInfo& playerInfo);
+
+			void Skeleton(const EntityListInfo& playerInfo);
 
 			std::unordered_map<int, float> previousHealth;
+
+			const int boneConnections[17][2] = {
+				{6, 5},  // head to neck
+				{5, 4},  // neck to spine
+				{4, 0},  // spine to hip
+				{4, 8},  // spine to left shoulder
+				{8, 9},  // left shoulder to left arm
+				{9, 11}, // arm to hand
+				{4, 13}, // spine to right shoulder
+				{13, 14},// right shoulder to arm
+				{14, 16},// right arm to hand
+				{4, 2},  // spine to spine_1
+				{0, 22}, // hip to left_hip
+				{0, 25}, // hip to right_hip
+				{22, 23},// left hip to left knee
+				{23, 24},// left knee to left foot
+				{25, 26},// right hip to right knee
+				{26, 27} // right knee to right foot
+			};
 		};
 		Players m_Players;
 

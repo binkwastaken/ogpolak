@@ -195,6 +195,7 @@
     <ClInclude Include="sdk\globals.h" />
     <ClInclude Include="sdk\interfaces\interfaces.h" />
     <ClInclude Include="sdk\math\mathematics.h" />
+    <ClInclude Include="sdk\math\vectors.h" />
     <ClInclude Include="sdk\structs\structs.h" />
   </ItemGroup>
   <ItemGroup>

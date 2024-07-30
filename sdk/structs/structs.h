@@ -2,13 +2,11 @@
 #include "../math/mathematics.h"
 #include "../classes/entities.h"
 
+#include "../math/vectors.h"
+
 #include <d3d9.h>
 
 #include <string>
-
-class Vector3D;
-class Vector2D;
-class Vector4D;
 
 class C_BaseHandle;
 
@@ -163,10 +161,29 @@ private:
     static constexpr uint32_t FNV_PRIME = 0x01000193, FNV_OFFSET_BASIS = 0x811c9dc5;
 };
 
+struct CBoneData
+{
+    Vector3D location;
+    float scale;
+    Vector4D rotation;
+};
+
+class CModelState {
+public:
+    CBoneData* BoneArray()
+    {
+        return *reinterpret_cast<CBoneData**>(std::uintptr_t(this) + 0x80);
+    }
+};
 
 class CGameSceneNode {
 public:
     Vector3D GetVecOrigin();
+
+    CModelState& GetModelState() {
+        auto modelStateAddress = reinterpret_cast<std::uintptr_t>(this) + 0x170;
+        return *reinterpret_cast<CModelState*>(modelStateAddress);
+    }
 };
 
 class CCollision {

@@ -31,6 +31,8 @@ void CFeatures::ESP::Players::Draw()
                 Ammo(bbox, entity);
                 Weapon(bbox, entity);
                 Distance(entity, bbox);
+                SnapLines(entity);
+				Skeleton(entity);
             }
         }
 
@@ -269,4 +271,63 @@ void CFeatures::ESP::Players::Flags(const EntityListInfo& playerInfo, CMath::Bou
 	}
 
 	ImGui::PopFont();
+}
+
+void CFeatures::ESP::Players::SnapLines(const EntityListInfo& playerInfo)
+{
+    if (!g_pGui->m_Vars.m_ESP.snaplines)
+        return;
+
+    if (playerInfo.Pawn == Globals::LocalPlayerPawn)
+        return;
+
+    Vector3D playerPosition = playerInfo.Pawn->GetBaseEntity()->GetGameSceneNode()->GetVecOrigin();
+    Vector2D screenPosition;
+
+    color_t color = color_t(g_pGui->m_Vars.m_ESP.SnapLinesColor.x * 255, g_pGui->m_Vars.m_ESP.SnapLinesColor.y * 255, g_pGui->m_Vars.m_ESP.SnapLinesColor.z * 255, g_pGui->m_Vars.m_ESP.SnapLinesColor.w * 255);
+
+    if (g_pMath->WorldToScreen(playerPosition, screenPosition)) {
+        float centerX = ImGui::GetIO().DisplaySize.x / 2.0f;
+        float centerY = ImGui::GetIO().DisplaySize.y / 2.0f;
+        float radius = g_pGui->m_Vars.m_ESP.SnaplinesRadius * 10;
+
+        float deltaY = screenPosition.y - centerY;
+        float deltaX = screenPosition.x - centerX;
+        float distance = sqrt(deltaX * deltaX + deltaY * deltaY);
+        float angle = atan2(deltaY, deltaX);
+
+        float startX = centerX + radius * cos(angle);
+        float startY = centerY + radius * sin(angle);
+
+        if (distance >= radius) {
+            g_pRenderer->DrawOutlinedLine(startX, startY, screenPosition.x, screenPosition.y, color, color_t(0, 0, 0, 100), 0.0);
+        }
+    }
+}
+
+void CFeatures::ESP::Players::Skeleton(const EntityListInfo& playerInfo)
+{
+    if (!g_pGui->m_Vars.m_ESP.skeletons)
+        return;
+
+    color_t colour = color_t(g_pGui->m_Vars.m_ESP.SkeletonsColor.x * 255, g_pGui->m_Vars.m_ESP.SkeletonsColor.y * 255, g_pGui->m_Vars.m_ESP.SkeletonsColor.z * 255, g_pGui->m_Vars.m_ESP.SkeletonsColor.w * 255);
+    Vector2D screenPositions[28];
+    bool boneVisible[28] = { false };
+
+    for (int i = 0; i <= 27; i++) {
+        Vector3D bonePosition = playerInfo.Pawn->GetBaseEntity()->GetBonePosition(i);
+
+        if (g_pMath->WorldToScreen(bonePosition, screenPositions[i])) {
+            boneVisible[i] = true;
+        }
+    }
+
+    for (int i = 0; i < 16; i++) {
+        int bone1 = boneConnections[i][0];
+        int bone2 = boneConnections[i][1];
+
+        if (boneVisible[bone1] && boneVisible[bone2]) {
+            g_pRenderer->DrawLine(screenPositions[bone1], screenPositions[bone2], colour);
+        }
+    }
 }

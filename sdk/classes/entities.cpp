@@ -24,6 +24,20 @@ CCollision* C_BaseEntity::GetCollision()
 	return g_pSchemaManager->GetOffset<CCollision*>("C_BaseEntity", "m_pCollision", this);
 }
 
+Vector3D C_BaseEntity::GetBonePosition(int boneIndex)
+{
+		auto& ModelState = this->GetGameSceneNode()->GetModelState();
+		auto bonearray = ModelState.BoneArray();
+		if (!bonearray)
+			return Vector3D{};
+
+		auto pos = (bonearray + boneIndex)->location;
+		if (pos.IsZero())
+			return Vector3D{};
+
+		return pos;
+}
+
 const char* C_PlayerController::GetPlayerName()
 {
 	return g_pSchemaManager->GetOffset<const char*>("CCSPlayerController", "m_sSanitizedPlayerName", this);

@@ -171,3 +171,62 @@ void CFramework::CheckBox(const char* label, bool* v)
     ImGui::ItemSize(checkboxRect);
     ImGui::ItemAdd(checkboxRect, ImGui::GetID(label));
 }
+
+void CFramework::SliderInt(const char* label, int* v, int min, int max, bool enabled)
+{
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    ImGuiContext& g = *GImGui;
+    const ImGuiStyle& style = g.Style;
+
+    ImVec2 position = window->DC.CursorPos;
+    ImVec2 comboRectSize(93, 9);
+
+    // Determine the color of the label based on the enabled state
+    color_t labelColor = enabled ? color_t(255, 255, 255, 255) : color_t(100, 100, 100, 255);
+
+    ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
+    g_pRenderer->DrawOutlinedString(label, Vector2D(position.x + 23, position.y), labelColor, color_t(0, 0, 0, 255), false);
+
+    ImRect comboRect(ImVec2(position.x + 65, position.y + 1), ImVec2(position.x + 65 + comboRectSize.x, position.y + comboRectSize.y));
+
+    g_pRenderer->DrawRect(comboRect.Min.x - 1, comboRect.Min.y - 1, comboRectSize.x + 2, comboRectSize.y + 2, color_t(46, 46, 46, 255));
+
+    if (enabled)
+    {
+        bool mouseHovering = ImGui::IsMouseHoveringRect(comboRect.Min, comboRect.Max);
+        color_t color = mouseHovering ? color_t(120, 150, 255, 255) : color_t(255, 255, 255, 255);
+
+        ImGui::SetCursorScreenPos(comboRect.Min);
+        ImGui::InvisibleButton(label, comboRectSize);
+
+        if (ImGui::IsItemActive())
+        {
+            g.ActiveIdIsJustActivated = false;
+            ImGui::SetActiveID(g.CurrentWindow->GetID(label), window);
+            if (ImGui::GetIO().MouseDelta.x != 0.0f)
+            {
+                ImVec2 mousePos = ImGui::GetIO().MousePos;
+                float mouseX = ImClamp(mousePos.x, comboRect.Min.x, comboRect.Max.x);
+                float newValue = min + (mouseX - comboRect.Min.x) / comboRectSize.x * (max - min);
+                *v = (int)ImClamp(newValue, (float)min, (float)max);
+            }
+        }
+    }
+
+    float fillWidth = (*v - min) / float(max - min) * comboRectSize.x;
+    fillWidth = ImMin(fillWidth, comboRectSize.x);
+
+    g_pRenderer->DrawFilledRect(comboRect.Min.x, comboRect.Min.y, fillWidth, comboRectSize.y, color_t(20, 20, 20, 255));
+
+    ImVec2 textSize = ImGui::CalcTextSize(std::to_string(*v).c_str());
+    float textX = comboRect.Min.x + (comboRectSize.x - textSize.x) / 2;
+    float textY = comboRect.Min.y + (comboRectSize.y - textSize.y) / 2;
+
+    // Use the same label color for the slider value
+    g_pRenderer->DrawOutlinedString(std::to_string(*v).c_str(), Vector2D(textX, textY), labelColor, color_t(0, 0, 0, 255), false);
+
+    ImGui::PopFont();
+}
