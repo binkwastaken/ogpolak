@@ -134,3 +134,9 @@ std::string C_BasePlayerController::GetPlayerName()
 	const char* name = g_pSchemaManager->GetOffset<const char*>("CBasePlayerController", "m_iszPlayerName", this);
 	 return std::string(name);
 }
+
+C_BaseHandle C_BaseEntity::GetHandleEntity()
+{
+	return g_pSchemaManager->GetOffset<C_BaseHandle>("C_BaseEntity", "m_hOwnerEntity", this);
+}
+

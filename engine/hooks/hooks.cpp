@@ -2,6 +2,8 @@
 
 CHooksManager::CreateMove::oCreateMoveFn CHooksManager::CreateMove::oCreateMove = nullptr;
 CHooksManager::PresentScene::oPresentSceneFn CHooksManager::PresentScene::oPresentScene = nullptr;
+CHooksManager::GlowObjects::oGlowObjectsFn CHooksManager::GlowObjects::oGlowObjects = nullptr;
+CHooksManager::GlowObjects::oIsGlowingFn CHooksManager::GlowObjects::oIsGlowing = nullptr;
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 uint8_t* CHooksManager::FindAddress(const char* moduleName, const char* pattern, const char* addressName) {
@@ -31,12 +33,14 @@ bool CHooksManager::Init()
 {
 	uint8_t* CreateMoveAddress = FindAddress("client.dll", "85 D2 0F 85 ? ? ? ? 48 8B C4 44 88 40", "CreateMove");
 	uint8_t* GameOverlayAddress = FindAddress("GameOverlayRenderer64.dll", "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC ? 41 8B E8", "PresentScene");
-
+	uint8_t* GlowObjectAddress = FindAddress("client.dll","48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC 20 48 8B FA 48 8B F1 48 8B 54 24 ? 48 83 C1", "GlowObject");
+	uint8_t* IsGlowingAddress = FindAddress("client.dll", "0F B6 41 ? C3 CC CC CC CC CC CC CC CC CC CC CC 32 C0 C3 CC CC CC CC CC CC CC CC CC CC CC CC CC 32 C0 C3 CC CC CC CC CC CC CC CC CC CC CC CC CC 32 C0", "IsGlowing");
 	MH_Initialize();
 
 	CreateHook(CreateMoveAddress, reinterpret_cast<void*>(&CHooksManager::CreateMove::Hook), reinterpret_cast<void**>(&CHooksManager::CreateMove::oCreateMove), "CreateMove");
 	CreateHook(GameOverlayAddress, reinterpret_cast<void*>(&CHooksManager::PresentScene::Hook), reinterpret_cast<void**>(&CHooksManager::PresentScene::oPresentScene), "PresentScene");
-
+	//CreateHook(GlowObjectAddress, reinterpret_cast<void*>(&CHooksManager::GlowObjects::Hook), reinterpret_cast<void**>(&CHooksManager::GlowObjects::oGlowObjects), "GlowObject");
+	//CreateHook(IsGlowingAddress, reinterpret_cast<void*>(&CHooksManager::GlowObjects::HookIsGlowing), reinterpret_cast<void**>(&CHooksManager::GlowObjects::oIsGlowing), "IsGlowing");
 	MH_EnableHook(MH_ALL_HOOKS);
 
 	return true;
@@ -97,6 +101,7 @@ HRESULT __stdcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain, 
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+	g_pFeatures->m_ESP.m_World.Draw();
 	g_pFeatures->m_ESP.m_Players.Draw();
 
 	g_pGui->DrawGui();
@@ -146,4 +151,43 @@ LRESULT CALLBACK CHooksManager::WindowProc::Hook(HWND hWnd, UINT uMsg, WPARAM wP
 		}
 	}
 	return CallWindowProc(g_pHooksManager->m_WindowProc.WndProc, hWnd, uMsg, wParam, lParam);
+}
+
+void __fastcall CHooksManager::GlowObjects::Hook(C_GlowProperty* glowProperty, float* colour)
+{
+	oGlowObjects(glowProperty, colour);
+	
+	if (glowProperty && colour)
+	{
+		colour[0] = g_pGui->m_Vars.m_ESP.GlowColor.x;
+		colour[1] = g_pGui->m_Vars.m_ESP.GlowColor.y;
+		colour[2] = g_pGui->m_Vars.m_ESP.GlowColor.z;
+		colour[3] = g_pGui->m_Vars.m_ESP.GlowColor.w;
+	}
+}
+
+bool __fastcall CHooksManager::GlowObjects::HookIsGlowing(C_GlowProperty* glowProperty)
+{
+	if (!g_pInterfaces->m_Interfaces.pEngineClient->IsConnected() || !g_pInterfaces->m_Interfaces.pEngineClient->IsInGame())
+		return false;
+
+	if (!g_pGui->m_Vars.m_ESP.glow)
+		return false;
+
+	if (!glowProperty || !glowProperty->GetParentEntity())
+		return false;
+
+	auto parentEntity = glowProperty->GetParentEntity();
+	auto localPlayer = Globals::LocalPlayerPawn;
+
+	if (!parentEntity->GetBaseEntity()->IsEntityPlayer() || parentEntity == localPlayer)
+		return false;
+
+	if (!parentEntity->IsAlive())
+		return false;
+
+	if (Globals::LocalPlayerPawn->GetTeam() == parentEntity->GetTeam() && !g_pGui->m_Vars.m_ESP.team)
+		return false;
+
+	return true;
 }

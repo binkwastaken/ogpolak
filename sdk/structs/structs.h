@@ -9,6 +9,8 @@
 #include <string>
 
 class C_BaseHandle;
+class C_BaseEntity;
+class C_PlayerPawn;
 
 struct color_t {
     int a, r, g, b;
@@ -333,4 +335,13 @@ class CCSPlayerController_InGameMoneyServices
 {
 public:
     int GetMoney();
+};
+
+class C_GlowProperty {
+public:
+   C_PlayerPawn* GetParentEntity() {
+       return *(C_PlayerPawn**)(this + 0x18);
+    }
+
+    bool IsGlowing();
 };

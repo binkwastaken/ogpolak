@@ -75,3 +75,8 @@ int CCSPlayerController_InGameMoneyServices::GetMoney()
 {
 	return g_pSchemaManager->GetOffset<int>("CCSPlayerController_InGameMoneyServices", "m_iAccount", this);
 }
+
+bool C_GlowProperty::IsGlowing()
+{
+	return g_pSchemaManager->GetOffset<bool>("CGlowProperty", "m_bGlowing", this);
+}

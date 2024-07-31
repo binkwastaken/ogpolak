@@ -46,12 +46,15 @@ public:
 	void GetSchemaClassInfo(SchemaClassInfoData** pReturn);
 	bool IsEntityPlayer();
 };
+class C_PlayerPawn;
 
-class C_BaseEntity : public CEntityInstance {
+class C_BaseEntity : public CEntityInstance{
 public:
 	CGameSceneNode* GetGameSceneNode();
 	CCollision* GetCollision();
 	Vector3D GetBonePosition(int boneIndex);
+	C_BaseHandle GetHandleEntity();
+
 };
 
 class C_BasePlayerController {

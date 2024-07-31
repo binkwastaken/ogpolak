@@ -51,5 +51,17 @@ private:
 		static LRESULT CALLBACK Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	};
 	WindowProc m_WindowProc;
+
+	class GlowObjects {
+	public:
+		typedef void(__fastcall* oGlowObjectsFn)(C_GlowProperty*, float*);
+		typedef bool(__fastcall* oIsGlowingFn)(C_GlowProperty*);
+		static oIsGlowingFn oIsGlowing;
+		static oGlowObjectsFn oGlowObjects;
+		static void __fastcall Hook(C_GlowProperty* glowProperty, float* colour);
+		static bool __fastcall HookIsGlowing(C_GlowProperty* glowProperty);
+	};
+	GlowObjects m_GlowObjects;
+
 };
 inline CHooksManager* g_pHooksManager = new CHooksManager();

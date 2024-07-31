@@ -58,6 +58,11 @@ public:
 
 		class World {
 		public:
+			void Draw();
+		private:
+			void Weapons(C_BaseEntity* Entity);
+			void Bomb(C_BaseEntity* Entity);
+			void Projectiles(C_BaseEntity* Entity);
 		};
 		World m_World;
 	};

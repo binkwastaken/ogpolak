@@ -24,6 +24,7 @@ void CFeatures::ESP::Players::Draw()
         {
             if (g_pMath->GetPlayerBoundingBox(entity.Pawn, bbox))
             {
+                SnapLines(entity);
                 Box(bbox);
                 Name(bbox,entity);
 				HealthBar(bbox, entity);
@@ -31,7 +32,6 @@ void CFeatures::ESP::Players::Draw()
                 Ammo(bbox, entity);
                 Weapon(bbox, entity);
                 Distance(entity, bbox);
-                SnapLines(entity);
 				Skeleton(entity);
             }
         }
@@ -300,7 +300,7 @@ void CFeatures::ESP::Players::SnapLines(const EntityListInfo& playerInfo)
         float startY = centerY + radius * sin(angle);
 
         if (distance >= radius) {
-            g_pRenderer->DrawOutlinedLine(startX, startY, screenPosition.x, screenPosition.y, color, color_t(0, 0, 0, 100), 0.0);
+            g_pRenderer->DrawLine(startX, startY, screenPosition.x, screenPosition.y, color, 0.0);
         }
     }
 }
@@ -330,4 +330,123 @@ void CFeatures::ESP::Players::Skeleton(const EntityListInfo& playerInfo)
             g_pRenderer->DrawLine(screenPositions[bone1], screenPositions[bone2], colour);
         }
     }
+}
+
+void CFeatures::ESP::World::Draw()
+{
+    if (!g_pGui->m_Vars.m_ESP.world || !g_pInterfaces->m_Interfaces.pEngineClient->IsInGame())
+        return;
+
+    for (int i = 0; i <= g_pInterfaces->m_Interfaces.pEntityList->GetHighestEntityIndex(); i++)
+    {
+		C_BaseEntity* Entity = g_pInterfaces->m_Interfaces.pEntityList->GetClientEntity(i);
+		if (!Entity)
+			continue;
+		Weapons(Entity);
+        Bomb(Entity);
+       // Projectiles(Entity);
+    }
+  
+}
+
+void CFeatures::ESP::World::Weapons(C_BaseEntity* Entity)
+{
+	if (!g_pGui->m_Vars.m_ESP.droppedweapons)
+		return;
+
+    C_BaseWeapon* Weapon = reinterpret_cast<C_BaseWeapon*>(Entity);
+    if (!Weapon || g_pInterfaces->m_Interfaces.pEntityList->GetClientEntityFromHandle(Entity->GetHandleEntity()))
+        return;
+
+    CCSWeaponData* WeaponData = Weapon->GetWeaponDataInfo();
+    if (!WeaponData)
+        return;
+
+    int index = Weapon->GetManagerAttribute().GetItem().GetItemDefinitionIndex();
+    if (!index)
+        return;
+
+   Vector3D Position = Entity->GetGameSceneNode()->GetVecOrigin();
+    if (Position.IsZero())
+        return;
+
+    Vector2D screenPos;
+    if (!g_pMath->WorldToScreen(Position, screenPos))
+        return;
+
+    std::string weaponString = Weapon->GetWeaponString(index);
+
+    if (g_pGui->m_Vars.m_ESP.droppedbomb)
+    {
+		if (weaponString.find("C_C4") != std::string::npos)
+		{
+            return;
+		}
+    }
+
+
+    ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
+	g_pRenderer->DrawOutlinedString(weaponString.c_str(), Vector2D(screenPos.x, screenPos.y), color_t(255, 255, 255, 255), color_t(0, 0, 0, 100), false);
+
+    ImGui::PopFont();
+}
+
+void CFeatures::ESP::World::Bomb(C_BaseEntity* Entity)
+{
+    if (!g_pGui->m_Vars.m_ESP.droppedbomb)
+        return;
+
+    SchemaClassInfoData* pInfo;
+    Entity->GetSchemaClassInfo(&pInfo);
+    if (!pInfo)
+        return;
+    auto hash = FNV1A::Hash(pInfo->name);
+    if (hash != FNV1A::Hash("C_C4"))
+        return;
+
+    if (g_pInterfaces->m_Interfaces.pEntityList->GetClientEntityFromHandle(Entity->GetHandleEntity()))
+        return;
+
+    Vector3D Position = Entity->GetGameSceneNode()->GetVecOrigin();
+    if (Position.IsZero())
+        return;
+
+    Vector2D screenPos;
+    if (!g_pMath->WorldToScreen(Position, screenPos))
+        return;
+
+    ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
+
+    g_pRenderer->DrawOutlinedString("BOMB", Vector2D(screenPos.x, screenPos.y), color_t(0, 140, 255, 255), color_t(0, 0, 0, 100), false);
+
+    ImGui::PopFont();
+
+}
+
+void CFeatures::ESP::World::Projectiles(C_BaseEntity* Entity)
+{
+    if (!g_pGui->m_Vars.m_ESP.projectiles)
+        return;
+
+    SchemaClassInfoData* pInfo;
+    Entity->GetSchemaClassInfo(&pInfo);
+    if (!pInfo)
+        return;
+
+    Vector3D Position = Entity->GetGameSceneNode()->GetVecOrigin();
+    if (Position.IsZero())
+        return;
+
+    Vector2D screenPos;
+    if (!g_pMath->WorldToScreen(Position, screenPos))
+        return;
+
+    std::string Projecile = pInfo->name;
+
+
+    ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
+
+    g_pRenderer->DrawOutlinedString(Projecile.c_str(), Vector2D(screenPos.x, screenPos.y), color_t(0, 140, 255, 255), color_t(0, 0, 0, 100), false);
+
+    ImGui::PopFont();
 }
