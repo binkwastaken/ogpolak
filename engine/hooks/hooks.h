@@ -63,12 +63,12 @@ private:
 	};
 	GlowObjects m_GlowObjects;
 
-
-	class NoSpreadHook {
+	class LightingModulation
+	{
 	public:
-		bool (*CalculateSpreadFn)(void* Controller, void* Pawn, float* Result);
-		static bool __fastcall Hook(void* Controller, void* Pawn, float* Result);
-
+		typedef void(__fastcall* oLightingModulationFn)(__int64 a1, CAggregateSceneObject* a2, __int64 a3);
+		static oLightingModulationFn oLightingModulation;
+		static void __fastcall Hook(__int64 a1, CAggregateSceneObject* a2, __int64 a3);
 	};
 };
 inline CHooksManager* g_pHooksManager = new CHooksManager();

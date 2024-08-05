@@ -30,10 +30,13 @@ public:
 		class Models {
 		public:
 			bool enable,ignorez;
-			int SelectedTexture = 0;
+			int SelectedTextureLocal = 0;
+			int SelectedTextureEnemy = 0;
+			int SelectedTextureTeam = 0;
+
 			bool localPlayer;
-			bool team;
-			bool enemy;
+			bool team,teaminvisible;
+			bool enemy,enemyinvisible;
 			ImVec4 LocalPlayerColor = ImVec4(1.f, 1.f, 1.f, 1.f);
 			ImVec4 EnemyColor = ImVec4(1.f, 1.f, 1.f, 1.f);
 			ImVec4 EnemyColorInvisible = ImVec4(1.f, 1.f, 1.f, 1.f);
@@ -42,6 +45,14 @@ public:
 			ImVec4 TeamColorInvisible = ImVec4(1.f, 1.f, 1.f, 1.f);
 		};
 		Models m_Models;
+		class WorldModulation
+		{
+		public:
+			bool lighting;
+			ImVec4 LightingColor = ImVec4(1.f, 1.f, 1.f, 1.f);
+			int LightingIntensity = 1;
+		};
+		WorldModulation m_WorldModulation;
 	};
 	Variables m_Vars;
 

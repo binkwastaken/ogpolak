@@ -346,7 +346,14 @@ public:
 
 
 
-
+class CAggregateSceneObject
+{
+public:
+    unsigned char pad_0[0xE4];
+    float red;
+    float green;
+    float blue;
+};
 
 
 class C_UserCmd

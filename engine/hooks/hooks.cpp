@@ -4,6 +4,7 @@ CHooksManager::CreateMove::oCreateMoveFn CHooksManager::CreateMove::oCreateMove 
 CHooksManager::PresentScene::oPresentSceneFn CHooksManager::PresentScene::oPresentScene = nullptr;
 CHooksManager::GlowObjects::oGlowObjectsFn CHooksManager::GlowObjects::oGlowObjects = nullptr;
 CHooksManager::GlowObjects::oIsGlowingFn CHooksManager::GlowObjects::oIsGlowing = nullptr;
+CHooksManager::LightingModulation::oLightingModulationFn CHooksManager::LightingModulation::oLightingModulation = nullptr;
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 uint8_t* CHooksManager::FindAddress(const char* moduleName, const char* pattern, const char* addressName) {
@@ -35,14 +36,16 @@ bool CHooksManager::Init()
 	uint8_t* GameOverlayAddress = FindAddress("GameOverlayRenderer64.dll", "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC ? 41 8B E8", "PresentScene");
 	uint8_t* GlowObjectAddress = FindAddress("client.dll","48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC 20 48 8B FA 48 8B F1 48 8B 54 24 ? 48 83 C1", "GlowObject");
 	uint8_t* IsGlowingAddress = FindAddress("client.dll", "0F B6 41 ? C3 CC CC CC CC CC CC CC CC CC CC CC 32 C0 C3 CC CC CC CC CC CC CC CC CC CC CC CC CC 32 C0 C3 CC CC CC CC CC CC CC CC CC CC CC CC CC 32 C0", "IsGlowing");
-	
+	uint8_t* LightingOverrideAddress = FindAddress("scenesystem.dll","48 89 54 24 ? 53 55 41 57", "LightingOverride");
 	MH_Initialize();
 
 	CreateHook(CreateMoveAddress, reinterpret_cast<void*>(&CHooksManager::CreateMove::Hook), reinterpret_cast<void**>(&CHooksManager::CreateMove::oCreateMove), "CreateMove");
 	CreateHook(GameOverlayAddress, reinterpret_cast<void*>(&CHooksManager::PresentScene::Hook), reinterpret_cast<void**>(&CHooksManager::PresentScene::oPresentScene), "PresentScene");
 	CreateHook(IsGlowingAddress, reinterpret_cast<void*>(&CHooksManager::GlowObjects::HookIsGlowing), reinterpret_cast<void**>(&CHooksManager::GlowObjects::oIsGlowing), "IsGlowing");
 	CreateHook(GlowObjectAddress, reinterpret_cast<void*>(&CHooksManager::GlowObjects::Hook), reinterpret_cast<void**>(&CHooksManager::GlowObjects::oGlowObjects), "GlowObject");
+	CreateHook(LightingOverrideAddress, reinterpret_cast<void*>(&CHooksManager::LightingModulation::Hook), reinterpret_cast<void**>(&CHooksManager::LightingModulation::oLightingModulation), "LightingOverride");
 
+	std::cout << CHooksManager::LightingModulation::oLightingModulation;
 	MH_EnableHook(MH_ALL_HOOKS);
 
 	return true;
@@ -194,11 +197,14 @@ bool __fastcall CHooksManager::GlowObjects::HookIsGlowing(C_GlowProperty* glowPr
 	return true;
 }
 
-bool __fastcall CHooksManager::NoSpreadHook::Hook(void* Controller, void* Pawn, float* Result)
+void __fastcall CHooksManager::LightingModulation::Hook(__int64 a1, CAggregateSceneObject* sceneObject, __int64 a3)
 {
-	*Result = 0.f;
+	if (!g_pGui->m_Vars.m_WorldModulation.lighting || !g_pInterfaces->m_Interfaces.pEngineClient->IsInGame())
+		oLightingModulation(a1, sceneObject, a3);
 
-	*reinterpret_cast<float*>((uint64_t)Pawn + 0x132) = 1.f;
+	sceneObject->red = g_pGui->m_Vars.m_WorldModulation.LightingColor.x * g_pGui->m_Vars.m_WorldModulation.LightingIntensity;
+	sceneObject->green = g_pGui->m_Vars.m_WorldModulation.LightingColor.y * g_pGui->m_Vars.m_WorldModulation.LightingIntensity;
+	sceneObject->blue = g_pGui->m_Vars.m_WorldModulation.LightingColor.z * g_pGui->m_Vars.m_WorldModulation.LightingIntensity;
 
-	return true;
+	oLightingModulation(a1, sceneObject, a3);
 }
