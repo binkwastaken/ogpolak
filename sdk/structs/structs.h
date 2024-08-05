@@ -344,7 +344,27 @@ public:
     }
 };
 
+class CAggregateSceneObjectDataWorld {
+private:
+    char pad_0000[0x38]; // 0x0
+public:
+    unsigned char r; // 0x38
+    unsigned char g; // 0x39
+    unsigned char b; // 0x3A
+private:
+    char pad_0038[0x9];
+};
 
+class CAggregateSceneObjectWorld {
+private:
+    char pad_0000[0x120];
+public:
+    int count; // 0x120
+private:
+    char pad_0120[0x4];
+public:
+    CAggregateSceneObjectDataWorld* array; // 0x128
+};
 
 class CAggregateSceneObject
 {

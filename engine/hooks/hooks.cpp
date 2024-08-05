@@ -5,6 +5,7 @@ CHooksManager::PresentScene::oPresentSceneFn CHooksManager::PresentScene::oPrese
 CHooksManager::GlowObjects::oGlowObjectsFn CHooksManager::GlowObjects::oGlowObjects = nullptr;
 CHooksManager::GlowObjects::oIsGlowingFn CHooksManager::GlowObjects::oIsGlowing = nullptr;
 CHooksManager::LightingModulation::oLightingModulationFn CHooksManager::LightingModulation::oLightingModulation = nullptr;
+CHooksManager::WorldModulation::oModulateWorldColorFn CHooksManager::WorldModulation::oModulateWorldColor = nullptr;
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 uint8_t* CHooksManager::FindAddress(const char* moduleName, const char* pattern, const char* addressName) {
@@ -37,6 +38,7 @@ bool CHooksManager::Init()
 	uint8_t* GlowObjectAddress = FindAddress("client.dll","48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC 20 48 8B FA 48 8B F1 48 8B 54 24 ? 48 83 C1", "GlowObject");
 	uint8_t* IsGlowingAddress = FindAddress("client.dll", "0F B6 41 ? C3 CC CC CC CC CC CC CC CC CC CC CC 32 C0 C3 CC CC CC CC CC CC CC CC CC CC CC CC CC 32 C0 C3 CC CC CC CC CC CC CC CC CC CC CC CC CC 32 C0", "IsGlowing");
 	uint8_t* LightingOverrideAddress = FindAddress("scenesystem.dll","48 89 54 24 ? 53 55 41 57", "LightingOverride");
+	uint8_t* WorldOverrideAddress = FindAddress("scenesystem.dll", "48 89 5C 24 18 48 89 6C 24 20 56 57 41 55", "ModulateWorldColor");
 	MH_Initialize();
 
 	CreateHook(CreateMoveAddress, reinterpret_cast<void*>(&CHooksManager::CreateMove::Hook), reinterpret_cast<void**>(&CHooksManager::CreateMove::oCreateMove), "CreateMove");
@@ -44,8 +46,8 @@ bool CHooksManager::Init()
 	CreateHook(IsGlowingAddress, reinterpret_cast<void*>(&CHooksManager::GlowObjects::HookIsGlowing), reinterpret_cast<void**>(&CHooksManager::GlowObjects::oIsGlowing), "IsGlowing");
 	CreateHook(GlowObjectAddress, reinterpret_cast<void*>(&CHooksManager::GlowObjects::Hook), reinterpret_cast<void**>(&CHooksManager::GlowObjects::oGlowObjects), "GlowObject");
 	CreateHook(LightingOverrideAddress, reinterpret_cast<void*>(&CHooksManager::LightingModulation::Hook), reinterpret_cast<void**>(&CHooksManager::LightingModulation::oLightingModulation), "LightingOverride");
+	CreateHook(WorldOverrideAddress, reinterpret_cast<void*>(&CHooksManager::WorldModulation::Hook), reinterpret_cast<void**>(&CHooksManager::WorldModulation::oModulateWorldColor), "ModulateWorldColor");
 
-	std::cout << CHooksManager::LightingModulation::oLightingModulation;
 	MH_EnableHook(MH_ALL_HOOKS);
 
 	return true;
@@ -197,14 +199,60 @@ bool __fastcall CHooksManager::GlowObjects::HookIsGlowing(C_GlowProperty* glowPr
 	return true;
 }
 
-void __fastcall CHooksManager::LightingModulation::Hook(__int64 a1, CAggregateSceneObject* sceneObject, __int64 a3)
+struct OriginalLightingValues {
+    float red;
+    float green;
+    float blue;
+    bool stored;
+};
+
+OriginalLightingValues originalValues = { 0, 0, 0, false };
+
+void* __fastcall CHooksManager::LightingModulation::Hook(__int64 a1, CAggregateSceneObject* sceneObject, __int64 a3)
 {
-	if (!g_pGui->m_Vars.m_WorldModulation.lighting || !g_pInterfaces->m_Interfaces.pEngineClient->IsInGame())
-		oLightingModulation(a1, sceneObject, a3);
+    if (!g_pGui->m_Vars.m_WorldModulation.lighting || !g_pInterfaces->m_Interfaces.pEngineClient->IsInGame()) {
 
-	sceneObject->red = g_pGui->m_Vars.m_WorldModulation.LightingColor.x * g_pGui->m_Vars.m_WorldModulation.LightingIntensity;
-	sceneObject->green = g_pGui->m_Vars.m_WorldModulation.LightingColor.y * g_pGui->m_Vars.m_WorldModulation.LightingIntensity;
-	sceneObject->blue = g_pGui->m_Vars.m_WorldModulation.LightingColor.z * g_pGui->m_Vars.m_WorldModulation.LightingIntensity;
+        if (originalValues.stored) {
+            sceneObject->red = originalValues.red;
+            sceneObject->green = originalValues.green;
+            sceneObject->blue = originalValues.blue;
+            originalValues.stored = false; 
+        }
+        return oLightingModulation(a1, sceneObject, a3);
+    }
 
-	oLightingModulation(a1, sceneObject, a3);
+    if (!originalValues.stored) {
+        originalValues.red = sceneObject->red;
+        originalValues.green = sceneObject->green;
+        originalValues.blue = sceneObject->blue;
+        originalValues.stored = true;
+    }
+
+    sceneObject->red = g_pGui->m_Vars.m_WorldModulation.LightingColor.x * g_pGui->m_Vars.m_WorldModulation.LightingIntensity;
+    sceneObject->green = g_pGui->m_Vars.m_WorldModulation.LightingColor.y * g_pGui->m_Vars.m_WorldModulation.LightingIntensity;
+    sceneObject->blue = g_pGui->m_Vars.m_WorldModulation.LightingColor.z * g_pGui->m_Vars.m_WorldModulation.LightingIntensity;
+
+    return oLightingModulation(a1, sceneObject, a3);
+}
+
+void* __fastcall CHooksManager::WorldModulation::Hook(CAggregateSceneObjectWorld* pAggregateSceneObject, void* a2)
+{
+	if (!g_pGui->m_Vars.m_WorldModulation.worldcolor || !g_pInterfaces->m_Interfaces.pEngineClient->IsInGame())
+		return oModulateWorldColor(pAggregateSceneObject, a2);
+
+	auto r = static_cast<unsigned char>(g_pGui->m_Vars.m_WorldModulation.WorldColor.x * 255.f);
+	auto g = static_cast<unsigned char>(g_pGui->m_Vars.m_WorldModulation.WorldColor.y * 255.f);
+	auto b = static_cast<unsigned char>(g_pGui->m_Vars.m_WorldModulation.WorldColor.z * 255.f);
+
+	int count = pAggregateSceneObject->count;
+
+	for (int i = 0; i < count; i++) {
+		CAggregateSceneObjectDataWorld* pAggregateSceneObjectData = &pAggregateSceneObject->array[i];
+
+		pAggregateSceneObjectData->r = r;
+		pAggregateSceneObjectData->g = g;
+		pAggregateSceneObjectData->b = b;
+	}
+
+	return oModulateWorldColor(pAggregateSceneObject, a2);
 }

@@ -54,7 +54,7 @@ void CFeatures::ESP::Players::Name(CMath::BoundingBox& pos, const EntityListInfo
     if (!g_pGui->m_Vars.m_ESP.name)
         return;
     Vector2D position(pos.x + pos.w / 2, pos.y - 8);
-
+    
     std::string nameLower = player.Controller->GetPlayerName();
 	std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
 
@@ -216,8 +216,9 @@ void CFeatures::ESP::Players::Flags(const EntityListInfo& playerInfo, CMath::Bou
         return;
     bool IsReloading = PlayerWeapon->IsReloading();
     bool IsDefusing = playerInfo.Pawn->IsDefusing();
+    bool IsBot = playerInfo.Controller->IsBot();
     int Money = playerInfo.Controller->GetMoneyServices()->GetMoney();
-    std::string szHasHelmet, szIsScoped,szIsReloading,szIsDefusing,szMoney;
+    std::string szHasHelmet, szIsScoped,szIsReloading,szIsDefusing,szMoney,szIsBot;
     if (HasHelmet) {
 		szHasHelmet = "HK";
     }
@@ -234,13 +235,21 @@ void CFeatures::ESP::Players::Flags(const EntityListInfo& playerInfo, CMath::Bou
 	{
 		szMoney = std::to_string(Money) + "$";
 	}
+    if (IsBot)
+    {
+		szIsBot = "B";
+    }
 
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
 
     float x = pos.x + pos.w + 3;
     float y = pos.y - 2;
 
-
+    if (!szIsBot.empty())
+    {
+		g_pRenderer->DrawOutlinedString(szIsBot.c_str(), Vector2D(x, y), color_t(255, 0, 0, 255), color_t(0, 0, 0, 100), false);
+		y += ImGui::GetFontSize() - 2;
+    }
     if (!szHasHelmet.empty()) {
         g_pRenderer->DrawOutlinedString(szHasHelmet.c_str(), Vector2D(x, y), color_t(255, 255, 255, 255), color_t(0, 0, 0, 100), false);
         y += ImGui::GetFontSize() - 2;

@@ -48,9 +48,11 @@ public:
 		class WorldModulation
 		{
 		public:
-			bool lighting;
+			bool lighting,worldcolor;
 			ImVec4 LightingColor = ImVec4(1.f, 1.f, 1.f, 1.f);
 			int LightingIntensity = 1;
+			ImVec4 WorldColor = ImVec4(1.f, 1.f, 1.f, 1.f);
+			int	WorldIntensity = 1;
 		};
 		WorldModulation m_WorldModulation;
 	};

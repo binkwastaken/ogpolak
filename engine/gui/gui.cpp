@@ -107,18 +107,18 @@ void CGui::DrawGui()
         g_pFramework->Tab("Models", ImVec2(175, 159));
         ImGui::SetCursorPos(ImVec2(320, 46));
         g_pFramework->CheckBox("Enable", &g_pGui->m_Vars.m_Models.enable);
-        ImGui::SetCursorPos(ImVec2(320,60));
+        ImGui::SetCursorPos(ImVec2(320, 60));
         g_pFramework->CheckBox("Local Player", &g_pGui->m_Vars.m_Models.localPlayer);
         ImGui::SetCursorPos(ImVec2(459, 60));
         ImGui::ColorEdit4("##LocalPlayerColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_Models.LocalPlayerColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
-		ImGui::SetCursorPos(ImVec2(320, 75));
+        ImGui::SetCursorPos(ImVec2(320, 75));
         g_pFramework->Combo("Material Local", &g_pGui->m_Vars.m_Models.SelectedTextureLocal, { "FLAT" ,"TEXTURE","GLOW" }, g_pGui->m_Vars.m_Models.localPlayer);
-		
+
         ImGui::SetCursorPos(ImVec2(320, 90));
         g_pFramework->CheckBox("Team", &g_pGui->m_Vars.m_Models.team);
         ImGui::SetCursorPos(ImVec2(459, 90));
         ImGui::ColorEdit4("##TeamColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_Models.TeamColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
-		ImGui::SetCursorPos(ImVec2(320, 105));
+        ImGui::SetCursorPos(ImVec2(320, 105));
         g_pFramework->CheckBox("Team Invisible", &g_pGui->m_Vars.m_Models.teaminvisible);
         ImGui::SetCursorPos(ImVec2(459, 105));
         ImGui::ColorEdit4("##TeamColorInvisible", reinterpret_cast<float*>(&g_pGui->m_Vars.m_Models.TeamColorInvisible), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
@@ -134,16 +134,21 @@ void CGui::DrawGui()
         ImGui::SetCursorPos(ImVec2(459, 150));
         ImGui::ColorEdit4("##EnemyColorInvisible", reinterpret_cast<float*>(&g_pGui->m_Vars.m_Models.EnemyColorInvisible), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
         ImGui::SetCursorPos(ImVec2(320, 165));
-		g_pFramework->Combo("Material Enemy", &g_pGui->m_Vars.m_Models.SelectedTextureEnemy, { "FLAT" ,"TEXTURE","GLOW" }, g_pGui->m_Vars.m_Models.enemy);
+        g_pFramework->Combo("Material Enemy", &g_pGui->m_Vars.m_Models.SelectedTextureEnemy, { "FLAT" ,"TEXTURE","GLOW" }, g_pGui->m_Vars.m_Models.enemy);
 
         ImGui::SetCursorPos(ImVec2(313, 198));
-        g_pFramework->Tab("World Modulation", ImVec2(175, 100));
+        g_pFramework->Tab("World Modulation", ImVec2(175, 69));
         ImGui::SetCursorPos(ImVec2(320, 213));
         g_pFramework->CheckBox("Lighting", &g_pGui->m_Vars.m_WorldModulation.lighting);
         ImGui::SetCursorPos(ImVec2(459, 213));
         ImGui::ColorEdit4("##LightingColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_WorldModulation.LightingColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
         ImGui::SetCursorPos(ImVec2(320, 228));
-        g_pFramework->SliderInt("Shine", &g_pGui->m_Vars.m_WorldModulation.LightingIntensity, 1,10,g_pGui->m_Vars.m_WorldModulation.lighting);
+        g_pFramework->SliderInt("Shine", &g_pGui->m_Vars.m_WorldModulation.LightingIntensity, 1, 10, g_pGui->m_Vars.m_WorldModulation.lighting);
+        ImGui::SetCursorPos(ImVec2(320, 243));
+        g_pFramework->CheckBox("World", &g_pGui->m_Vars.m_WorldModulation.worldcolor);
+        ImGui::SetCursorPos(ImVec2(459, 243));
+        ImGui::ColorEdit4("##WorldColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_WorldModulation.WorldColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
+
     }
         break;
 

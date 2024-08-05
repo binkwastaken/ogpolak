@@ -66,9 +66,20 @@ private:
 	class LightingModulation
 	{
 	public:
-		typedef void(__fastcall* oLightingModulationFn)(__int64 a1, CAggregateSceneObject* a2, __int64 a3);
+		typedef void*(__fastcall* oLightingModulationFn)(__int64 a1, CAggregateSceneObject* a2, __int64 a3);
 		static oLightingModulationFn oLightingModulation;
-		static void __fastcall Hook(__int64 a1, CAggregateSceneObject* a2, __int64 a3);
+		static void* __fastcall Hook(__int64 a1, CAggregateSceneObject* a2, __int64 a3);
 	};
+	LightingModulation m_LightingModulation;
+
+	class WorldModulation
+	{
+	public:
+		typedef void* (__fastcall* oModulateWorldColorFn)(CAggregateSceneObjectWorld*, void*);
+		static oModulateWorldColorFn oModulateWorldColor;
+		static void* __fastcall Hook(CAggregateSceneObjectWorld* pAggregateSceneObject, void* a2);
+	};
+	WorldModulation m_WorldModulation;
+
 };
 inline CHooksManager* g_pHooksManager = new CHooksManager();

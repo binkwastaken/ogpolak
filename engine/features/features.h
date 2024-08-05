@@ -70,6 +70,19 @@ public:
 			void Projectiles(C_BaseEntity* Entity);
 		};
 		World m_World;
+
+		class PlayerList {
+		public:
+			void DrawPlayers();
+			int ClickedItem = -1;
+			void DrawInfoPanel();
+			void ClearPlayerData();
+			const char* Username = "";
+			uint64_t UserID = 0;
+			int Health = 0;
+		private:
+			std::vector<EntityListInfo> PlayerCacheList;
+		};
 	};
 	ESP m_ESP;
 	Prediction m_Prediction;

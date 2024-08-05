@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cstdint>
 #include <string>
-
+#include <stdint.h>
 #include "../math/mathematics.h"
 #include "../structs/structs.h"
 
@@ -57,11 +57,6 @@ public:
 
 };
 
-class C_BasePlayerController {
-public:
-	std::string GetPlayerName();
-};
-
 class C_PlayerPawn {
 public:
 	C_BaseEntity* GetBaseEntity();
@@ -88,6 +83,7 @@ public:
 	C_BaseHandle GetHandlePawn();
 	static C_PlayerController* GetLocalPlayerController();
 	const char* GetPlayerName();
-
+	bool IsBot();
 	CCSPlayerController_InGameMoneyServices* GetMoneyServices();
+	long long GetPlayerSteamID();
 };

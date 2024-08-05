@@ -43,6 +43,14 @@ const char* C_PlayerController::GetPlayerName()
 	return g_pSchemaManager->GetOffset<const char*>("CCSPlayerController", "m_sSanitizedPlayerName", this);
 }
 
+bool C_PlayerController::IsBot()
+{
+	if (GetPlayerSteamID() > 0)
+		return false;
+	else
+		return true;
+}
+
 CCSPlayerController_InGameMoneyServices* C_PlayerController::GetMoneyServices()
 {
 return g_pSchemaManager->GetOffset<CCSPlayerController_InGameMoneyServices*>("CCSPlayerController", "m_pInGameMoneyServices", this);
@@ -129,10 +137,9 @@ C_PlayerItemServices* C_PlayerPawn::GetItemServices()
 	return g_pSchemaManager->GetOffset<C_PlayerItemServices*>("C_BasePlayerPawn", "m_pItemServices", this);
 }
 
-std::string C_BasePlayerController::GetPlayerName()
+long long C_PlayerController::GetPlayerSteamID()
 {
-	const char* name = g_pSchemaManager->GetOffset<const char*>("CBasePlayerController", "m_iszPlayerName", this);
-	 return std::string(name);
+	return *(long long*)(this + 0x6B8);
 }
 
 C_BaseHandle C_BaseEntity::GetHandleEntity()
