@@ -144,6 +144,7 @@
     <ClCompile Include="engine\interfaces\manager.cpp" />
     <ClCompile Include="engine\main.cpp" />
     <ClCompile Include="engine\renderer\renderer.cpp" />
+    <ClCompile Include="engine\schema\info.cpp" />
     <ClCompile Include="engine\schema\schema.cpp" />
     <ClCompile Include="engine\utils\utils.cpp" />
     <ClCompile Include="extensions\imgui\imgui.cpp" />

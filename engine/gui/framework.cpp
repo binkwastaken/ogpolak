@@ -2,6 +2,7 @@
 
 void CFramework::CreatePolygon(int x, int y, int w, int h)
 {
+
         g_pRenderer->DrawFilledRect(x, y, w, h, color_t(9, 9, 9, 255));
 
         g_pRenderer->DrawRect(x, y, w, h, color_t(9, 9, 9, 255));
@@ -163,7 +164,7 @@ void CFramework::CheckBox(const char* label, bool* v)
     g_pRenderer->DrawRect(checkboxPos.x, checkboxPos.y, checkboxSize.x, checkboxSize.y, color_t(46, 46, 46));
 
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
-    g_pRenderer->DrawOutlinedString(label,Vector2D(textPos.x + 10, textPos.y + 1), textColor, color_t(0, 0, 0, 255), false);
+    g_pRenderer->DrawOutlinedString(label,Vector2D(textPos.x + 10, textPos.y), textColor, color_t(0, 0, 0, 255), false);
     ImGui::PopFont();
 
     ImGui::SetCursorPosY(position.y + checkboxSize.y + ImGui::GetStyle().ItemSpacing.y);
@@ -194,9 +195,15 @@ void CFramework::SliderInt(const char* label, int* v, int min, int max, bool ena
 
     g_pRenderer->DrawRect(comboRect.Min.x - 1, comboRect.Min.y - 1, comboRectSize.x + 2, comboRectSize.y + 2, color_t(46, 46, 46, 255));
 
+    bool mouseHovering = ImGui::IsMouseHoveringRect(comboRect.Min, comboRect.Max);
+
+    if (mouseHovering && enabled)
+    {
+        labelColor = color_t(120, 150, 255, 255);
+    }
+
     if (enabled)
     {
-        bool mouseHovering = ImGui::IsMouseHoveringRect(comboRect.Min, comboRect.Max);
         color_t color = mouseHovering ? color_t(120, 150, 255, 255) : color_t(255, 255, 255, 255);
 
         ImGui::SetCursorScreenPos(comboRect.Min);
@@ -229,4 +236,53 @@ void CFramework::SliderInt(const char* label, int* v, int min, int max, bool ena
     g_pRenderer->DrawOutlinedString(std::to_string(*v).c_str(), Vector2D(textX, textY), labelColor, color_t(0, 0, 0, 255), false);
 
     ImGui::PopFont();
+}
+
+void CFramework::Combo(const char* label, int* item_current, std::vector<std::string> items, bool enabled)
+{
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    ImVec2 position = window->DC.CursorPos;
+    ImVec2 ComboRectSize(50, 11);
+
+    // Determine the color of the label based on the enabled state
+    color_t labelColor = enabled ? color_t(255, 255, 255, 255) : color_t(100, 100, 100, 255);
+
+    ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
+    g_pRenderer->DrawOutlinedString(label, Vector2D(position.x + 23, position.y), labelColor, color_t(0, 0, 0, 255), false);
+
+    ImRect comboRect(ImVec2(position.x + 109, position.y), ImVec2(position.x + 109 + ComboRectSize.x, position.y + ComboRectSize.y));
+
+    g_pRenderer->DrawRect(comboRect.Min.x, comboRect.Min.y, ComboRectSize.x, ComboRectSize.y, color_t(46, 46, 46));
+
+    ImVec2 textSize = ImGui::CalcTextSize(items[*item_current].c_str());
+
+    float textX = comboRect.Min.x + (ComboRectSize.x - textSize.x) / 2;
+    float textY = comboRect.Min.y + (ComboRectSize.y - textSize.y) / 2;
+
+    color_t colour;
+    bool isMouseHovering = ImGui::IsMouseHoveringRect(comboRect.Min, comboRect.Max);
+
+    if (isMouseHovering && enabled)
+    {
+        colour = color_t(120, 150, 255, 255);
+    }
+    else
+    {
+        colour = enabled ? color_t(255, 255, 255, 255) : color_t(100, 100, 100, 255);
+    }
+
+    g_pRenderer->DrawOutlinedString(items[*item_current].c_str(), Vector2D(textX, textY), colour, color_t(0, 0, 0, 255), false);
+    ImGui::PopFont();
+
+    if (enabled && ImGui::IsMouseHoveringRect(comboRect.Min, comboRect.Max) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+    {
+        *item_current = (*item_current + 1) % items.size();
+    }
+    if (enabled && ImGui::IsMouseHoveringRect(comboRect.Min, comboRect.Max) && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+    {
+        *item_current = (*item_current - 1 + items.size()) % items.size();
+    }
 }

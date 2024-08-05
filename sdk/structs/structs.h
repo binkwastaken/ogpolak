@@ -342,6 +342,16 @@ public:
    C_PlayerPawn* GetParentEntity() {
        return *(C_PlayerPawn**)(this + 0x18);
     }
-
-    bool IsGlowing();
 };
+
+
+
+
+
+
+class C_UserCmd
+{
+public:
+
+};
+

@@ -139,4 +139,3 @@ C_BaseHandle C_BaseEntity::GetHandleEntity()
 {
 	return g_pSchemaManager->GetOffset<C_BaseHandle>("C_BaseEntity", "m_hOwnerEntity", this);
 }
-

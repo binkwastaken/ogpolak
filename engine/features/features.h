@@ -12,7 +12,12 @@
 
 class CFeatures {
 public:
-
+	class Prediction
+	{
+	public:
+		void Start(C_UserCmd* cmd);
+		void End();
+	};
 	class ESP {
 	public:
 		class Players {
@@ -67,5 +72,6 @@ public:
 		World m_World;
 	};
 	ESP m_ESP;
+	Prediction m_Prediction;
 };
 inline CFeatures* g_pFeatures = new CFeatures();

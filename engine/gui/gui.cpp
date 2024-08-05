@@ -25,7 +25,7 @@ void CGui::DrawGui()
     case 2:
     {
 		ImGui::SetCursorPos(ImVec2(100, 31));
-		g_pFramework->Tab("Players", ImVec2(175, 245));
+		g_pFramework->Tab("Players", ImVec2(175, 264));
         ImGui::SetCursorPos(ImVec2(107, 46));
 		g_pFramework->CheckBox("Enable", &g_pGui->m_Vars.m_ESP.players);
 		ImGui::SetCursorPos(ImVec2(107, 61));
@@ -74,33 +74,54 @@ void CGui::DrawGui()
 		g_pFramework->CheckBox("Snaplines", &g_pGui->m_Vars.m_ESP.snaplines);
         ImGui::SetCursorPos(ImVec2(246, 241));
         ImGui::ColorEdit4("##SnaplinesColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_ESP.SnapLinesColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
-		ImGui::SetCursorPos(ImVec2(107, 256));
+		ImGui::SetCursorPos(ImVec2(107, 255));
 
-        g_pFramework->SliderInt("Radius", &g_pGui->m_Vars.m_ESP.SnaplinesRadius, 1, 10,g_pGui->m_Vars.m_ESP.snaplines);
+        g_pFramework->SliderInt("Radius", &g_pGui->m_Vars.m_ESP.SnaplinesRadius, 0, 10,g_pGui->m_Vars.m_ESP.snaplines);
+		ImGui::SetCursorPos(ImVec2(107, 270));
+        g_pFramework->Combo("Position", &g_pGui->m_Vars.m_ESP.SnaplinesPosition, {"Center", "Top", "Bottom"},g_pGui->m_Vars.m_ESP.snaplines);
 
 
-        ImGui::SetCursorPos(ImVec2(100, 287));
-        g_pFramework->Tab("World", ImVec2(175, 202));
-        ImGui::SetCursorPos(ImVec2(107, 302));
+
+        ImGui::SetCursorPos(ImVec2(100, 303));
+        g_pFramework->Tab("World", ImVec2(175, 186));
+        ImGui::SetCursorPos(ImVec2(107, 318));
         g_pFramework->CheckBox("Enable", &g_pGui->m_Vars.m_ESP.world);
-		ImGui::SetCursorPos(ImVec2(107, 317));
+		ImGui::SetCursorPos(ImVec2(107, 333));
 		g_pFramework->CheckBox("Dropped weapons", &g_pGui->m_Vars.m_ESP.droppedweapons);
-		ImGui::SetCursorPos(ImVec2(107, 332));
+		ImGui::SetCursorPos(ImVec2(107, 348));
 		g_pFramework->CheckBox("Planted C4", &g_pGui->m_Vars.m_ESP.plantedc4);
-		ImGui::SetCursorPos(ImVec2(107, 347));
+		ImGui::SetCursorPos(ImVec2(107, 363));
 		g_pFramework->CheckBox("Projectiles", &g_pGui->m_Vars.m_ESP.projectiles);
-		ImGui::SetCursorPos(ImVec2(107, 362));
+		ImGui::SetCursorPos(ImVec2(107, 378));
 		g_pFramework->CheckBox("Bomb", &g_pGui->m_Vars.m_ESP.droppedbomb);
-        ImGui::SetCursorPos(ImVec2(107, 377));
+        ImGui::SetCursorPos(ImVec2(107, 393));
         g_pFramework->CheckBox("Defuse Kit",&g_pGui->m_Vars.m_ESP.defusekit);
-        ImGui::SetCursorPos(ImVec2(107, 392));
+        ImGui::SetCursorPos(ImVec2(107, 408));
         g_pFramework->CheckBox("Health Shot", &g_pGui->m_Vars.m_ESP.healthshot);
-        ImGui::SetCursorPos(ImVec2(107, 407));
+        ImGui::SetCursorPos(ImVec2(107, 423));
         g_pFramework->CheckBox("Chicken", &g_pGui->m_Vars.m_ESP.chicken);
-        ImGui::SetCursorPos(ImVec2(107, 422));
+        ImGui::SetCursorPos(ImVec2(107, 438));
 		g_pFramework->CheckBox("Hostage", &g_pGui->m_Vars.m_ESP.hostages);
-        //ImGui::SetCursorPos(ImVec2(313, 31));
-        //g_pFramework->Tab("Chams", ImVec2(175, 200));
+
+        ImGui::SetCursorPos(ImVec2(313, 31));
+        g_pFramework->Tab("Models", ImVec2(175, 200));
+        ImGui::SetCursorPos(ImVec2(320, 46));
+        g_pFramework->CheckBox("Enable", &g_pGui->m_Vars.m_Models.enable);
+        ImGui::SetCursorPos(ImVec2(320, 60));
+        g_pFramework->Combo("Texture", &g_pGui->m_Vars.m_Models.SelectedTexture, { "FLAT" ,"TEXTURE","GLOW" },g_pGui->m_Vars.m_Models.enable);
+        ImGui::SetCursorPos(ImVec2(320, 75));
+		g_pFramework->CheckBox("Local Player", &g_pGui->m_Vars.m_Models.localPlayer);
+        ImGui::SetCursorPos(ImVec2(459, 75));
+        ImGui::ColorEdit4("##LocalPlayerColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_Models.LocalPlayerColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
+        ImGui::SetCursorPos(ImVec2(320, 90));
+        g_pFramework->CheckBox("Team", &g_pGui->m_Vars.m_Models.team);
+        ImGui::SetCursorPos(ImVec2(459, 90));
+        ImGui::ColorEdit4("##TeamColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_Models.TeamColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
+        ImGui::SetCursorPos(ImVec2(320, 105));
+        g_pFramework->CheckBox("Enemy", &g_pGui->m_Vars.m_Models.enemy);
+        ImGui::SetCursorPos(ImVec2(459, 105));
+        ImGui::ColorEdit4("##EnemyColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_Models.EnemyColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
+
     }
         break;
 

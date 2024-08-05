@@ -24,7 +24,6 @@ void CFeatures::ESP::Players::Draw()
         {
             if (g_pMath->GetPlayerBoundingBox(entity.Pawn, bbox))
             {
-                SnapLines(entity);
                 Box(bbox);
                 Name(bbox,entity);
 				HealthBar(bbox, entity);
@@ -33,9 +32,9 @@ void CFeatures::ESP::Players::Draw()
                 Weapon(bbox, entity);
                 Distance(entity, bbox);
 				Skeleton(entity);
+                SnapLines(entity);
             }
         }
-
     }
 }
 
@@ -291,20 +290,38 @@ void CFeatures::ESP::Players::SnapLines(const EntityListInfo& playerInfo)
         float centerY = ImGui::GetIO().DisplaySize.y / 2.0f;
         float radius = g_pGui->m_Vars.m_ESP.SnaplinesRadius * 10;
 
-        float deltaY = screenPosition.y - centerY;
-        float deltaX = screenPosition.x - centerX;
+        float startX = centerX, startY = centerY;
+
+        // Determine the initial position based on SnaplinesPosition
+        switch (g_pGui->m_Vars.m_ESP.SnaplinesPosition) {
+        case 0: // Center
+            startX = centerX;
+            startY = centerY;
+            break;
+        case 1: // Top
+            startX = centerX;
+            startY = 0.0f;
+            break;
+        case 2: // Bottom
+            startX = centerX;
+            startY = ImGui::GetIO().DisplaySize.y;
+            break;
+        }
+
+        float deltaY = screenPosition.y - startY;
+        float deltaX = screenPosition.x - startX;
         float distance = sqrt(deltaX * deltaX + deltaY * deltaY);
         float angle = atan2(deltaY, deltaX);
 
-        float startX = centerX + radius * cos(angle);
-        float startY = centerY + radius * sin(angle);
+        // Adjust start position to be on the radius circle
+        float adjustedStartX = startX + radius * cos(angle);
+        float adjustedStartY = startY + radius * sin(angle);
 
         if (distance >= radius) {
-            g_pRenderer->DrawLine(startX, startY, screenPosition.x, screenPosition.y, color, 0.0);
+            g_pRenderer->DrawLine(adjustedStartX, adjustedStartY, screenPosition.x, screenPosition.y, color, 0.0);
         }
     }
 }
-
 void CFeatures::ESP::Players::Skeleton(const EntityListInfo& playerInfo)
 {
     if (!g_pGui->m_Vars.m_ESP.skeletons)
@@ -343,7 +360,7 @@ void CFeatures::ESP::World::Draw()
 		if (!Entity)
 			continue;
 		Weapons(Entity);
-        Bomb(Entity);
+        //Bomb(Entity);
        // Projectiles(Entity);
     }
   
@@ -351,8 +368,8 @@ void CFeatures::ESP::World::Draw()
 
 void CFeatures::ESP::World::Weapons(C_BaseEntity* Entity)
 {
-	if (!g_pGui->m_Vars.m_ESP.droppedweapons)
-		return;
+    if (!g_pGui->m_Vars.m_ESP.droppedweapons)
+        return;
 
     C_BaseWeapon* Weapon = reinterpret_cast<C_BaseWeapon*>(Entity);
     if (!Weapon || g_pInterfaces->m_Interfaces.pEntityList->GetClientEntityFromHandle(Entity->GetHandleEntity()))
@@ -375,18 +392,20 @@ void CFeatures::ESP::World::Weapons(C_BaseEntity* Entity)
         return;
 
     std::string weaponString = Weapon->GetWeaponString(index);
+    if(weaponString.empty())
+        return;
 
-    if (g_pGui->m_Vars.m_ESP.droppedbomb)
+    /*/if (g_pGui->m_Vars.m_ESP.droppedbomb)
     {
-		if (weaponString.find("C_C4") != std::string::npos)
+		if (weaponString.find("C4 Explosive") != std::string::npos)
 		{
             return;
 		}
-    }
+    }*/
 
 
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
-	g_pRenderer->DrawOutlinedString(weaponString.c_str(), Vector2D(screenPos.x, screenPos.y), color_t(255, 255, 255, 255), color_t(0, 0, 0, 100), false);
+	g_pRenderer->DrawOutlinedString("TEST", Vector2D(screenPos.x, screenPos.y), color_t(255, 255, 255, 255), color_t(0, 0, 0, 100), false);
 
     ImGui::PopFont();
 }
@@ -395,16 +414,16 @@ void CFeatures::ESP::World::Bomb(C_BaseEntity* Entity)
 {
     if (!g_pGui->m_Vars.m_ESP.droppedbomb)
         return;
-
-    SchemaClassInfoData* pInfo;
-    Entity->GetSchemaClassInfo(&pInfo);
-    if (!pInfo)
-        return;
-    auto hash = FNV1A::Hash(pInfo->name);
-    if (hash != FNV1A::Hash("C_C4"))
+    C_BaseWeapon* Weapon = reinterpret_cast<C_BaseWeapon*>(Entity);
+    if (!Weapon || g_pInterfaces->m_Interfaces.pEntityList->GetClientEntityFromHandle(Entity->GetHandleEntity()))
         return;
 
-    if (g_pInterfaces->m_Interfaces.pEntityList->GetClientEntityFromHandle(Entity->GetHandleEntity()))
+    CCSWeaponData* WeaponData = Weapon->GetWeaponDataInfo();
+    if (!WeaponData)
+        return;
+
+    int index = Weapon->GetManagerAttribute().GetItem().GetItemDefinitionIndex();
+    if (!index)
         return;
 
     Vector3D Position = Entity->GetGameSceneNode()->GetVecOrigin();
@@ -415,12 +434,16 @@ void CFeatures::ESP::World::Bomb(C_BaseEntity* Entity)
     if (!g_pMath->WorldToScreen(Position, screenPos))
         return;
 
-    ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
+    std::string weaponString = Weapon->GetWeaponString(index);
 
-    g_pRenderer->DrawOutlinedString("BOMB", Vector2D(screenPos.x, screenPos.y), color_t(0, 140, 255, 255), color_t(0, 0, 0, 100), false);
+    if (weaponString.find("C4 Explosive") != std::string::npos)
+    {
 
-    ImGui::PopFont();
+        ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
+        g_pRenderer->DrawOutlinedString("BOMB", Vector2D(screenPos.x, screenPos.y), color_t(0, 140, 255, 255), color_t(0, 0, 0, 100), false);
 
+        ImGui::PopFont();
+    }
 }
 
 void CFeatures::ESP::World::Projectiles(C_BaseEntity* Entity)
@@ -428,25 +451,17 @@ void CFeatures::ESP::World::Projectiles(C_BaseEntity* Entity)
     if (!g_pGui->m_Vars.m_ESP.projectiles)
         return;
 
-    SchemaClassInfoData* pInfo;
-    Entity->GetSchemaClassInfo(&pInfo);
-    if (!pInfo)
-        return;
-
-    Vector3D Position = Entity->GetGameSceneNode()->GetVecOrigin();
-    if (Position.IsZero())
-        return;
-
-    Vector2D screenPos;
-    if (!g_pMath->WorldToScreen(Position, screenPos))
-        return;
-
-    std::string Projecile = pInfo->name;
-
-
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
 
-    g_pRenderer->DrawOutlinedString(Projecile.c_str(), Vector2D(screenPos.x, screenPos.y), color_t(0, 140, 255, 255), color_t(0, 0, 0, 100), false);
-
     ImGui::PopFont();
+}
+
+void CFeatures::Prediction::Start(C_UserCmd* cmd)
+{
+
+}
+
+void CFeatures::Prediction::End()
+{
+
 }

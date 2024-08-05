@@ -23,9 +23,25 @@ public:
 			ImVec4 SkeletonsColor = ImVec4(1.f, 1.f, 1.f, 1.f);
 			ImVec4 GlowColor = ImVec4(1.f, 1.f, 1.f, 1.f);
 			ImVec4 AmmoColor = ImVec4(1.f, 1.f, 1.f, 1.f);
-			int SnaplinesRadius = 1;
+			int SnaplinesRadius = 0;
+			int SnaplinesPosition = 0;
 		};
 		ESP m_ESP;
+		class Models {
+		public:
+			bool enable,ignorez;
+			int SelectedTexture = 0;
+			bool localPlayer;
+			bool team;
+			bool enemy;
+			ImVec4 LocalPlayerColor = ImVec4(1.f, 1.f, 1.f, 1.f);
+			ImVec4 EnemyColor = ImVec4(1.f, 1.f, 1.f, 1.f);
+			ImVec4 EnemyColorInvisible = ImVec4(1.f, 1.f, 1.f, 1.f);
+
+			ImVec4 TeamColor = ImVec4(1.f, 1.f, 1.f, 1.f);
+			ImVec4 TeamColorInvisible = ImVec4(1.f, 1.f, 1.f, 1.f);
+		};
+		Models m_Models;
 	};
 	Variables m_Vars;
 
@@ -37,7 +53,7 @@ private:
 	bool IsDragging = false;
 	int clickedItem = 0;
 	ImVec2 DragDelta;
-	ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse;
+	ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove;
 
 };
 

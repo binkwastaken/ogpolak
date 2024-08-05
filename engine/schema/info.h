@@ -177,4 +177,7 @@ public:
         for (int i = 0; i < m_nNumDeclaredClasses; ++i)
             declaratedClasses_.push_back(m_pDeclaredClasses[i].declaratedClass);
     }
+
+
+    void FindDeclaredClass(SchemaClassInfoData** pReturnClass, const char* szClassName);
 };

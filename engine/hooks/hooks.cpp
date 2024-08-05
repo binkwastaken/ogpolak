@@ -35,12 +35,14 @@ bool CHooksManager::Init()
 	uint8_t* GameOverlayAddress = FindAddress("GameOverlayRenderer64.dll", "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC ? 41 8B E8", "PresentScene");
 	uint8_t* GlowObjectAddress = FindAddress("client.dll","48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC 20 48 8B FA 48 8B F1 48 8B 54 24 ? 48 83 C1", "GlowObject");
 	uint8_t* IsGlowingAddress = FindAddress("client.dll", "0F B6 41 ? C3 CC CC CC CC CC CC CC CC CC CC CC 32 C0 C3 CC CC CC CC CC CC CC CC CC CC CC CC CC 32 C0 C3 CC CC CC CC CC CC CC CC CC CC CC CC CC 32 C0", "IsGlowing");
+	
 	MH_Initialize();
 
 	CreateHook(CreateMoveAddress, reinterpret_cast<void*>(&CHooksManager::CreateMove::Hook), reinterpret_cast<void**>(&CHooksManager::CreateMove::oCreateMove), "CreateMove");
 	CreateHook(GameOverlayAddress, reinterpret_cast<void*>(&CHooksManager::PresentScene::Hook), reinterpret_cast<void**>(&CHooksManager::PresentScene::oPresentScene), "PresentScene");
-	//CreateHook(GlowObjectAddress, reinterpret_cast<void*>(&CHooksManager::GlowObjects::Hook), reinterpret_cast<void**>(&CHooksManager::GlowObjects::oGlowObjects), "GlowObject");
-	//CreateHook(IsGlowingAddress, reinterpret_cast<void*>(&CHooksManager::GlowObjects::HookIsGlowing), reinterpret_cast<void**>(&CHooksManager::GlowObjects::oIsGlowing), "IsGlowing");
+	CreateHook(IsGlowingAddress, reinterpret_cast<void*>(&CHooksManager::GlowObjects::HookIsGlowing), reinterpret_cast<void**>(&CHooksManager::GlowObjects::oIsGlowing), "IsGlowing");
+	CreateHook(GlowObjectAddress, reinterpret_cast<void*>(&CHooksManager::GlowObjects::Hook), reinterpret_cast<void**>(&CHooksManager::GlowObjects::oGlowObjects), "GlowObject");
+
 	MH_EnableHook(MH_ALL_HOOKS);
 
 	return true;
@@ -188,6 +190,15 @@ bool __fastcall CHooksManager::GlowObjects::HookIsGlowing(C_GlowProperty* glowPr
 
 	if (Globals::LocalPlayerPawn->GetTeam() == parentEntity->GetTeam() && !g_pGui->m_Vars.m_ESP.team)
 		return false;
+
+	return true;
+}
+
+bool __fastcall CHooksManager::NoSpreadHook::Hook(void* Controller, void* Pawn, float* Result)
+{
+	*Result = 0.f;
+
+	*reinterpret_cast<float*>((uint64_t)Pawn + 0x132) = 1.f;
 
 	return true;
 }

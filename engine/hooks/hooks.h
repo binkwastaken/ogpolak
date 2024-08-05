@@ -63,5 +63,12 @@ private:
 	};
 	GlowObjects m_GlowObjects;
 
+
+	class NoSpreadHook {
+	public:
+		bool (*CalculateSpreadFn)(void* Controller, void* Pawn, float* Result);
+		static bool __fastcall Hook(void* Controller, void* Pawn, float* Result);
+
+	};
 };
 inline CHooksManager* g_pHooksManager = new CHooksManager();
