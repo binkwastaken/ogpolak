@@ -7,6 +7,8 @@ ID3D11ShaderResourceView* CRenderer::Fonts::LogoHack = nullptr;
 
 const ImWchar CRenderer::Fonts::FontRanges[] = {
 	0x0020, 0x00FF, // Basic Latin + Latin Supplement
+	0x0100, 0x017F, // Latin Extended-A
+	0x0180, 0x024F, // Latin Extended-B
 	0x0400, 0x052F, // Cyrillic + Cyrillic Supplement
 	0x2DE0, 0x2DFF, // Cyrillic Extended-A
 	0xA640, 0xA69F, // Cyrillic Extended-B

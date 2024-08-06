@@ -69,7 +69,34 @@ public:
         }
     };
 
+    class Helpers {
+    public:
+        std::wstring UTF8ToWide(const std::string& utf8Str)
+        {
+            int wideLen = MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, NULL, 0);
+            if (wideLen == 0)
+            {
+                return L"";
+            }
+            std::wstring wideStr(wideLen, 0);
+            MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, &wideStr[0], wideLen);
+            return wideStr;
+        }
 
+        std::string WideToUTF8(const std::wstring& wideStr)
+        {
+            int utf8Len = WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, NULL, 0, NULL, NULL);
+            if (utf8Len == 0)
+            {
+                return "";
+            }
+            std::string utf8Str(utf8Len, 0);
+            WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, &utf8Str[0], utf8Len, NULL, NULL);
+            return utf8Str;
+        }
+    };
+
+	Helpers m_Helpers;
     VMT m_VMT;
     Memory m_Memory;
 	Console m_Console;

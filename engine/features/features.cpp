@@ -5,6 +5,7 @@ void CFeatures::ESP::Players::Draw()
 {
     if (!g_pGui->m_Vars.m_ESP.players || !g_pInterfaces->m_Interfaces.pEngineClient->IsInGame())
         return;
+
     std::vector<EntityListInfo> entities;
     g_pInterfaces->m_Interfaces.pEntityList->UpdateEntities(entities);
     if (entities.empty())
@@ -17,7 +18,8 @@ void CFeatures::ESP::Players::Draw()
         bool IsPlayer = entity.Pawn->GetBaseEntity()->IsEntityPlayer();
         bool IsAlive = entity.Pawn->IsAlive();
 
-        if ((entity.Pawn != Globals::LocalPlayerPawn && Globals::LocalPlayerPawn->GetTeam() == entity.Pawn->GetTeam() && !g_pGui->m_Vars.m_ESP.team) || (entity.Pawn == Globals::LocalPlayerPawn && !g_pGui->m_Vars.m_ESP.localplayer))
+        if ((entity.Pawn != Globals::LocalPlayerPawn && Globals::LocalPlayerPawn->GetTeam() == entity.Pawn->GetTeam() && !g_pGui->m_Vars.m_ESP.team) ||
+            (entity.Pawn == Globals::LocalPlayerPawn && !g_pGui->m_Vars.m_ESP.localplayer))
             continue;
 
         if (IsPlayer && IsAlive)
@@ -25,18 +27,19 @@ void CFeatures::ESP::Players::Draw()
             if (g_pMath->GetPlayerBoundingBox(entity.Pawn, bbox))
             {
                 Box(bbox);
-                Name(bbox,entity);
-				HealthBar(bbox, entity);
+                Name(bbox, entity);
+                HealthBar(bbox, entity);
                 Flags(entity, bbox);
                 Ammo(bbox, entity);
                 Weapon(bbox, entity);
                 Distance(entity, bbox);
-				Skeleton(entity);
+                Skeleton(entity);
                 SnapLines(entity);
             }
         }
     }
 }
+
 
 void CFeatures::ESP::Players::Box(CMath::BoundingBox bbox)
 {
@@ -53,17 +56,22 @@ void CFeatures::ESP::Players::Name(CMath::BoundingBox& pos, const EntityListInfo
 {
     if (!g_pGui->m_Vars.m_ESP.name)
         return;
+
     Vector2D position(pos.x + pos.w / 2, pos.y - 8);
-    
+
     std::string nameLower = player.Controller->GetPlayerName();
-	std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
+    std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
+
+    std::wstring wideName = g_pUtils->m_Helpers.UTF8ToWide(nameLower);
+    nameLower = g_pUtils->m_Helpers.WideToUTF8(wideName);
 
     color_t color = color_t(g_pGui->m_Vars.m_ESP.NameColor.x * 255, g_pGui->m_Vars.m_ESP.NameColor.y * 255, g_pGui->m_Vars.m_ESP.NameColor.z * 255, g_pGui->m_Vars.m_ESP.NameColor.w * 255);
     ImGui::PushFont(g_pRenderer->m_Fonts.Verdana);
+
     g_pRenderer->DrawOutlinedString(nameLower.c_str(), position, color, color_t(0, 0, 0, 100), true);
+
     ImGui::PopFont();
 }
-
 
 void CFeatures::ESP::Players::HealthBar(CMath::BoundingBox& bbox, const EntityListInfo& player)
 {
@@ -301,17 +309,16 @@ void CFeatures::ESP::Players::SnapLines(const EntityListInfo& playerInfo)
 
         float startX = centerX, startY = centerY;
 
-        // Determine the initial position based on SnaplinesPosition
         switch (g_pGui->m_Vars.m_ESP.SnaplinesPosition) {
-        case 0: // Center
+        case 0:
             startX = centerX;
             startY = centerY;
             break;
-        case 1: // Top
+        case 1:
             startX = centerX;
             startY = 0.0f;
             break;
-        case 2: // Bottom
+        case 2:
             startX = centerX;
             startY = ImGui::GetIO().DisplaySize.y;
             break;
@@ -322,7 +329,6 @@ void CFeatures::ESP::Players::SnapLines(const EntityListInfo& playerInfo)
         float distance = sqrt(deltaX * deltaX + deltaY * deltaY);
         float angle = atan2(deltaY, deltaX);
 
-        // Adjust start position to be on the radius circle
         float adjustedStartX = startX + radius * cos(angle);
         float adjustedStartY = startY + radius * sin(angle);
 

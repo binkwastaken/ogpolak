@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <algorithm> 
 #include <cctype> 
+#include <locale>
+#include <codecvt>
 
 #include "../gui/gui.h"
 #include "../renderer/renderer.h"
