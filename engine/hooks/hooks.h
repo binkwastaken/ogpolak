@@ -35,9 +35,9 @@ private:
 
 	class PresentScene {
 	public:
-		typedef HRESULT(__stdcall* oPresentSceneFn) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
+		typedef HRESULT(__fastcall* oPresentSceneFn) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
 		static oPresentSceneFn oPresentScene;
-		static HRESULT __stdcall Hook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
+		static HRESULT __fastcall Hook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
 		HWND outputWindow = nullptr;
 
 		bool init{ };
@@ -80,6 +80,31 @@ private:
 		static void* __fastcall Hook(CAggregateSceneObjectWorld* pAggregateSceneObject, void* a2);
 	};
 	WorldModulation m_WorldModulation;
+
+	class BombCode
+	{
+	public:
+		typedef void(__fastcall* oBombCodeFn)(void* a1);
+		static oBombCodeFn oBombCode;
+		static void __fastcall Hook(void* a1);
+	};
+	BombCode m_BombCode;
+
+	class DrawObject {
+	public:
+		typedef void(__fastcall* oDrawObjectFn)(void*, void*, void*, int, void*, void*, void*, void*);
+		static oDrawObjectFn oDrawObject;
+		static void __fastcall Hook(void* a1, void* a2, void* a3, int a4, void* a5, void* a6, void* a7, void* a8);
+	};
+	DrawObject m_DrawObject;
+
+	class RenderStart {
+	public:
+		typedef void(__fastcall* oRenderStartFn)(CViewSetup*);
+		static oRenderStartFn oRenderStart;
+		static void __fastcall Hook(CViewSetup* pSetup);
+	};
+	RenderStart m_RenderStart;
 
 };
 inline CHooksManager* g_pHooksManager = new CHooksManager();

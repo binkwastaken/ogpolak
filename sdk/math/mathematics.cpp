@@ -4,6 +4,8 @@
 #include "../../extensions/imgui/imgui.h"
 
 
+#include "../../sdk/globals.h"
+
 bool CMath::WorldToScreen(Vector3D& Position, Vector2D& ScreenPosition)
 {
     static float(*ViewMatrix)[4][4] = reinterpret_cast<float(*)[4][4]>(g_pUtils->m_Memory.ResolveRip(g_pUtils->m_Memory.PatternScan("client.dll", "48 8D ?? ?? ?? ?? ?? 48 C1 E0 06 48 03 C1 C3 CC CC"), 3, 7));
@@ -28,13 +30,15 @@ bool CMath::GetPlayerBoundingBox(C_PlayerPawn* ent, BoundingBox& in)
 {
 	Vector3D worldPoints[8];
 
-	C_BaseEntity* BaseEntity = (C_BaseEntity*)ent; // Pointer to CBaseEntity*
+	C_BaseEntity* BaseEntity = (C_BaseEntity*)ent;
 	if (!BaseEntity)
 		return false;
 
-	auto origin = BaseEntity->GetGameSceneNode()->GetVecOrigin();
-	if (origin.IsZero())
-		return false;
+
+
+	//std::unique_lock<std::shared_mutex> lock(Globals::mtx);
+	const auto origin = BaseEntity->GetGameSceneNode()->GetVecOrigin();
+	//lock.unlock();
 
 	const auto min = BaseEntity->GetCollision()->VecMins() + origin;
 	const auto max = BaseEntity->GetCollision()->VecMaxs() + origin;

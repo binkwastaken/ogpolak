@@ -71,6 +71,15 @@ public:
 			void Bomb(C_BaseEntity* Entity);
 			void Projectiles(C_BaseEntity* Entity);
 		};
+
+
+		class OthersVisuals {
+		public:
+			void Watermark();
+			void InfoPanel();
+		};
+		OthersVisuals m_OthersVisuals;
+
 		World m_World;
 
 		class PlayerList {

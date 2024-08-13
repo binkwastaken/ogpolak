@@ -6,6 +6,10 @@ CHooksManager::GlowObjects::oGlowObjectsFn CHooksManager::GlowObjects::oGlowObje
 CHooksManager::GlowObjects::oIsGlowingFn CHooksManager::GlowObjects::oIsGlowing = nullptr;
 CHooksManager::LightingModulation::oLightingModulationFn CHooksManager::LightingModulation::oLightingModulation = nullptr;
 CHooksManager::WorldModulation::oModulateWorldColorFn CHooksManager::WorldModulation::oModulateWorldColor = nullptr;
+CHooksManager::BombCode::oBombCodeFn CHooksManager::BombCode::oBombCode = nullptr;
+CHooksManager::DrawObject::oDrawObjectFn CHooksManager::DrawObject::oDrawObject = nullptr;
+CHooksManager::RenderStart::oRenderStartFn CHooksManager::RenderStart::oRenderStart = nullptr;
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 uint8_t* CHooksManager::FindAddress(const char* moduleName, const char* pattern, const char* addressName) {
@@ -31,22 +35,49 @@ bool CHooksManager::CreateHook(uint8_t* targetAddress, void* hookFunction, void*
 	}
 }
 
+//typedef bool(__fastcall* pFuncFn)(C_PlayerPawn* test);
+//pFuncFn oFunc;
+
+/*static bool __fastcall Func(C_PlayerPawn* Entity)
+{
+	oFunc(Entity);
+
+	if (!g_pInterfaces->m_Interfaces.pInput->m_bInThirdPerson && Globals::LocalPlayerPawn && Globals::LocalPlayerPawn->IsAlive() && Entity == Globals::LocalPlayerPawn)
+		return false;
+
+	return true;
+}*/
+
 bool CHooksManager::Init()
 {
 	uint8_t* CreateMoveAddress = FindAddress("client.dll", "85 D2 0F 85 ? ? ? ? 48 8B C4 44 88 40", "CreateMove");
 	uint8_t* GameOverlayAddress = FindAddress("GameOverlayRenderer64.dll", "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC ? 41 8B E8", "PresentScene");
-	uint8_t* GlowObjectAddress = FindAddress("client.dll","48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC 20 48 8B FA 48 8B F1 48 8B 54 24 ? 48 83 C1", "GlowObject");
-	uint8_t* IsGlowingAddress = FindAddress("client.dll", "0F B6 41 ? C3 CC CC CC CC CC CC CC CC CC CC CC 32 C0 C3 CC CC CC CC CC CC CC CC CC CC CC CC CC 32 C0 C3 CC CC CC CC CC CC CC CC CC CC CC CC CC 32 C0", "IsGlowing");
+	uint8_t* GlowObjectAddress = g_pUtils->m_Memory.ResolveRip(FindAddress("client.dll", "E8 ? ? ? ? F3 0F 10 BE ? ? ? ? 48 8B CF", "GlowObject"), 1, 5);
+	uint8_t* IsGlowingAddress = g_pUtils->m_Memory.ResolveRip(FindAddress("client.dll", "E8 ? ? ? ? 33 DB 84 C0 0F 84 ? ? ? ? 48 8B 4F", "IsGlowing"),1,5);
 	uint8_t* LightingOverrideAddress = FindAddress("scenesystem.dll","48 89 54 24 ? 53 55 41 57", "LightingOverride");
 	uint8_t* WorldOverrideAddress = FindAddress("scenesystem.dll", "48 89 5C 24 18 48 89 6C 24 20 56 57 41 55", "ModulateWorldColor");
+	uint8_t* DrawObjectAddress = FindAddress("scenesystem.dll", "48 8B C4 53 41 54 41 55 48 81 EC ? ? ? ? 4D 63 E1", "DrawObject");
+	uint8_t* OnRenderStart = FindAddress("client.dll", "48 89 5C 24 10 48 89 6C 24 18 56 57 41 56 48 83 EC 70", "OnRenderStart");
+	//uint8_t* TestHook = FindAddress("client.dll", "40 53 48 83 EC ? 48 8B D9 E8 ? ? ? ? 48 85 C0 0F 85", "TestHook");
 	MH_Initialize();
 
 	CreateHook(CreateMoveAddress, reinterpret_cast<void*>(&CHooksManager::CreateMove::Hook), reinterpret_cast<void**>(&CHooksManager::CreateMove::oCreateMove), "CreateMove");
+
+	//CreateHook(TestHook, reinterpret_cast<void*>(&Func), reinterpret_cast<void**>(&oFunc), "TestHook");
+
 	CreateHook(GameOverlayAddress, reinterpret_cast<void*>(&CHooksManager::PresentScene::Hook), reinterpret_cast<void**>(&CHooksManager::PresentScene::oPresentScene), "PresentScene");
+
 	CreateHook(IsGlowingAddress, reinterpret_cast<void*>(&CHooksManager::GlowObjects::HookIsGlowing), reinterpret_cast<void**>(&CHooksManager::GlowObjects::oIsGlowing), "IsGlowing");
+
 	CreateHook(GlowObjectAddress, reinterpret_cast<void*>(&CHooksManager::GlowObjects::Hook), reinterpret_cast<void**>(&CHooksManager::GlowObjects::oGlowObjects), "GlowObject");
+
 	CreateHook(LightingOverrideAddress, reinterpret_cast<void*>(&CHooksManager::LightingModulation::Hook), reinterpret_cast<void**>(&CHooksManager::LightingModulation::oLightingModulation), "LightingOverride");
+
 	CreateHook(WorldOverrideAddress, reinterpret_cast<void*>(&CHooksManager::WorldModulation::Hook), reinterpret_cast<void**>(&CHooksManager::WorldModulation::oModulateWorldColor), "ModulateWorldColor");
+
+	CreateHook(DrawObjectAddress, reinterpret_cast<void*>(&CHooksManager::DrawObject::Hook), reinterpret_cast<void**>(&CHooksManager::DrawObject::oDrawObject), "DrawObject");
+
+	CreateHook(OnRenderStart, reinterpret_cast<void*>(&CHooksManager::RenderStart::Hook), reinterpret_cast<void**>(&CHooksManager::RenderStart::oRenderStart), "OnRenderStart");
 
 	MH_EnableHook(MH_ALL_HOOKS);
 
@@ -56,6 +87,11 @@ bool CHooksManager::Init()
 void CHooksManager::Destroy()
 {
 	reinterpret_cast<WNDPROC>(SetWindowLongPtr(m_PresentScene.outputWindow, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(m_WindowProc.WndProc)));
+
+	//ImGui_ImplDX11_Shutdown();
+	//ImGui_ImplWin32_Shutdown();
+	//ImGui::DestroyContext();
+
 	MH_DisableHook(MH_ALL_HOOKS);
 	MH_RemoveHook(MH_ALL_HOOKS);
 	MH_Uninitialize();
@@ -73,7 +109,7 @@ void __fastcall CHooksManager::CreateMove::Hook(void* ecx, int edx, char a2)
 		return oCreateMove(ecx, edx, a2);
 }
 
-HRESULT __stdcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
+HRESULT __fastcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
 	if (!g_pHooksManager->m_PresentScene.init)
 	{
@@ -103,13 +139,17 @@ HRESULT __stdcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain, 
 			return oPresentScene(pSwapChain, SyncInterval, Flags);
 	}
 
-
+	
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+	//ConfigSystem->UpdateConfiguration();
+
 	g_pFeatures->m_ESP.m_World.Draw();
 	g_pFeatures->m_ESP.m_Players.Draw();
+
+	g_pFeatures->m_ESP.m_OthersVisuals.Watermark();
 
 	g_pGui->DrawGui();
 
@@ -255,4 +295,25 @@ void* __fastcall CHooksManager::WorldModulation::Hook(CAggregateSceneObjectWorld
 	}
 
 	return oModulateWorldColor(pAggregateSceneObject, a2);
+}
+
+void __fastcall CHooksManager::BombCode::Hook(void* a1)
+{
+	oBombCode(a1);
+}
+
+void __fastcall CHooksManager::DrawObject::Hook(void* a1, void* a2, void* a3, int a4, void* a5, void* a6, void* a7, void* a8)
+{
+	oDrawObject(a1, a2, a3, a4, a5, a6, a7, a8);
+}
+
+void __fastcall CHooksManager::RenderStart::Hook(CViewSetup* pSetup)
+{
+	oRenderStart(pSetup);
+
+	//std::unique_lock<std::shared_mutex> lock(Globals::mtx);
+
+	//Vector3D origin = Globals::LocalPlayerPawn->GetBaseEntity()->GetGameSceneNode()->GetVecOrigin();
+
+	//Globals::LocalPlayerOrigin = origin;
 }

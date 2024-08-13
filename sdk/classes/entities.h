@@ -15,6 +15,7 @@ class C_BaseWeapon;
 class C_BaseWeaponServices;
 class C_PlayerItemServices;
 class CCSPlayerController_InGameMoneyServices;
+class C_PlayerPawn;
 
 class C_BaseHandle {
 public:
@@ -46,7 +47,6 @@ public:
 	void GetSchemaClassInfo(SchemaClassInfoData** pReturn);
 	bool IsEntityPlayer();
 };
-class C_PlayerPawn;
 
 class C_BaseEntity : public CEntityInstance{
 public:
@@ -54,7 +54,6 @@ public:
 	CCollision* GetCollision();
 	Vector3D GetBonePosition(int boneIndex);
 	C_BaseHandle GetHandleEntity();
-
 };
 
 class C_PlayerPawn {
@@ -64,7 +63,6 @@ public:
 	int GetTeam();
 	int GetFlags();
 	bool IsAlive();
-
 	bool IsDefusing();
 
 	bool IsScoped();

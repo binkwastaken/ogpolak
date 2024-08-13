@@ -180,7 +180,7 @@ public:
 
 class CGameSceneNode {
 public:
-    Vector3D GetVecOrigin();
+   const  Vector3D GetVecOrigin();
 
     CModelState& GetModelState() {
         auto modelStateAddress = reinterpret_cast<std::uintptr_t>(this) + 0x170;
@@ -382,3 +382,31 @@ public:
 
 };
 
+class CViewSetup
+{
+public:
+private: char pad_053[0x494]; public:; // 0x0000
+    float m_flOrthoLeft; // 0x0494
+    float m_flOrthoTop; // 0x0498
+    float m_flOrthoRight; // 0x049C
+    float m_flOrthoBottom; // 0x04A0
+private: char pad_058[0x34]; public:;
+    float m_flFov; // 0x04D8
+    float m_flFovViewmodel; // 0x04DC
+    Vector3D m_vecOrigin; // 0x04E0
+private: char pad_010[0xC]; public:; // 0x04EC
+    Vector3D m_angView; // 0x04F8
+private: char pad_06[0x14]; public:; // 0x0504
+    float m_flAspectRatio; // 0x0518
+private: char pad_09[0x1C]; public:; //0x051C
+};
+static_assert(sizeof(CViewSetup) == 0x538);
+
+struct CViewRender
+{
+private: char pad_03[0x8]; public:; // 0x0000
+    CViewSetup m_viewSetup; // 0x0008
+
+    virtual void Function0();
+};
+static_assert(sizeof(CViewRender) == 0x548);

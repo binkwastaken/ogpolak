@@ -4,7 +4,10 @@
 #include "schema/schema.h"
 unsigned long EntryPoint(void* entryPoint)
 {
+#ifdef _DEBUG
 	g_pUtils->m_Console.Init();
+#endif // _DEBUG
+
 	g_pUtils->m_Memory.Init();
 	g_pInterfaces->Init();
 	g_pSchemaManager->Init();

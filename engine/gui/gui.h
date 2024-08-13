@@ -3,6 +3,7 @@
 #include "../renderer/renderer.h"
 
 #include "framework.h"
+#include "configs.h"
 
 class CGui {
 public:
@@ -14,8 +15,8 @@ public:
 	public:
 		class ESP {
 		public:
-			bool players, name, team, localplayer,boxes,health,weapon,distance,ammo,flags,money,glow,snaplines,skeletons;
-			bool world, droppedweapons, plantedc4, projectiles, droppedbomb,defusekit,healthshot,chicken,droppednades,hostages;
+			bool players = false, name = false, team = false, localplayer = false, boxes = false, health = false, weapon = false, distance = false, ammo = false, flags = false, money = false, glow = false, snaplines = false, skeletons = false;
+			bool world = false, droppedweapons = false, plantedc4 = false, projectiles = false, droppedbomb = false, defusekit = false, healthshot = false, chicken = false, droppednades = false, hostages = false;
 			ImVec4 NameColor = ImVec4(1.f, 1.f, 1.f, 1.f);
 			ImVec4 BoxesColor = ImVec4(1.f, 1.f, 1.f, 1.f);
 			ImVec4 SnapLinesColor = ImVec4(1.f, 1.f, 1.f, 1.f);
@@ -55,6 +56,24 @@ public:
 			int	WorldIntensity = 1;
 		};
 		WorldModulation m_WorldModulation;
+
+		class OtherVisuals {
+		public:
+			bool Watermark = false;
+			bool InfoPanel = false;
+			bool CustomMenuTheme = false;
+			ImVec4 MenuThemeColor = ImVec4(1.f, 1.f, 1.f, 1.f);
+		};
+		OtherVisuals m_OtherVisuals;
+
+		class Configuration {
+		public:
+			int SelectedIndexConfig = 0;
+			std::vector<std::string> ConfigNames = { "Default" };
+			char CustomNameConfig[256] = "";  // Adjust the size as needed
+		};
+		Configuration m_Configuration;
+
 	};
 	Variables m_Vars;
 

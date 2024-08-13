@@ -57,7 +57,7 @@ void CFeatures::ESP::Players::Name(CMath::BoundingBox& pos, const EntityListInfo
     if (!g_pGui->m_Vars.m_ESP.name)
         return;
 
-    Vector2D position(pos.x + pos.w / 2, pos.y - 8);
+    const Vector2D position(pos.x + pos.w / 2, pos.y - 8);
 
     std::string nameLower = player.Controller->GetPlayerName();
     std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
@@ -410,17 +410,9 @@ void CFeatures::ESP::World::Weapons(C_BaseEntity* Entity)
     if(weaponString.empty())
         return;
 
-    /*/if (g_pGui->m_Vars.m_ESP.droppedbomb)
-    {
-		if (weaponString.find("C4 Explosive") != std::string::npos)
-		{
-            return;
-		}
-    }*/
-
-
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
-	g_pRenderer->DrawOutlinedString("TEST", Vector2D(screenPos.x, screenPos.y), color_t(255, 255, 255, 255), color_t(0, 0, 0, 100), false);
+
+	g_pRenderer->DrawOutlinedString(weaponString.c_str(), Vector2D(screenPos.x, screenPos.y), color_t(255, 255, 255, 255), color_t(0, 0, 0, 100), false);
 
     ImGui::PopFont();
 }
@@ -465,7 +457,7 @@ void CFeatures::ESP::World::Projectiles(C_BaseEntity* Entity)
 {
     if (!g_pGui->m_Vars.m_ESP.projectiles)
         return;
-
+       
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
 
     ImGui::PopFont();
@@ -479,4 +471,39 @@ void CFeatures::Prediction::Start(C_UserCmd* cmd)
 void CFeatures::Prediction::End()
 {
 
+}
+
+void CFeatures::ESP::OthersVisuals::Watermark()
+{
+
+    if (!g_pGui->m_Vars.m_OtherVisuals.Watermark)
+        return;
+    bool IsCustomThemeToogle = g_pGui->m_Vars.m_OtherVisuals.CustomMenuTheme;
+
+    int x = 1, y = 1, w = 200, h = 20;
+
+    g_pRenderer->DrawFilledRect(x, y, w, h, color_t(9, 9, 9, 255));
+
+    g_pRenderer->DrawRect(x, y, w, h, color_t(9, 9, 9, 255));
+
+    g_pRenderer->DrawRect(x + 1, y + 1, w - 2, h - 2, color_t(46, 46, 46));
+
+
+    if (IsCustomThemeToogle)
+    {
+        color_t coulour = color_t(g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.x * 255, g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.y * 255, g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.z * 255, 255);
+        g_pRenderer->DrawLine(x + 2, y + h - 17, x + w - 2, y + h - 17, color_t(coulour));
+    }
+    else
+    {
+        g_pRenderer->DrawLine(x + 2, y + h - 17, x + w - 2, y + h - 17, color_t(120, 150, 255, 255));
+    }
+
+    ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
+    g_pRenderer->DrawOutlinedString("poseidon.pw", Vector2D(x + 5, y + 6), color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
+    ImGui::PopFont();
+}
+
+void CFeatures::ESP::OthersVisuals::InfoPanel()
+{
 }

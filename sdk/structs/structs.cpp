@@ -4,9 +4,9 @@
 
 
 
-Vector3D CGameSceneNode::GetVecOrigin()
+const Vector3D CGameSceneNode::GetVecOrigin()
 {
-	return g_pSchemaManager->GetOffset<Vector3D>("CGameSceneNode", "m_vecAbsOrigin", this);
+	return g_pSchemaManager->GetOffset<const Vector3D>("CGameSceneNode", "m_vecAbsOrigin", this);
 }
 
 Vector3D CCollision::VecMaxs()

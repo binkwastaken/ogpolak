@@ -1,4 +1,5 @@
 #include "gui.h"
+
 void CGui::DrawGui()
 {
 	if (!IsOpen)
@@ -149,10 +150,52 @@ void CGui::DrawGui()
         ImGui::SetCursorPos(ImVec2(459, 243));
         ImGui::ColorEdit4("##WorldColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_WorldModulation.WorldColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
 
+        ImGui::SetCursorPos(ImVec2(313, 276));
+        g_pFramework->Tab("Other", ImVec2(175, 69));
+        ImGui::SetCursorPos(ImVec2(320, 291));
+        g_pFramework->CheckBox("Watermark", &g_pGui->m_Vars.m_OtherVisuals.Watermark);
+		ImGui::SetCursorPos(ImVec2(320, 306));
+		g_pFramework->CheckBox("Info Panel", &g_pGui->m_Vars.m_OtherVisuals.InfoPanel);
+        ImGui::SetCursorPos(ImVec2(320, 321));
+        g_pFramework->CheckBox("Custom Menu Theme", &g_pGui->m_Vars.m_OtherVisuals.CustomMenuTheme);
+        ImGui::SetCursorPos(ImVec2(459, 321));
+        ImGui::ColorEdit4("##MenuTheme", reinterpret_cast<float*>(&g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
+
+
     }
         break;
 
     case 3:
+        ImGui::SetCursorPos(ImVec2(313, 31));
+        g_pFramework->Tab("Configuration", ImVec2(175, 100));
+        ImGui::SetCursorPos(ImVec2(320, 46));
+        g_pFramework->InputText("Name Config", g_pGui->m_Vars.m_Configuration.CustomNameConfig, IM_ARRAYSIZE(&g_pGui->m_Vars.m_Configuration.CustomNameConfig));
+        ImGui::SetCursorPos(ImVec2(320, 61));
+        g_pFramework->ComboConfig("Config", &g_pGui->m_Vars.m_Configuration.SelectedIndexConfig, g_pGui->m_Vars.m_Configuration.ConfigNames, g_pGui->m_Vars.m_Configuration.ConfigNames.size());
+        ImGui::SetCursorPos(ImVec2(320, 76));
+        if (g_pFramework->Button("Save"))
+        {
+            ConfigSystem->UpdateConfiguration();
+            if (strlen(g_pGui->m_Vars.m_Configuration.CustomNameConfig) == 0) {
+                ConfigSystem->SaveConfiguarion();
+            }
+            else {
+                g_pGui->m_Vars.m_Configuration.ConfigNames[g_pGui->m_Vars.m_Configuration.SelectedIndexConfig] = g_pGui->m_Vars.m_Configuration.CustomNameConfig;
+                ConfigSystem->SaveConfiguarion();
+            }
+        }
+		ImGui::SetCursorPos(ImVec2(320, 91));
+        if (g_pFramework->Button("Load"))
+        {
+            ConfigSystem->UpdateConfiguration();
+            ConfigSystem->LoadConfiguration(g_pGui->m_Vars.m_Configuration.ConfigNames, g_pGui->m_Vars.m_Configuration.SelectedIndexConfig);
+        }
+
+		ImGui::SetCursorPos(ImVec2(320, 106));
+		if (g_pFramework->Button("Refresh"))
+		{
+			ConfigSystem->UpdateConfiguration();
+		}
         break;
 
     case 4:

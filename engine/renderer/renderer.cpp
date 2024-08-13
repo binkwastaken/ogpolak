@@ -143,27 +143,21 @@ void CRenderer::DrawCapsule(const Vector2D& start, const Vector2D& end, float ra
 }
 void CRenderer::DrawOutlinedLine(const Vector2D& start, const Vector2D& end, const color_t& color, int thickness, const color_t& outlineColor)
 {
-	// Draw outline
-	int outlineThickness = thickness + 2; // Example: outline thickness is 2 pixels more than the main line
+	int outlineThickness = thickness + 2;
 
-	// Draw top and bottom outlines
 	pDrawList->AddLine(ImVec2(start.x - 1, start.y), ImVec2(end.x - 1, end.y), ImGui::ColorConvertFloat4ToU32(ImVec4(outlineColor.r / 255.f, outlineColor.g / 255.f, outlineColor.b / 255.f, outlineColor.a / 255.f)), outlineThickness);
 	pDrawList->AddLine(ImVec2(start.x + 1, start.y), ImVec2(end.x + 1, end.y), ImGui::ColorConvertFloat4ToU32(ImVec4(outlineColor.r / 255.f, outlineColor.g / 255.f, outlineColor.b / 255.f, outlineColor.a / 255.f)), outlineThickness);
 
-	// Draw left and right outlines
 	pDrawList->AddLine(ImVec2(start.x, start.y - 1), ImVec2(end.x, end.y - 1), ImGui::ColorConvertFloat4ToU32(ImVec4(outlineColor.r / 255.f, outlineColor.g / 255.f, outlineColor.b / 255.f, outlineColor.a / 255.f)), outlineThickness);
 	pDrawList->AddLine(ImVec2(start.x, start.y + 1), ImVec2(end.x, end.y + 1), ImGui::ColorConvertFloat4ToU32(ImVec4(outlineColor.r / 255.f, outlineColor.g / 255.f, outlineColor.b / 255.f, outlineColor.a / 255.f)), outlineThickness);
 
-	// Draw main line
 	pDrawList->AddLine(ImVec2(start.x, start.y), ImVec2(end.x, end.y), ImGui::ColorConvertFloat4ToU32(ImVec4(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f)), thickness);
 }
 
 void CRenderer::DrawOutlinedLine(int x, int y, int x2, int y2, const color_t& color, const color_t& outlineColor, int thickness)
 {
-	// Convert integer coordinates to vector coordinates
 	Vector2D start(x, y);
 	Vector2D end(x2, y2);
 
-	// Call the vector version of DrawOutlinedLine
 	DrawOutlinedLine(start, end, color, thickness, outlineColor);
 }
