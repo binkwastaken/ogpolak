@@ -3,14 +3,17 @@
 #include "../classes/entities.h"
 
 #include "../math/vectors.h"
+#include "../math/matrix.h"
 
 #include <d3d9.h>
+#include <vector>
 
 #include <string>
 
 class C_BaseHandle;
 class C_BaseEntity;
 class C_PlayerPawn;
+class C_PlayerController;
 
 struct color_t {
     int a, r, g, b;
@@ -176,16 +179,28 @@ public:
     {
         return *reinterpret_cast<CBoneData**>(std::uintptr_t(this) + 0x80);
     }
+
+    const char* GetModelName();
+
 };
 
 class CGameSceneNode {
 public:
+private: char pad_039[0x1CC]; public:; //0x0000
+    int nBoneCount; //0x01CC
+private: char pad_08[0x18]; public:; //0x01D0
+    int nMask; //0x01E8
+private: char pad_011[0x4]; public:; //0x01EC
+    Matrix2x4_t* pBoneCache; //0x01F0
+
    const  Vector3D GetVecOrigin();
 
     CModelState& GetModelState() {
         auto modelStateAddress = reinterpret_cast<std::uintptr_t>(this) + 0x170;
         return *reinterpret_cast<CModelState*>(modelStateAddress);
     }
+
+    void CalcBones(unsigned int bone);
 };
 
 class CCollision {
@@ -261,7 +276,7 @@ public:
 		case WEAPON_KNIFE0: return "Knife";
 		case WEAPON_KNIFE1: return "Knife";
 		case WEAPON_FLASHBANG: return "Flashbang";
-		case WEAPON_HIGH_EXPLOSIVE_GRENADE: return "High Explosive Grenade";
+		case WEAPON_HIGH_EXPLOSIVE_GRENADE: return "HE Grenade";
 		case WEAPON_SMOKE_GRENADE: return "Smoke Grenade";
 		case WEAPON_MOLOTOV: return "Molotov";
 		case WEAPON_DECOY_GRENADE: return "Decoy Grenade";
@@ -410,3 +425,30 @@ private: char pad_03[0x8]; public:; // 0x0000
     virtual void Function0();
 };
 static_assert(sizeof(CViewRender) == 0x548);
+
+
+enum EClientFrameStage : int
+{
+    FRAME_UNDEFINED = -1,
+    FRAME_START,
+    // a network packet is being received
+    FRAME_NET_UPDATE_START,
+    // data has been received and we are going to start calling postdataupdate
+    FRAME_NET_UPDATE_POSTDATAUPDATE_START,
+    // data has been received and called postdataupdate on all data recipients
+    FRAME_NET_UPDATE_POSTDATAUPDATE_END,
+    // received all packets, we can now do interpolation, prediction, etc
+    FRAME_NET_UPDATE_END,
+    // start rendering the scene
+    FRAME_RENDER_START,
+    // finished rendering the scene
+    FRAME_RENDER_END,
+    FRAME_NET_FULL_FRAME_UPDATE_ON_REMOVE
+};
+
+
+class CGameInput {
+public:
+    Vector3D GetViewAngles();
+    void SetViewAngles(Vector3D& newAngle);
+};

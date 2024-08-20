@@ -2,11 +2,16 @@
 #include "../../engine/utils/utils.h"
 #include "../../engine/schema/schema.h"
 
-
-
 const Vector3D CGameSceneNode::GetVecOrigin()
 {
 	return g_pSchemaManager->GetOffset<const Vector3D>("CGameSceneNode", "m_vecAbsOrigin", this);
+}
+
+void CGameSceneNode::CalcBones(unsigned int bone)
+{
+	using fnGetCalcBones = void* (__thiscall*)(void*, int);
+	static auto CalcBones = reinterpret_cast<fnGetCalcBones>(g_pUtils->m_Memory.PatternScan("client.dll", "40 55 56 57 41 54 41 55 41 56 41 57 48 81 EC D0"));
+	CalcBones(this, bone);
 }
 
 Vector3D CCollision::VecMaxs()
@@ -74,4 +79,24 @@ bool C_PlayerItemServices::HasHelmet()
 int CCSPlayerController_InGameMoneyServices::GetMoney()
 {
 	return g_pSchemaManager->GetOffset<int>("CCSPlayerController_InGameMoneyServices", "m_iAccount", this);
+}
+
+const char* CModelState::GetModelName()
+{
+return g_pSchemaManager->GetOffset<const char*>("CModelState", "m_ModelName", this);
+}
+
+Vector3D CGameInput::GetViewAngles()
+{
+	using fnGetViewAngles = std::int64_t(__fastcall*)(void*, std::int32_t);
+	static auto oGetViewAngles = reinterpret_cast<fnGetViewAngles>(g_pUtils->m_Memory.PatternScan("client.dll", "4C 8B C1 85 D2 74 08 48 8D 05 ? ? ? ? C3"));
+	return *reinterpret_cast<Vector3D*>(oGetViewAngles(this, 0));
+
+}
+
+void CGameInput::SetViewAngles(Vector3D& newAngle)
+{
+	using fnSetViewAngle = std::int64_t(__fastcall*)(void*, std::int32_t, Vector3D&);
+	static auto oSetViewAngle = reinterpret_cast<fnSetViewAngle>(g_pUtils->m_Memory.PatternScan("client.dll", "85 D2 75 3F 48"));
+	oSetViewAngle(this, 0, std::ref(newAngle));
 }

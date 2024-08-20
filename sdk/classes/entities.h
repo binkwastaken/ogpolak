@@ -54,6 +54,8 @@ public:
 	CCollision* GetCollision();
 	Vector3D GetBonePosition(int boneIndex);
 	C_BaseHandle GetHandleEntity();
+	Vector3D GetVecViewOffset();
+	Vector3D GetEyePosition();
 };
 
 class C_PlayerPawn {
@@ -64,7 +66,6 @@ public:
 	int GetFlags();
 	bool IsAlive();
 	bool IsDefusing();
-
 	bool IsScoped();
 	C_BaseHandle GetHandleController();
 
@@ -73,6 +74,8 @@ public:
 	C_BaseWeaponServices* GetWeaponServices();
 
 	C_PlayerItemServices* GetItemServices();
+
+	float& GetViewModelFOV();
 
 };
 

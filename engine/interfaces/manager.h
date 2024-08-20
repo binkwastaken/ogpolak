@@ -13,6 +13,8 @@ public:
         IEngineClient* pEngineClient;
         ISystemInput* pSystemInput;
         ISchemaSystem* pSchemaSystem;
+        IClientSource2* pClientSource2;
+        CGameInput* pGameInput;
 	};
 
 	CInterfaces m_Interfaces;

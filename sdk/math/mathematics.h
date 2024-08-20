@@ -24,5 +24,8 @@ public:
 
 	bool WorldToScreen(Vector3D& Position, Vector2D& ScreenPosition);
 	bool GetPlayerBoundingBox(C_PlayerPawn* ent, BoundingBox& in);
+
+	Vector3D CalcAngle(const Vector3D& vecSource, const Vector3D& vecDestination);
+
 };
 inline CMath* g_pMath = new CMath();

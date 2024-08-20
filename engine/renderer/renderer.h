@@ -2,12 +2,15 @@
 #include "../utils/utils.h"
 #include "../../extensions/imgui.h"
 #include "../../extensions/fonts.h"
+#include "../../sdk/globals.h"
 
 #include "../../sdk/math/mathematics.h"
 
 #include <D3DX11.h>
 #include <d3d11.h>
 #include <D3DX11tex.h>
+#include <mutex>
+#include <shared_mutex>
 
 #pragma comment (lib,"D3DX11.lib")
 
@@ -16,7 +19,6 @@ class CRenderer {
 public:
 	bool Init(HWND hWnd, ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 
-	// Rendering functions
 	void DrawImage(ID3D11ShaderResourceView* image, int x, int y, int w, int h);
 	void DrawLine(const Vector2D& start, const Vector2D& end, const color_t& color, int thickness = 1);
 	void DrawLine(int x, int y, int x2, int y2, const color_t& color, int thickness = 1);
@@ -31,6 +33,8 @@ public:
 	void DrawOutlinedLine(const Vector2D& start, const Vector2D& end, const color_t& color, int thickness, const color_t& outlineColor);
 	void DrawOutlinedLine(int x, int y, int x2, int y2, const color_t& color, const color_t& outlineColor, int thickness);
 
+	void LinearGradient(int x, int y, int w, int h, const color_t& color1, const color_t& color2, bool isVertical);
+
 	class Fonts {
 	public:
 		static ImFont* Verdana;
@@ -41,6 +45,5 @@ public:
 	Fonts m_Fonts;
 private:
 	bool LoadImageByMemory(ID3D11Device* device, unsigned char* image, size_t image_size, ID3D11ShaderResourceView** result);
-
 };
 inline CRenderer* g_pRenderer = new CRenderer();

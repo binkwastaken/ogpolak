@@ -97,6 +97,73 @@ void CConfig::Setup()
     SetupValue(g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.z, 1.f, "other_visuals_color", "menu_theme_z");
     SetupValue(g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.w, 1.f, "other_visuals_color", "menu_theme_w");
 
+
+    SetupValue(g_pGui->m_Vars.m_Aimbot.enable, false, "aimbot", "enable");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.fov, 0, "aimbot", "fov");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.ignoreteam, false, "aimbot", "ignoreteam");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.silentaim, false, "aimbot", "silentaim");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.autowall, false, "aimbot", "autowall");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.autostop, false, "aimbot", "autostop");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.removerecoil, false, "aimbot", "removerecoil");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.smoothness, false, "aimbot", "smoothness");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.smoothnessvalue, 0, "aimbot", "smoothnessvalue");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.selectedautostop, 0, "aimbot", "selectedautostop");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.selectedhitbox, 0, "aimbot", "selectedhitbox");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.multipoint, 0, "aimbot", "multipoint");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.selectedweaponslot, 0, "aimbot", "selectedweaponslot");
+
+    // Hitchance and Minimal Damage
+    SetupValue(g_pGui->m_Vars.m_Aimbot.hitchancePistol, 0, "aimbot", "hitchance_pistol");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.hitchanceRifle, 0, "aimbot", "hitchance_rifle");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.hitchanceSniper, 0, "aimbot", "hitchance_sniper");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.hitchanceSmg, 0, "aimbot", "hitchance_smg");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.hitchanceAuto, 0, "aimbot", "hitchance_auto");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.hitchanceHeavy, 0, "aimbot", "hitchance_heavy");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.hitchanceZeus, 0, "aimbot", "hitchance_zeus");
+
+    SetupValue(g_pGui->m_Vars.m_Aimbot.minimaldamagePistol, 0, "aimbot", "minimaldamage_pistol");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.minimaldamageRifle, 0, "aimbot", "minimaldamage_rifle");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.minimaldamageSniper, 0, "aimbot", "minimaldamage_sniper");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.minimaldamageSmg, 0, "aimbot", "minimaldamage_smg");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.minimaldamageAuto, 0, "aimbot", "minimaldamage_auto");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.minimaldamageHeavy, 0, "aimbot", "minimaldamage_heavy");
+    SetupValue(g_pGui->m_Vars.m_Aimbot.minimaldamageZeus, 0, "aimbot", "minimaldamage_zeus");
+
+    // Other Visuals
+    SetupValue(g_pGui->m_Vars.m_OtherVisuals.ForceCrosshair, false, "other_visuals", "force_crosshair");
+    SetupValue(g_pGui->m_Vars.m_OtherVisuals.SniperZoom, false, "other_visuals", "sniper_zoom");
+    SetupValue(g_pGui->m_Vars.m_OtherVisuals.SniperZoomType, 0, "other_visuals", "sniper_zoom_type");
+    SetupValue(g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.x, 0.f, "other_visuals_color", "sniper_zoom_x");
+    SetupValue(g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.y, 0.f, "other_visuals_color", "sniper_zoom_y");
+    SetupValue(g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.z, 0.f, "other_visuals_color", "sniper_zoom_z");
+    SetupValue(g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.w, 1.f, "other_visuals_color", "sniper_zoom_w");
+    SetupValue(g_pGui->m_Vars.m_OtherVisuals.SniperZoomColorGradient.x, 0.f, "other_visuals_color", "sniper_zoom_gradient_x");
+    SetupValue(g_pGui->m_Vars.m_OtherVisuals.SniperZoomColorGradient.y, 0.f, "other_visuals_color", "sniper_zoom_gradient_y");
+    SetupValue(g_pGui->m_Vars.m_OtherVisuals.SniperZoomColorGradient.z, 0.f, "other_visuals_color", "sniper_zoom_gradient_z");
+    SetupValue(g_pGui->m_Vars.m_OtherVisuals.SniperZoomColorGradient.w, 1.f, "other_visuals_color", "sniper_zoom_gradient_w");
+
+    // Removals 
+    SetupValue(g_pGui->m_Vars.m_Removals.nosmoke, false, "removals", "nosmoke");
+    SetupValue(g_pGui->m_Vars.m_Removals.nolegspreview, false, "removals", "nolegspreview");
+    SetupValue(g_pGui->m_Vars.m_Removals.nozoom, false, "removals", "nozoom");
+
+    // View
+    SetupValue(g_pGui->m_Vars.m_View.fovchanger, false, "view", "fovchanger");
+    SetupValue(g_pGui->m_Vars.m_View.fovwhilescoped, false, "view", "fovwhilescoped");
+    SetupValue(g_pGui->m_Vars.m_View.fov, 120, "view", "fov");
+    SetupValue(g_pGui->m_Vars.m_View.viewmodelchanger, false, "view", "viewmodelchanger");
+    SetupValue(g_pGui->m_Vars.m_View.viewmodelx, 0, "view", "viewmodelx");
+    SetupValue(g_pGui->m_Vars.m_View.viewmodely, 0, "view", "viewmodely");
+    SetupValue(g_pGui->m_Vars.m_View.viewmodelz, 0, "view", "viewmodelz");
+    SetupValue(g_pGui->m_Vars.m_View.viewmodelfov, 120, "view", "viewmodelfov");
+
+    // Movement
+    SetupValue(g_pGui->m_Vars.m_Movement.bunnyhop, false, "movement", "bunnyhop");
+    SetupValue(g_pGui->m_Vars.m_Movement.autostrafe, false, "movement", "autostrafe");
+    SetupValue(g_pGui->m_Vars.m_Movement.duckinair, false, "movement", "duckinair");
+    SetupValue(g_pGui->m_Vars.m_Movement.crouchjump, false, "movement", "crouchjump");
+
+
     // Configuration Variables
    // SetupValue(g_pGui->m_Vars.m_Configuration.SelectedIndexConfig, 0, "configuration", "selected_index");
     //SetupValue(g_pGui->m_Vars.m_Configuration.ConfigNames, std::vector<std::string>{"Default"}, "configuration", "config_names"); // This may require a custom handler for vectors

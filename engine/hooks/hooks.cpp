@@ -9,6 +9,16 @@ CHooksManager::WorldModulation::oModulateWorldColorFn CHooksManager::WorldModula
 CHooksManager::BombCode::oBombCodeFn CHooksManager::BombCode::oBombCode = nullptr;
 CHooksManager::DrawObject::oDrawObjectFn CHooksManager::DrawObject::oDrawObject = nullptr;
 CHooksManager::RenderStart::oRenderStartFn CHooksManager::RenderStart::oRenderStart = nullptr;
+CHooksManager::FrameStage::oFrameStageFn CHooksManager::FrameStage::oFrameStage = nullptr;
+CHooksManager::ForceCrosshair::oForceCrosshairFn CHooksManager::ForceCrosshair::oForceCrosshair = nullptr;
+CHooksManager::RemoveZoomOverlay::oRemoveZoomOverlayFn CHooksManager::RemoveZoomOverlay::oRemoveZoomOverlay = nullptr;
+CHooksManager::NoSmokeHook::oNoSmokeFn CHooksManager::NoSmokeHook::oNoSmoke = nullptr;
+CHooksManager::RemoveLegs::oRemoveLegsFn CHooksManager::RemoveLegs::oRemoveLegs = nullptr;
+CHooksManager::OverrideView::oOverrideViewFn CHooksManager::OverrideView::oOverrideView = nullptr;
+CHooksManager::FovObject::oFovObjectFn CHooksManager::FovObject::oFovObject = nullptr;
+CHooksManager::ViewModel::oViewModelFn CHooksManager::ViewModel::oViewModel = nullptr;
+CHooksManager::CalcViewModelAngles::oViewModelCalcFn CHooksManager::CalcViewModelAngles::oViewModelCalc = nullptr;
+CHooksManager::NoFlashbangEffect::oNoFlashbangEffectFn CHooksManager::NoFlashbangEffect::oNoFlashbangEffect = nullptr;
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -35,18 +45,13 @@ bool CHooksManager::CreateHook(uint8_t* targetAddress, void* hookFunction, void*
 	}
 }
 
-//typedef bool(__fastcall* pFuncFn)(C_PlayerPawn* test);
-//pFuncFn oFunc;
+typedef bool(__fastcall* oReduceAimPunchFn)(__int64 a1, float* a2, float* a3);
+oReduceAimPunchFn oReduceAimPunch;
 
-/*static bool __fastcall Func(C_PlayerPawn* Entity)
+bool __fastcall ReduceAimPunch(__int64 a1, float* a2, float* a3)
 {
-	oFunc(Entity);
-
-	if (!g_pInterfaces->m_Interfaces.pInput->m_bInThirdPerson && Globals::LocalPlayerPawn && Globals::LocalPlayerPawn->IsAlive() && Entity == Globals::LocalPlayerPawn)
-		return false;
-
-	return true;
-}*/
+	return false;
+}
 
 bool CHooksManager::Init()
 {
@@ -58,12 +63,22 @@ bool CHooksManager::Init()
 	uint8_t* WorldOverrideAddress = FindAddress("scenesystem.dll", "48 89 5C 24 18 48 89 6C 24 20 56 57 41 55", "ModulateWorldColor");
 	uint8_t* DrawObjectAddress = FindAddress("scenesystem.dll", "48 8B C4 53 41 54 41 55 48 81 EC ? ? ? ? 4D 63 E1", "DrawObject");
 	uint8_t* OnRenderStart = FindAddress("client.dll", "48 89 5C 24 10 48 89 6C 24 18 56 57 41 56 48 83 EC 70", "OnRenderStart");
-	//uint8_t* TestHook = FindAddress("client.dll", "40 53 48 83 EC ? 48 8B D9 E8 ? ? ? ? 48 85 C0 0F 85", "TestHook");
+	uint8_t* FrameStageAddress = FindAddress("client.dll", "48 89 5C 24 ? 56 48 83 EC ? 8B 05 ? ? ? ? 8D 5A", "FrameStageNotify");
+	uint8_t* ForceCrosshairAddress = FindAddress("client.dll", "48 89 5C 24 ? 57 48 83 EC ? 48 8B D9 E8 ? ? ? ? 48 85 C0", "ForceCrosshair");
+	uint8_t* RemoveScopeOverlayAddress = FindAddress("client.dll", "40 56 57 48 83 EC 68", "RemoveScopeOverlay");
+	uint8_t* NoSmokeAddress = FindAddress("client.dll","48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC ? 48 8B 9C 24 ? ? ? ? 4D 8B F8", "NoSmoke");
+	uint8_t* RemoveLegsAddress = FindAddress("client.dll", "48 89 5C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 55 41 54 41 55 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 8B 01", "RemoveLegs");
+	uint8_t* OverrideViewAddress = FindAddress("client.dll","48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC ? 48 8B FA E8", "OverrideView");
+	uint8_t* ChangeFovAddress = FindAddress("client.dll","40 53 48 81 EC 80 00 00 00 48 8B D9 E8 ?? ?? ?? ?? 48 85", "FovObject");
+	uint8_t* ChangeViewmodelAddress = FindAddress("client.dll","48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 49 8B E8 48 8B DA 48 8B F1", "ChangeViewmodel");
+	uint8_t* NoShootingPunchAddress = FindAddress("client.dll", "48 89 5C 24 ? 55 56 57 48 8D 6C 24 ? 48 81 EC ? ? ? ? F2 41 0F 10 01", "NoShootingPunch");
+	uint8_t* NoFlashbangEffectAddress = FindAddress("client.dll","48 89 5C 24 ? 57 48 83 EC ? 49 8B D8 48 8B F9 E8", "NoFlashbangEffect");
+	//uint8_t* TestSig2 = FindAddress("client.dll", "48 89 5C 24 ? 48 89 74 24 ? 57 48 81 EC ? ? ? ? 48 8B FA 48 8B D9", "TestSig");
 	MH_Initialize();
 
 	CreateHook(CreateMoveAddress, reinterpret_cast<void*>(&CHooksManager::CreateMove::Hook), reinterpret_cast<void**>(&CHooksManager::CreateMove::oCreateMove), "CreateMove");
 
-	//CreateHook(TestHook, reinterpret_cast<void*>(&Func), reinterpret_cast<void**>(&oFunc), "TestHook");
+	CreateHook(ForceCrosshairAddress, reinterpret_cast<void*>(&CHooksManager::ForceCrosshair::Hook), reinterpret_cast<void**>(&CHooksManager::ForceCrosshair::oForceCrosshair), "ForceCrosshair");
 
 	CreateHook(GameOverlayAddress, reinterpret_cast<void*>(&CHooksManager::PresentScene::Hook), reinterpret_cast<void**>(&CHooksManager::PresentScene::oPresentScene), "PresentScene");
 
@@ -79,6 +94,29 @@ bool CHooksManager::Init()
 
 	CreateHook(OnRenderStart, reinterpret_cast<void*>(&CHooksManager::RenderStart::Hook), reinterpret_cast<void**>(&CHooksManager::RenderStart::oRenderStart), "OnRenderStart");
 
+	CreateHook(FrameStageAddress, reinterpret_cast<void*>(&CHooksManager::FrameStage::Hook), reinterpret_cast<void**>(&CHooksManager::FrameStage::oFrameStage), "FrameStageNotify");
+
+	CreateHook(RemoveScopeOverlayAddress, reinterpret_cast<void*>(&CHooksManager::RemoveZoomOverlay::Hook), reinterpret_cast<void**>(&CHooksManager::RemoveZoomOverlay::oRemoveZoomOverlay), "RemoveScopeOverlay");
+
+	CreateHook(NoSmokeAddress, reinterpret_cast<void*>(&CHooksManager::NoSmokeHook::Hook), reinterpret_cast<void**>(&CHooksManager::NoSmokeHook::oNoSmoke), "NoSmoke");
+
+	CreateHook(RemoveLegsAddress, reinterpret_cast<void*>(&CHooksManager::RemoveLegs::Hook), reinterpret_cast<void**>(&CHooksManager::RemoveLegs::oRemoveLegs), "RemoveLegs");
+
+	CreateHook(OverrideViewAddress, reinterpret_cast<void*>(&CHooksManager::OverrideView::Hook), reinterpret_cast<void**>(&CHooksManager::OverrideView::oOverrideView), "OverrideView");
+
+	CreateHook(ChangeFovAddress, reinterpret_cast<void*>(&CHooksManager::FovObject::Hook), reinterpret_cast<void**>(&CHooksManager::FovObject::oFovObject), "FovObject");
+
+	CreateHook(ChangeViewmodelAddress, reinterpret_cast<void*>(&CHooksManager::ViewModel::Hook), reinterpret_cast<void**>(&CHooksManager::ViewModel::oViewModel), "ViewModel");
+
+	CreateHook(NoShootingPunchAddress, reinterpret_cast<void*>(&CHooksManager::CalcViewModelAngles::Hook), reinterpret_cast<void**>(&CHooksManager::CalcViewModelAngles::oViewModelCalc), "ViewModelCalc");
+	
+	CreateHook(NoFlashbangEffectAddress, reinterpret_cast<void*>(&CHooksManager::NoFlashbangEffect::Hook), reinterpret_cast<void**>(&CHooksManager::NoFlashbangEffect::oNoFlashbangEffect), "NoFlashbangEffect");
+
+	
+	//CreateHook(TestSig2, reinterpret_cast<void*>(&ReduceAimPunch), reinterpret_cast<void**>(&oReduceAimPunch), "TestSig2");
+
+	//CreateHook(gownotest, reinterpret_cast<void*>(&Gowno), reinterpret_cast<void**>(&oGowno), "gownotest");
+
 	MH_EnableHook(MH_ALL_HOOKS);
 
 	return true;
@@ -88,25 +126,27 @@ void CHooksManager::Destroy()
 {
 	reinterpret_cast<WNDPROC>(SetWindowLongPtr(m_PresentScene.outputWindow, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(m_WindowProc.WndProc)));
 
-	//ImGui_ImplDX11_Shutdown();
-	//ImGui_ImplWin32_Shutdown();
-	//ImGui::DestroyContext();
-
 	MH_DisableHook(MH_ALL_HOOKS);
 	MH_RemoveHook(MH_ALL_HOOKS);
 	MH_Uninitialize();
 }
 
-void __fastcall CHooksManager::CreateMove::Hook(void* ecx, int edx, char a2)
+void __fastcall CHooksManager::CreateMove::Hook(CGameInput* input, int edx, char a2)
 {
-	oCreateMove(ecx, edx, a2);
+	oCreateMove(input, edx, a2);
 
 	Globals::LocalPlayerController = C_PlayerController::GetLocalPlayerController();
 	if (!Globals::LocalPlayerController)
-		return oCreateMove(ecx, edx, a2);
+		return oCreateMove(input, edx, a2);
 	Globals::LocalPlayerPawn = (C_PlayerPawn*)g_pInterfaces->m_Interfaces.pEntityList->GetClientEntityFromHandle(Globals::LocalPlayerController->GetHandlePawn());
 	if (!Globals::LocalPlayerPawn)
-		return oCreateMove(ecx, edx, a2);
+		return oCreateMove(input, edx, a2);
+
+
+	C_UserCmd* cmd = nullptr;
+
+	g_pFeatures->m_Aimbot.Run(cmd);
+
 }
 
 HRESULT __fastcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
@@ -139,19 +179,19 @@ HRESULT __fastcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain,
 			return oPresentScene(pSwapChain, SyncInterval, Flags);
 	}
 
-	
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-
-	//ConfigSystem->UpdateConfiguration();
 
 	g_pFeatures->m_ESP.m_World.Draw();
 	g_pFeatures->m_ESP.m_Players.Draw();
 
 	g_pFeatures->m_ESP.m_OthersVisuals.Watermark();
 
+	g_pFeatures->m_ESP.m_OthersVisuals.SniperScopeOverlay();
+
 	g_pGui->DrawGui();
+
 
 	ImGui::EndFrame();
 	ImGui::Render();
@@ -277,8 +317,10 @@ void* __fastcall CHooksManager::LightingModulation::Hook(__int64 a1, CAggregateS
 
 void* __fastcall CHooksManager::WorldModulation::Hook(CAggregateSceneObjectWorld* pAggregateSceneObject, void* a2)
 {
+	auto original = oModulateWorldColor(pAggregateSceneObject, a2);
+
 	if (!g_pGui->m_Vars.m_WorldModulation.worldcolor || !g_pInterfaces->m_Interfaces.pEngineClient->IsInGame())
-		return oModulateWorldColor(pAggregateSceneObject, a2);
+		return original;
 
 	auto r = static_cast<unsigned char>(g_pGui->m_Vars.m_WorldModulation.WorldColor.x * 255.f);
 	auto g = static_cast<unsigned char>(g_pGui->m_Vars.m_WorldModulation.WorldColor.y * 255.f);
@@ -294,7 +336,7 @@ void* __fastcall CHooksManager::WorldModulation::Hook(CAggregateSceneObjectWorld
 		pAggregateSceneObjectData->b = b;
 	}
 
-	return oModulateWorldColor(pAggregateSceneObject, a2);
+	return original;
 }
 
 void __fastcall CHooksManager::BombCode::Hook(void* a1)
@@ -312,8 +354,196 @@ void __fastcall CHooksManager::RenderStart::Hook(CViewSetup* pSetup)
 	oRenderStart(pSetup);
 
 	//std::unique_lock<std::shared_mutex> lock(Globals::mtx);
+	//Globals::LocalPlayerOrigin = Globals::LocalPlayerPawn->GetBaseEntity()->GetGameSceneNode()->GetVecOrigin();
+	//lock.unlock();
+}
 
-	//Vector3D origin = Globals::LocalPlayerPawn->GetBaseEntity()->GetGameSceneNode()->GetVecOrigin();
+void* __fastcall CHooksManager::FrameStage::Hook(void* rcx, int stage)
+{
+	auto original = oFrameStage(rcx,stage);
 
-	//Globals::LocalPlayerOrigin = origin;
+	if (!Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
+		return original;
+
+	switch (stage)
+	{
+	case FRAME_NET_FULL_FRAME_UPDATE_ON_REMOVE:
+	{
+		//if (Globals::LocalPlayerPawn->IsAlive())
+		//{
+
+
+		//	//Globals::LocalPlayerPawn->GetBaseEntity()->GetGameSceneNode()->CalcBones(Globals::LocalPlayerPawn->GetBaseEntity()->GetGameSceneNode()->nBoneCount);
+
+		//	//auto localBoneKesz = Globals::LocalPlayerPawn->GetBaseEntity()->GetGameSceneNode()->pBoneCache;
+
+		//	//std::memcpy(localBoneKesz, Globals::LocalPlayerPawn->GetBaseEntity()->GetGameSceneNode()->pBoneCache, sizeof(localBoneKesz));
+
+
+		//}
+	}
+		break;
+	}
+
+	return original;
+}
+
+bool __fastcall CHooksManager::ForceCrosshair::Hook(__int64* a1)
+{
+	if (!g_pGui->m_Vars.m_OtherVisuals.ForceCrosshair)
+		return oForceCrosshair(a1);
+
+	if (!g_pInterfaces->m_Interfaces.pEngineClient->IsConnected())
+		return false;
+	if (!Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
+		return false;
+
+	if (!Globals::LocalPlayerPawn->IsAlive())
+		return false;
+
+	auto isScoped = Globals::LocalPlayerPawn->IsScoped();
+
+	if(isScoped)
+		return false;
+
+
+	return true;
+}
+
+bool __fastcall CHooksManager::RemoveZoomOverlay::Hook(void* a1, void* a2)
+{
+	if (!g_pGui->m_Vars.m_Removals.nozoom)
+		return oRemoveZoomOverlay(a1,a2);
+
+	if (!g_pInterfaces->m_Interfaces.pEngineClient->IsConnected())
+		return false;
+	if (!Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
+		return false;
+
+	if (!Globals::LocalPlayerPawn->IsAlive())
+		return false;
+
+	if (Globals::LocalPlayerPawn->IsScoped())
+		return false;
+
+	return oRemoveZoomOverlay(a1, a2);
+}
+
+bool __fastcall CHooksManager::NoSmokeHook::Hook(void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
+{
+	if (!g_pGui->m_Vars.m_Removals.nosmoke)
+		return oNoSmoke(a1, a2, a3, a4, a5, a6);
+
+	if (!g_pInterfaces->m_Interfaces.pEngineClient->IsConnected())
+		return true;
+
+	if (!Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
+		return true;
+
+	if (Globals::LocalPlayerPawn->IsAlive())
+		return false;
+
+
+	return true;
+}
+
+bool __fastcall CHooksManager::RemoveLegs::Hook(void* a1, void* a2, void* a3, void* a4, void* a5)
+{
+	if (!g_pGui->m_Vars.m_Removals.nolegspreview)
+		return oRemoveLegs(a1, a2, a3, a4, a5);
+
+	if (!g_pInterfaces->m_Interfaces.pEngineClient->IsConnected())
+		return true;
+
+	if (!Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
+		return true;
+
+	if (Globals::LocalPlayerPawn->IsAlive())
+		return false;
+
+
+	return true;
+}
+
+void __fastcall CHooksManager::OverrideView::Hook(void* a1, CViewSetup* a2)
+{
+	if(!g_pInterfaces->m_Interfaces.pEngineClient->IsConnected() || !Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
+		return oOverrideView(a1, a2);
+
+	if (g_pGui->m_Vars.m_Removals.norecoil) {
+		a2->m_angView = g_pInterfaces->m_Interfaces.pGameInput->GetViewAngles();
+	}
+
+	oOverrideView(a1, a2);
+}
+
+float __fastcall CHooksManager::FovObject::Hook(void* a1)
+{
+	if(!g_pInterfaces->m_Interfaces.pEngineClient->IsInGame() || !Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
+		return oFovObject(a1);
+
+
+	if (g_pGui->m_Vars.m_View.fovchanger)
+	{
+		float fov = g_pGui->m_Vars.m_View.fov;
+
+		bool IsPlayerScoped = Globals::LocalPlayerPawn->IsScoped();
+
+		if (!IsPlayerScoped)
+		{
+			return fov;
+		}
+		else if (g_pGui->m_Vars.m_View.fovwhilescoped && IsPlayerScoped)
+		{
+			return fov;
+		}
+	}
+
+	return oFovObject(a1);
+}
+
+void* __fastcall CHooksManager::ViewModel::Hook(float* a1, float* offset, float* fov)
+{
+
+	auto original = oViewModel(a1, offset, fov);
+
+	if (!g_pInterfaces->m_Interfaces.pEngineClient->IsInGame() || !Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
+		return original;
+
+	if (g_pGui->m_Vars.m_View.viewmodelchanger)
+	{
+		*offset = g_pGui->m_Vars.m_View.viewmodelx;
+		offset[1] = g_pGui->m_Vars.m_View.viewmodely;
+		offset[2] = g_pGui->m_Vars.m_View.viewmodelz;
+		*fov = g_pGui->m_Vars.m_View.viewmodelfov;
+	}
+	return original;
+}
+
+void __fastcall CHooksManager::CalcViewModelAngles::Hook(DWORD* a1, __int64 a2, Vector3D a3, Vector3D a4, char a5)
+{
+	if (!g_pInterfaces->m_Interfaces.pEngineClient->IsConnected() || !Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
+		return oViewModelCalc(a1, a2, a3, a4, a5);
+
+	if (g_pGui->m_Vars.m_Removals.norecoil) {
+		auto angle_viewmodel = g_pInterfaces->m_Interfaces.pGameInput->GetViewAngles();
+
+		angle_viewmodel.Normalize();
+
+		a4.x = angle_viewmodel.x;
+		a4.y = angle_viewmodel.y;
+	}
+
+	oViewModelCalc(a1, a2, a3, a4, a5);;
+}
+
+void* __fastcall CHooksManager::NoFlashbangEffect::Hook(__int64 a1, __int64 a2, float* a3)
+{
+	if (!g_pInterfaces->m_Interfaces.pEngineClient->IsConnected() || !Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
+		return oNoFlashbangEffect(a1, a2, a3);
+
+	if (g_pGui->m_Vars.m_Removals.noflash)
+		return NULL;
+
+	return oNoFlashbangEffect(a1, a2, a3);
 }

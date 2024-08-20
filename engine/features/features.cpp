@@ -46,6 +46,7 @@ void CFeatures::ESP::Players::Box(CMath::BoundingBox bbox)
     if (!g_pGui->m_Vars.m_ESP.boxes)
         return;
     color_t color = color_t(g_pGui->m_Vars.m_ESP.BoxesColor.x * 255, g_pGui->m_Vars.m_ESP.BoxesColor.y * 255, g_pGui->m_Vars.m_ESP.BoxesColor.z * 255, g_pGui->m_Vars.m_ESP.BoxesColor.w * 255);
+    
     g_pRenderer->DrawRect(bbox.x, bbox.y, bbox.w, bbox.h,color);
     g_pRenderer->DrawRect(bbox.x + 1, bbox.y + 1, bbox.w - 2, bbox.h - 2, color_t::black(100));
     g_pRenderer->DrawRect(bbox.x - 1, bbox.y - 1, bbox.w + 2, bbox.h + 2, color_t::black(100));
@@ -222,11 +223,13 @@ void CFeatures::ESP::Players::Flags(const EntityListInfo& playerInfo, CMath::Bou
     C_BaseWeapon* PlayerWeapon = reinterpret_cast<C_BaseWeapon*>(g_pInterfaces->m_Interfaces.pEntityList->GetClientEntityFromHandle(playerInfo.Pawn->GetWeaponServices()->GetWeaponHandle()));
     if (!PlayerWeapon)
         return;
+
     bool IsReloading = PlayerWeapon->IsReloading();
     bool IsDefusing = playerInfo.Pawn->IsDefusing();
     bool IsBot = playerInfo.Controller->IsBot();
     int Money = playerInfo.Controller->GetMoneyServices()->GetMoney();
-    std::string szHasHelmet, szIsScoped,szIsReloading,szIsDefusing,szMoney,szIsBot;
+
+    std::string szHasHelmet, szIsScoped, szIsReloading, szIsDefusing, szMoney, szIsBot;
     if (HasHelmet) {
 		szHasHelmet = "HK";
     }
@@ -247,7 +250,6 @@ void CFeatures::ESP::Players::Flags(const EntityListInfo& playerInfo, CMath::Bou
     {
 		szIsBot = "B";
     }
-
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
 
     float x = pos.x + pos.w + 3;
@@ -463,16 +465,6 @@ void CFeatures::ESP::World::Projectiles(C_BaseEntity* Entity)
     ImGui::PopFont();
 }
 
-void CFeatures::Prediction::Start(C_UserCmd* cmd)
-{
-
-}
-
-void CFeatures::Prediction::End()
-{
-
-}
-
 void CFeatures::ESP::OthersVisuals::Watermark()
 {
 
@@ -499,11 +491,135 @@ void CFeatures::ESP::OthersVisuals::Watermark()
         g_pRenderer->DrawLine(x + 2, y + h - 17, x + w - 2, y + h - 17, color_t(120, 150, 255, 255));
     }
 
+
+#ifdef _DEBUG
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
-    g_pRenderer->DrawOutlinedString("poseidon.pw", Vector2D(x + 5, y + 6), color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
+    g_pRenderer->DrawOutlinedString("poseidon.pw - debug", Vector2D(x + 5, y + 6), color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
     ImGui::PopFont();
+#endif // _DEBUG
+
+	ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
+	g_pRenderer->DrawOutlinedString("poseidon.pw", Vector2D(x + 5, y + 6), color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
+	ImGui::PopFont();
 }
 
 void CFeatures::ESP::OthersVisuals::InfoPanel()
 {
+}
+
+void CFeatures::ESP::OthersVisuals::SniperScopeOverlay()
+{
+    static float animationProgress = 0.0f;
+    static bool isScoped = false;
+    float animationSpeed = 5.0f;
+
+    if (!g_pGui->m_Vars.m_OtherVisuals.SniperZoom || !g_pGui->m_Vars.m_Removals.nozoom)
+        return;
+    if (!g_pInterfaces->m_Interfaces.pEngineClient->IsInGame() || !g_pInterfaces->m_Interfaces.pEngineClient->IsConnected())
+        return;
+    if (!Globals::LocalPlayerPawn->IsAlive())
+        return;
+
+    bool currentlyScoped = Globals::LocalPlayerPawn->IsScoped();
+
+    if (currentlyScoped && !isScoped) {
+        isScoped = true;
+    }
+    else if (!currentlyScoped && isScoped) {
+        isScoped = false;
+    }
+
+    if (isScoped) {
+        animationProgress += animationSpeed * ImGui::GetIO().DeltaTime;
+        if (animationProgress > 1.0f) animationProgress = 1.0f;
+    }
+    else {
+        animationProgress -= animationSpeed * ImGui::GetIO().DeltaTime;
+        if (animationProgress < 0.0f) animationProgress = 0.0f;
+    }
+
+    int width = ImGui::GetIO().DisplaySize.x;
+    int height = ImGui::GetIO().DisplaySize.y;
+
+    if (animationProgress > 0.0f) {
+        switch (g_pGui->m_Vars.m_OtherVisuals.SniperZoomType)
+        {
+        case 0:
+        {
+            color_t colour = color_t(g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.x * 255, g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.y * 255, g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.z * 255, g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.w * 255);
+
+            float final_distance = 50.0f * animationProgress;
+
+            int centerX = width / 2;
+            int centerY = height / 2;
+
+            g_pRenderer->DrawLine(centerX - final_distance, centerY, centerX + final_distance, centerY, colour);
+
+            g_pRenderer->DrawLine(centerX, centerY - final_distance, centerX, centerY + final_distance, colour);
+        }
+        break;
+        case 1:
+        {
+            float final_distance = 50.0f * animationProgress;
+            float height_1 = 2.0f;
+            float height_2 = 2.0f;
+            float final_width = 50.0f * animationProgress;
+
+            color_t color_first = color_t(g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.x * 255, g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.y * 255, g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.z * 255, g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.w * 255);
+            color_t color_second = color_t(g_pGui->m_Vars.m_OtherVisuals.SniperZoomColorGradient.x * 255, g_pGui->m_Vars.m_OtherVisuals.SniperZoomColorGradient.y * 255, g_pGui->m_Vars.m_OtherVisuals.SniperZoomColorGradient.z * 255, g_pGui->m_Vars.m_OtherVisuals.SniperZoomColorGradient.w * 255);
+
+            g_pRenderer->LinearGradient(width / 2 + final_distance, height / 2 - height_1, final_width, height_2, color_first, color_second, false);
+            g_pRenderer->LinearGradient(width / 2 - final_distance, height / 2 - height_1, -final_width, height_2, color_first, color_second, false);
+
+            g_pRenderer->LinearGradient(width / 2 - height_1, height / 2 + final_distance, height_2, final_width, color_first, color_second, true);
+            g_pRenderer->LinearGradient(width / 2 - height_2, height / 2 - final_distance, height_2, -final_width, color_first, color_second, true);
+        }
+        break;
+
+        case 2:
+        {
+            color_t colour = color_t(g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.x * 255, g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.y * 255, g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.z * 255, g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor.w * 255);
+
+            int centerX = width / 2;
+            int centerY = height / 2;
+            int lineX = static_cast<int>(centerX * (1.0f - animationProgress));
+            int lineY = static_cast<int>(centerY * (1.0f - animationProgress));
+
+            g_pRenderer->DrawLine(centerX - lineX, 0, centerX + lineX, height, colour);
+            g_pRenderer->DrawLine(0, centerY - lineY, width, centerY + lineY, colour);
+        }
+        break;
+        }
+    }
+}
+
+void CFeatures::Aimbot::Run(C_UserCmd* cmd)
+{
+    if (!g_pGui->m_Vars.m_Aimbot.enable || !g_pInterfaces->m_Interfaces.pEngineClient->IsInGame() || !g_pInterfaces->m_Interfaces.pEngineClient->IsConnected())
+        return;
+
+    std::vector<EntityListInfo> Entities;
+	g_pInterfaces->m_Interfaces.pEntityList->UpdateEntities(Entities);
+
+
+   C_PlayerPawn* Target = nullptr;
+
+    for (auto& entity : Entities)
+    {
+        if(!entity.Pawn->IsAlive() || Globals::LocalPlayerPawn == entity.Pawn || entity.Pawn->GetTeam() == Globals::LocalPlayerPawn->GetTeam())
+			continue;
+
+        Vector3D Bone = entity.Pawn->GetBaseEntity()->GetBonePosition(6);
+
+        Vector3D Angle = g_pMath->CalcAngle(Globals::LocalPlayerPawn->GetBaseEntity()->GetEyePosition(), Bone);
+      
+        Angle.Normalize();
+
+
+         g_pInterfaces->m_Interfaces.pGameInput->SetViewAngles(Angle);
+
+  
+    }
+
+
 }

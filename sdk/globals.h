@@ -2,6 +2,7 @@
 
 #include <mutex>
 #include <shared_mutex>
+#include <vector>
 
 #include "classes/entities.h"
 #include "math/vectors.h"

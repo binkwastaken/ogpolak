@@ -3,8 +3,8 @@
 void CGui::DrawGui()
 {
 	if (!IsOpen)
-
 		return;
+
     ImGui::SetNextWindowSize(ImVec2(w, h));
     ImGui::Begin("Polygon", &IsOpen, WindowFlags);
     SetupStyles();
@@ -13,11 +13,97 @@ void CGui::DrawGui()
     g_pFramework->CreatePolygon(WindowPostion.x, WindowPostion.y, WindowSize.x, WindowSize.y);
 
     ImGui::SetCursorPos(ImVec2(6, 31));
-    g_pFramework->GroupBox("tabs", ImVec2(84, 458), { "aimbot","anti aim","visuals","misc","players"}, clickedItem, 7);
+    g_pFramework->GroupBox("tabs", ImVec2(84, 478), { "aimbot","anti aim","visuals","misc","players"}, clickedItem, 7);
 
     switch (clickedItem)
     {
     case 0:
+        ImGui::SetCursorPos(ImVec2(100, 31));
+        g_pFramework->Tab("General", ImVec2(175, 83));
+        ImGui::SetCursorPos(ImVec2(107, 46));
+        g_pFramework->CheckBox("Enable", &g_pGui->m_Vars.m_Aimbot.enable);
+        ImGui::SetCursorPos(ImVec2(107, 61));
+        g_pFramework->CheckBox("Ignore Team", &g_pGui->m_Vars.m_Aimbot.ignoreteam);
+        ImGui::SetCursorPos(ImVec2(107, 76));
+        g_pFramework->CheckBox("Silent Aim", &g_pGui->m_Vars.m_Aimbot.silentaim);
+        ImGui::SetCursorPos(ImVec2(107, 91));
+        g_pFramework->SliderInt("Fov", &g_pGui->m_Vars.m_Aimbot.fov, 0, 360, g_pGui->m_Vars.m_Aimbot.enable);
+
+        ImGui::SetCursorPos(ImVec2(100, 124));
+        g_pFramework->Tab("Targeting", ImVec2(175, 53));
+        ImGui::SetCursorPos(ImVec2(107, 139));
+        g_pFramework->Combo("Hitbox", &g_pGui->m_Vars.m_Aimbot.selectedhitbox, {"HEAD","BODY","FULL"}, g_pGui->m_Vars.m_Aimbot.enable);
+        ImGui::SetCursorPos(ImVec2(107, 154));
+        g_pFramework->Combo("Multipoint", &g_pGui->m_Vars.m_Aimbot.multipoint, {"LOW","MEDIUM","HIGH","EXTREME","NONE"}, g_pGui->m_Vars.m_Aimbot.enable);
+
+        ImGui::SetCursorPos(ImVec2(100, 187));
+        g_pFramework->Tab("Weapons", ImVec2(175, 68));
+		ImGui::SetCursorPos(ImVec2(107, 202));
+        g_pFramework->Combo("Slot", &g_pGui->m_Vars.m_Aimbot.selectedweaponslot, {"PISTOL","RIFLE","AUTO","SNIPER","SMG","HEAVY","ZEUS"}, g_pGui->m_Vars.m_Aimbot.enable);
+
+        switch (g_pGui->m_Vars.m_Aimbot.selectedweaponslot)
+        {
+        case 0:
+            ImGui::SetCursorPos(ImVec2(107, 217));
+            g_pFramework->SliderInt("Hit rate", &g_pGui->m_Vars.m_Aimbot.hitchancePistol, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+            ImGui::SetCursorPos(ImVec2(107, 232));
+            g_pFramework->SliderInt("Min dmg", &g_pGui->m_Vars.m_Aimbot.minimaldamagePistol, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+            break;
+		case 1:
+            ImGui::SetCursorPos(ImVec2(107, 217));
+            g_pFramework->SliderInt("Hit rate", &g_pGui->m_Vars.m_Aimbot.hitchanceRifle, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+            ImGui::SetCursorPos(ImVec2(107, 232));
+            g_pFramework->SliderInt("Min dmg", &g_pGui->m_Vars.m_Aimbot.minimaldamageRifle, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+			break;
+		case 2:
+            ImGui::SetCursorPos(ImVec2(107, 217));
+            g_pFramework->SliderInt("Hit rate", &g_pGui->m_Vars.m_Aimbot.hitchanceAuto, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+            ImGui::SetCursorPos(ImVec2(107, 232));
+            g_pFramework->SliderInt("Min dmg", &g_pGui->m_Vars.m_Aimbot.minimaldamageAuto, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+			break;
+		case 3:
+            ImGui::SetCursorPos(ImVec2(107, 217));
+            g_pFramework->SliderInt("Hit rate", &g_pGui->m_Vars.m_Aimbot.hitchanceSniper, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+            ImGui::SetCursorPos(ImVec2(107, 232));
+            g_pFramework->SliderInt("Min dmg", &g_pGui->m_Vars.m_Aimbot.minimaldamageSniper, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+			break;
+		case 4:
+            ImGui::SetCursorPos(ImVec2(107, 217));
+            g_pFramework->SliderInt("Hit rate", &g_pGui->m_Vars.m_Aimbot.hitchanceSmg, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+            ImGui::SetCursorPos(ImVec2(107, 232));
+            g_pFramework->SliderInt("Min dmg", &g_pGui->m_Vars.m_Aimbot.minimaldamageSmg, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+			break;
+		case 5:
+            ImGui::SetCursorPos(ImVec2(107, 217));
+            g_pFramework->SliderInt("Hit rate", &g_pGui->m_Vars.m_Aimbot.hitchanceHeavy, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+            ImGui::SetCursorPos(ImVec2(107, 232));
+            g_pFramework->SliderInt("Min dmg", &g_pGui->m_Vars.m_Aimbot.minimaldamageHeavy, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+			break;
+		case 6:
+            ImGui::SetCursorPos(ImVec2(107, 217));
+            g_pFramework->SliderInt("Hit rate", &g_pGui->m_Vars.m_Aimbot.hitchanceZeus, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+            ImGui::SetCursorPos(ImVec2(107, 232));
+            g_pFramework->SliderInt("Min dmg", &g_pGui->m_Vars.m_Aimbot.minimaldamageZeus, 0, 100, g_pGui->m_Vars.m_Aimbot.enable);
+			break;
+
+        }
+
+
+        ImGui::SetCursorPos(ImVec2(313, 31));
+        g_pFramework->Tab("Other", ImVec2(175, 113));
+        ImGui::SetCursorPos(ImVec2(320, 46));
+        g_pFramework->CheckBox("Auto Wall", &g_pGui->m_Vars.m_Aimbot.autowall);
+        ImGui::SetCursorPos(ImVec2(320, 61));
+        g_pFramework->CheckBox("Auto Stop", &g_pGui->m_Vars.m_Aimbot.autostop);
+        ImGui::SetCursorPos(ImVec2(320, 76));
+        g_pFramework->Combo("Modes", &g_pGui->m_Vars.m_Aimbot.selectedautostop, {"INSTANT","SLOW","EARLY"}, g_pGui->m_Vars.m_Aimbot.autostop);
+        ImGui::SetCursorPos(ImVec2(320, 91));
+        g_pFramework->CheckBox("Remove Recoil", &g_pGui->m_Vars.m_Aimbot.removerecoil);
+        ImGui::SetCursorPos(ImVec2(320, 106));
+        g_pFramework->CheckBox("Smoothness", &g_pGui->m_Vars.m_Aimbot.smoothness);
+        ImGui::SetCursorPos(ImVec2(320, 121));
+        g_pFramework->SliderInt("Value", &g_pGui->m_Vars.m_Aimbot.smoothnessvalue, 0, 100, g_pGui->m_Vars.m_Aimbot.smoothness);
+
         break;
 
     case 1:
@@ -84,7 +170,7 @@ void CGui::DrawGui()
 
 
         ImGui::SetCursorPos(ImVec2(100, 303));
-        g_pFramework->Tab("World", ImVec2(175, 186));
+        g_pFramework->Tab("World", ImVec2(175, 206));
         ImGui::SetCursorPos(ImVec2(107, 318));
         g_pFramework->CheckBox("Enable", &g_pGui->m_Vars.m_ESP.world);
         ImGui::SetCursorPos(ImVec2(107, 333));
@@ -151,7 +237,7 @@ void CGui::DrawGui()
         ImGui::ColorEdit4("##WorldColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_WorldModulation.WorldColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
 
         ImGui::SetCursorPos(ImVec2(313, 276));
-        g_pFramework->Tab("Other", ImVec2(175, 69));
+        g_pFramework->Tab("Other", ImVec2(175, 115));
         ImGui::SetCursorPos(ImVec2(320, 291));
         g_pFramework->CheckBox("Watermark", &g_pGui->m_Vars.m_OtherVisuals.Watermark);
 		ImGui::SetCursorPos(ImVec2(320, 306));
@@ -160,12 +246,64 @@ void CGui::DrawGui()
         g_pFramework->CheckBox("Custom Menu Theme", &g_pGui->m_Vars.m_OtherVisuals.CustomMenuTheme);
         ImGui::SetCursorPos(ImVec2(459, 321));
         ImGui::ColorEdit4("##MenuTheme", reinterpret_cast<float*>(&g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
+        ImGui::SetCursorPos(ImVec2(320, 336));
+        g_pFramework->CheckBox("Force Crosshair", &g_pGui->m_Vars.m_OtherVisuals.ForceCrosshair);
+        ImGui::SetCursorPos(ImVec2(320, 351));
+        g_pFramework->CheckBox("Sniper Zoom", &g_pGui->m_Vars.m_OtherVisuals.SniperZoom);
+        ImGui::SetCursorPos(ImVec2(459, 351));
+        ImGui::ColorEdit4("##SniperZoomColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_OtherVisuals.SniperZoomColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
+        ImGui::SetCursorPos(ImVec2(435, 351));
+        ImGui::ColorEdit4("##SniperZoomColorGradient", reinterpret_cast<float*>(&g_pGui->m_Vars.m_OtherVisuals.SniperZoomColorGradient), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
+        ImGui::SetCursorPos(ImVec2(320, 366));
+        g_pFramework->Combo("Zoom Type", &g_pGui->m_Vars.m_OtherVisuals.SniperZoomType, { "SIMPLE","MODERN","OLD"}, g_pGui->m_Vars.m_OtherVisuals.SniperZoom);
 
+        ImGui::SetCursorPos(ImVec2(313, 399));
+        g_pFramework->Tab("Removals", ImVec2(175, 110));
+        ImGui::SetCursorPos(ImVec2(320, 414));
+        g_pFramework->CheckBox("No Visual Recoil", &g_pGui->m_Vars.m_Removals.norecoil);
+        ImGui::SetCursorPos(ImVec2(320, 429));
+        g_pFramework->CheckBox("No Smoke", &g_pGui->m_Vars.m_Removals.nosmoke);
+        ImGui::SetCursorPos(ImVec2(320, 444));
+        g_pFramework->CheckBox("No Flash", &g_pGui->m_Vars.m_Removals.noflash);
+        ImGui::SetCursorPos(ImVec2(320, 459));
+        g_pFramework->CheckBox("No Zoom", &g_pGui->m_Vars.m_Removals.nozoom);
+        ImGui::SetCursorPos(ImVec2(320, 474));
+        g_pFramework->CheckBox("No Legs", &g_pGui->m_Vars.m_Removals.nolegspreview);
 
     }
         break;
 
     case 3:
+        ImGui::SetCursorPos(ImVec2(100, 31));
+        g_pFramework->Tab("Movement", ImVec2(175, 84));
+        ImGui::SetCursorPos(ImVec2(107, 46));
+        g_pFramework->CheckBox("Auto Jump", &g_pGui->m_Vars.m_Movement.bunnyhop);
+        ImGui::SetCursorPos(ImVec2(107, 61));
+        g_pFramework->CheckBox("Auto Strafe", &g_pGui->m_Vars.m_Movement.autostrafe);
+        ImGui::SetCursorPos(ImVec2(107, 76));
+        g_pFramework->CheckBox("Duck Jump", &g_pGui->m_Vars.m_Movement.duckinair);
+        ImGui::SetCursorPos(ImVec2(107, 91));
+        g_pFramework->CheckBox("Crouch in Air", &g_pGui->m_Vars.m_Movement.crouchjump);
+
+        ImGui::SetCursorPos(ImVec2(100, 124));
+        g_pFramework->Tab("View", ImVec2(175, 145));
+        ImGui::SetCursorPos(ImVec2(107, 139));
+        g_pFramework->CheckBox("Fov Changer", &g_pGui->m_Vars.m_View.fovchanger);
+        ImGui::SetCursorPos(ImVec2(107, 154));
+        g_pFramework->SliderInt("Value", &g_pGui->m_Vars.m_View.fov, 90, 180, g_pGui->m_Vars.m_View.fovchanger);
+        ImGui::SetCursorPos(ImVec2(107, 169));
+        g_pFramework->CheckBox("While Zoomed", &g_pGui->m_Vars.m_View.fovwhilescoped);
+        ImGui::SetCursorPos(ImVec2(107, 184));
+        g_pFramework->CheckBox("Viewmodel Changer", &g_pGui->m_Vars.m_View.viewmodelchanger);
+        ImGui::SetCursorPos(ImVec2(107, 199));
+        g_pFramework->SliderInt("FOV", &g_pGui->m_Vars.m_View.viewmodelfov, 90, 180, g_pGui->m_Vars.m_View.viewmodelchanger);
+        ImGui::SetCursorPos(ImVec2(107, 214));
+        g_pFramework->SliderInt("Value X", &g_pGui->m_Vars.m_View.viewmodelx, -10, 10, g_pGui->m_Vars.m_View.viewmodelchanger);
+        ImGui::SetCursorPos(ImVec2(107, 229));
+        g_pFramework->SliderInt("Value Y", &g_pGui->m_Vars.m_View.viewmodely, -10, 10, g_pGui->m_Vars.m_View.viewmodelchanger);
+        ImGui::SetCursorPos(ImVec2(107, 244));
+        g_pFramework->SliderInt("Value Z", &g_pGui->m_Vars.m_View.viewmodelz, -10, 10, g_pGui->m_Vars.m_View.viewmodelchanger);
+
         ImGui::SetCursorPos(ImVec2(313, 31));
         g_pFramework->Tab("Configuration", ImVec2(175, 100));
         ImGui::SetCursorPos(ImVec2(320, 46));

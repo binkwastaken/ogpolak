@@ -14,12 +14,12 @@
 
 class CFeatures {
 public:
-	class Prediction
-	{
+	class Aimbot {
 	public:
-		void Start(C_UserCmd* cmd);
-		void End();
+		void Run(C_UserCmd* cmd);
 	};
+	Aimbot m_Aimbot;
+
 	class ESP {
 	public:
 		class Players {
@@ -77,6 +77,8 @@ public:
 		public:
 			void Watermark();
 			void InfoPanel();
+			
+			void SniperScopeOverlay();
 		};
 		OthersVisuals m_OthersVisuals;
 
@@ -96,6 +98,5 @@ public:
 		};
 	};
 	ESP m_ESP;
-	Prediction m_Prediction;
 };
 inline CFeatures* g_pFeatures = new CFeatures();

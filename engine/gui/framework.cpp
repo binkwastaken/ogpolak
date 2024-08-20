@@ -9,18 +9,18 @@ void CFramework::CreatePolygon(int x, int y, int w, int h)
         g_pRenderer->DrawRect(x, y, w, h, color_t(9, 9, 9, 255));
 
         g_pRenderer->DrawRect(x + 1, y + 1, w - 2, h - 2, color_t(46, 46, 46));
-        g_pRenderer->DrawRect(x + 1, y + 1, w - 2, h - 479, color_t(46, 46, 46, 255));
+        g_pRenderer->DrawRect(x + 1, y + 1, w - 2, h - 499, color_t(46, 46, 46, 255));
 
         if (IsCustomThemeToogle)
         {
             color_t coulour = color_t(g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.x * 255, g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.y * 255, g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.z * 255, 255);
-            g_pRenderer->DrawLine(x + 2, y + h - 479 + 2, x + w - 2, y + h - 479 + 2, color_t(coulour));
+            g_pRenderer->DrawLine(x + 2, y + h - 499 + 2, x + w - 2, y + h - 499 + 2, color_t(coulour));
 
             g_pRenderer->DrawLine(x + 2, y + h - 4, x + w - 2, y + h - 4, color_t(coulour));
         }
         else
         {
-            g_pRenderer->DrawLine(x + 2, y + h - 479 + 2, x + w - 2, y + h - 479 + 2, color_t(120, 150, 255, 255));
+            g_pRenderer->DrawLine(x + 2, y + h - 499 + 2, x + w - 2, y + h - 499 + 2, color_t(120, 150, 255, 255));
             g_pRenderer->DrawLine(x + 2, y + h - 4, x + w - 2, y + h - 4, color_t(120, 150, 255, 255));
         }
 
@@ -217,7 +217,10 @@ void CFramework::SliderInt(const char* label, int* v, int min, int max, bool ena
     ImVec2 position = window->DC.CursorPos;
     ImVec2 comboRectSize(93, 9);
 
-    // Determine the color of the label based on the enabled state
+    bool isCustomMenuTheme = g_pGui->m_Vars.m_OtherVisuals.CustomMenuTheme;
+
+    color_t colour = color_t(g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.x * 255, g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.y * 255, g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.z * 255, 255);
+
     color_t labelColor = enabled ? color_t(255, 255, 255, 255) : color_t(100, 100, 100, 255);
 
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
@@ -231,6 +234,12 @@ void CFramework::SliderInt(const char* label, int* v, int min, int max, bool ena
 
     if (mouseHovering && enabled)
     {
+        if (isCustomMenuTheme)
+        {
+            labelColor = colour;
+        }
+        else
+
         labelColor = color_t(120, 150, 255, 255);
     }
 

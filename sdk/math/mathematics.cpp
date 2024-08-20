@@ -35,9 +35,9 @@ bool CMath::GetPlayerBoundingBox(C_PlayerPawn* ent, BoundingBox& in)
 		return false;
 
 
-
+	Vector3D origin;
 	//std::unique_lock<std::shared_mutex> lock(Globals::mtx);
-	const auto origin = BaseEntity->GetGameSceneNode()->GetVecOrigin();
+	origin = ent->GetBaseEntity()->GetGameSceneNode()->GetVecOrigin();
 	//lock.unlock();
 
 	const auto min = BaseEntity->GetCollision()->VecMins() + origin;
@@ -81,4 +81,19 @@ bool CMath::GetPlayerBoundingBox(C_PlayerPawn* ent, BoundingBox& in)
 	in.h = static_cast<int>(bottom - top);
 
 	return true;
+}
+
+Vector3D CMath::CalcAngle(const Vector3D& vecSource, const Vector3D& vecDestination)
+{
+
+	Vector3D qAngles;
+	Vector3D delta = Vector3D((vecSource[0] - vecDestination[0]), (vecSource[1] - vecDestination[1]), (vecSource[2] - vecDestination[2]));
+	double hyp = sqrtf(delta[0] * delta[0] + delta[1] * delta[1]);
+	qAngles[0] = (float)(atan(delta[2] / hyp) * (180.0 / 3.14159265358979323846));
+	qAngles[1] = (float)(atan(delta[1] / delta[0]) * (180.0 / 3.14159265358979323846));
+	qAngles[2] = 0.f;
+	if (delta[0] >= 0.f)
+		qAngles[1] += 180.f;
+
+	return qAngles;
 }

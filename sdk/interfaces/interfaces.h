@@ -11,6 +11,11 @@ struct EntityListInfo {
 	bool IsCheater = false;
 };
 
+class IClientSource2
+{
+public:
+
+};
 
 class ISchemaSystem
 {

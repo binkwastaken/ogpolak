@@ -27,9 +27,9 @@ private:
 
 	class CreateMove {
 	public:
-		typedef void(__fastcall* oCreateMoveFn)(void*, int, char);
+		typedef void(__fastcall* oCreateMoveFn)(CGameInput*, int, char);
 		static oCreateMoveFn oCreateMove;
-		static void __fastcall Hook(void* ecx, int edx, char a2);
+		static void __fastcall Hook(CGameInput* input, int edx, char a2);
 	};
 	CreateMove m_CreateMove;
 
@@ -105,6 +105,88 @@ private:
 		static void __fastcall Hook(CViewSetup* pSetup);
 	};
 	RenderStart m_RenderStart;
+
+	class FrameStage {
+	public:
+		typedef void*(__fastcall* oFrameStageFn)(void* rcx,int stage);
+		static oFrameStageFn oFrameStage;
+		static void* __fastcall Hook(void* rcx,int stage);
+	};
+	FrameStage m_FrameStage;
+
+	class ForceCrosshair {
+	public:
+		typedef bool(__fastcall* oForceCrosshairFn)(__int64*);
+		static oForceCrosshairFn oForceCrosshair;
+		static bool __fastcall Hook(__int64* a1);
+	};
+	ForceCrosshair m_ForceCrosshair;
+	
+
+	class RemoveZoomOverlay {
+	public:
+		typedef bool(__fastcall* oRemoveZoomOverlayFn)(void*,void*);
+		static oRemoveZoomOverlayFn oRemoveZoomOverlay;
+		static bool __fastcall Hook(void* a1,void* a2);
+	};
+	RemoveZoomOverlay m_RemoveZoomOverlay;
+
+	class NoSmokeHook {
+	public:
+		typedef bool(__fastcall* oNoSmokeFn)(void* a1, void* a2, void* a3, void* a4, void* a5, void* a6);
+		static oNoSmokeFn oNoSmoke;
+		static bool __fastcall Hook(void* a1, void* a2, void* a3, void* a4, void* a5, void* a6);
+	};
+	NoSmokeHook m_NoSmoke;
+
+	class RemoveLegs {
+	public:
+		typedef bool(__fastcall* oRemoveLegsFn)(void*, void*, void*, void*, void*);
+		static oRemoveLegsFn oRemoveLegs;
+		static bool __fastcall Hook(void* a1, void* a2, void* a3, void* a4, void* a5);
+	};
+	RemoveLegs m_RemoveLegs;
+
+	class OverrideView {
+	public:
+		typedef void(__fastcall* oOverrideViewFn)(void*,CViewSetup*);
+		static oOverrideViewFn oOverrideView;
+		static void __fastcall Hook(void* a1, CViewSetup* a2);
+	};
+	OverrideView m_OverrideView;
+
+	class FovObject {
+	public:
+		typedef float(__fastcall* oFovObjectFn)(void*);
+		static oFovObjectFn oFovObject;
+		static float __fastcall Hook(void* a1);
+	};
+	FovObject m_FovObject;
+
+	class ViewModel {
+	public:
+		typedef void*(__fastcall* oViewModelFn)(float*, float*, float*);
+		static oViewModelFn oViewModel;
+		static void* __fastcall Hook(float* a1, float* offset, float* fov);
+	};
+	ViewModel m_ViewModel;
+
+
+	class CalcViewModelAngles {
+	public:
+		typedef void(__fastcall* oViewModelCalcFn)(DWORD* a1, __int64 a2, Vector3D a3, Vector3D a4, char a5);
+		static oViewModelCalcFn oViewModelCalc;
+		static void __fastcall Hook(DWORD* a1, __int64 a2, Vector3D a3, Vector3D a4, char a5);
+	};
+	CalcViewModelAngles m_CalcViewModelAngles;
+
+	class NoFlashbangEffect {
+	public:
+		typedef void*(__fastcall* oNoFlashbangEffectFn)(__int64 a1, __int64 a2, float* a3);
+		static oNoFlashbangEffectFn oNoFlashbangEffect;
+		static void* __fastcall Hook(__int64 a1, __int64 a2, float* a3);
+	};
+	NoFlashbangEffect m_NoFlashbangEffect;
 
 };
 inline CHooksManager* g_pHooksManager = new CHooksManager();

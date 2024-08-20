@@ -19,15 +19,6 @@ public:
 		this->w = 0;
 	}
 
-	float Magnitude() {
-		return sqrt(x * x + y * y + z * z + w * w);
-	}
-
-	Vector4D Normalize() {
-		float m = Magnitude();
-		return Vector4D(x / m, y / m, z / m, w / m);
-	}
-
 	bool IsZero() {
 		return x == 0 && y == 0 && z == 0 && w == 0;
 	}
@@ -109,16 +100,6 @@ public:
 		this->x = 0;
 		this->y = 0;
 	}
-
-	float Magnitude() {
-		return sqrt(x * x + y * y);
-	}
-
-	Vector2D Normalize() {
-		float m = Magnitude();
-		return Vector2D(x / m, y / m);
-	}
-
 	float Distance(Vector2D v) {
 		return sqrt(pow(x - v.x, 2) + pow(y - v.y, 2));
 	}
@@ -171,14 +152,37 @@ public:
 		this->z = 0;
 	}
 
-	float Magnitude() {
-		return sqrt(x * x + y * y + z * z);
+	float operator[](int index) const {
+		switch (index) {
+		case 0: return x;
+		case 1: return y;
+		case 2: return z;
+		default: break;
+		}
 	}
 
-	Vector3D Normalize() {
-		float m = Magnitude();
-		return Vector3D(x / m, y / m, z / m);
+	float& operator[](int index) {
+		switch (index) {
+		case 0: return x;
+		case 1: return y;
+		case 2: return z;
+		default: break;
+		}
 	}
+	void Normalize() {
+		while (x > 89.0f) x -= 180.0f;
+		while (x < -89.0f) x += 180.0f;
+		while (y > 180.0f) y -= 360.0f;
+		while (y < -180.0f) y += 360.0f;
+	}
+
+	void Clamp() {
+		if (x > 89.0f) x = 89.0f;
+		if (x < -89.0f) x = -89.0f;
+		if (y > 180.0f) y = 180.0f;
+		if (y < -180.0f) y = -180.0f;
+	}
+
 	Vector3D operator+(Vector3D v) {
 		return Vector3D(x + v.x, y + v.y, z + v.z);
 	}

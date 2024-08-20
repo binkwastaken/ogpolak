@@ -26,8 +26,6 @@ bool CRenderer::LoadImageByMemory(ID3D11Device* device, unsigned char* image, si
 
 
 bool CRenderer::Init(HWND hWnd, ID3D11Device* pDevice, ID3D11DeviceContext* pContext) {
-
-
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags = ImGuiConfigFlags_NoMouseCursorChange;
@@ -60,41 +58,50 @@ bool CRenderer::Init(HWND hWnd, ID3D11Device* pDevice, ID3D11DeviceContext* pCon
 
 void CRenderer::DrawImage(ID3D11ShaderResourceView* image, int x, int y, int w, int h)
 {
+	
 	pDrawList->AddImage(image, ImVec2(x, y), ImVec2(x + w, y + h));
 }
 
 void CRenderer::DrawLine(const Vector2D& start, const Vector2D& end, const color_t& color, int thickness)
 {
+	
 	pDrawList->AddLine(ImVec2(start.x, start.y), ImVec2(end.x, end.y), ImGui::ColorConvertFloat4ToU32(ImVec4(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f)), thickness);
 }
 
 void CRenderer::DrawLine(int x, int y, int x2, int y2, const color_t& color, int thickness)
 {
+	
 	pDrawList->AddLine(ImVec2(x, y), ImVec2(x2, y2), ImGui::ColorConvertFloat4ToU32(ImVec4(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f)), thickness);
 }
 
 void CRenderer::DrawRect(const Vector2D& start, const Vector2D& end, const color_t& color)
 {
+	
 	pDrawList->AddRect(ImVec2(start.x, start.y), ImVec2(end.x, end.y), ImGui::ColorConvertFloat4ToU32(ImVec4(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f)));
 }
 
 void CRenderer::DrawRect(int x, int y, int w, int h, const color_t& color)
 {
+	std::unique_lock<std::shared_mutex> lock(Globals::mtx);
 	pDrawList->AddRect(ImVec2(x, y), ImVec2(x + w, y + h), ImGui::ColorConvertFloat4ToU32(ImVec4(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f)));
+	lock.unlock();
 }
 
 void CRenderer::DrawFilledRect(const Vector2D& start, const Vector2D& end, const color_t& color)
 {
+	
 	pDrawList->AddRectFilled(ImVec2(start.x, start.y), ImVec2(end.x, end.y), ImGui::ColorConvertFloat4ToU32(ImVec4(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f)));
 }
 
 void CRenderer::DrawFilledRect(int x, int y, int w, int h, const color_t& color)
 {
+	
 	pDrawList->AddRectFilled(ImVec2(x, y), ImVec2(x + w, y + h), ImGui::ColorConvertFloat4ToU32(ImVec4(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f)));
 }
-
+std::mutex test;
 void CRenderer::DrawString(const char* text, const Vector2D& pos, const color_t& color, const bool centered)
 {
+	std::unique_lock<std::shared_mutex> lock(Globals::mtx);
 	if (centered)
 	{
 		ImVec2 size = ImGui::CalcTextSize(text);
@@ -102,10 +109,12 @@ void CRenderer::DrawString(const char* text, const Vector2D& pos, const color_t&
 	}
 	else
 		pDrawList->AddText(ImVec2(pos.x, pos.y), ImGui::ColorConvertFloat4ToU32(ImVec4(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f)), text);
+	lock.unlock();
 }
 
 void CRenderer::DrawTriangle(const Vector2D& a, const Vector2D& b, const Vector2D& c, const color_t& color, bool fillled)
 {
+	
 	if (fillled)
 		pDrawList->AddTriangleFilled(ImVec2(a.x, a.y), ImVec2(b.x, b.y), ImVec2(c.x, c.y), ImGui::ColorConvertFloat4ToU32(ImVec4(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f)));
 	else
@@ -113,6 +122,7 @@ void CRenderer::DrawTriangle(const Vector2D& a, const Vector2D& b, const Vector2
 }
 void CRenderer::DrawOutlinedString(const char* text, Vector2D position, color_t textColor, color_t outlineColor, bool centered)
 {
+	
 	ImVec2 pos = ImVec2(position.x, position.y);
 
 	if (centered)
@@ -136,6 +146,7 @@ void CRenderer::DrawOutlinedString(const char* text, Vector2D position, color_t 
 
 void CRenderer::DrawCapsule(const Vector2D& start, const Vector2D& end, float radius, const color_t& color, bool fillled)
 {
+	
 	if (fillled)
 		pDrawList->AddCircleFilled(ImVec2(start.x, start.y), radius, ImGui::ColorConvertFloat4ToU32(ImVec4(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f)));
 	else
@@ -143,6 +154,7 @@ void CRenderer::DrawCapsule(const Vector2D& start, const Vector2D& end, float ra
 }
 void CRenderer::DrawOutlinedLine(const Vector2D& start, const Vector2D& end, const color_t& color, int thickness, const color_t& outlineColor)
 {
+	
 	int outlineThickness = thickness + 2;
 
 	pDrawList->AddLine(ImVec2(start.x - 1, start.y), ImVec2(end.x - 1, end.y), ImGui::ColorConvertFloat4ToU32(ImVec4(outlineColor.r / 255.f, outlineColor.g / 255.f, outlineColor.b / 255.f, outlineColor.a / 255.f)), outlineThickness);
@@ -156,8 +168,33 @@ void CRenderer::DrawOutlinedLine(const Vector2D& start, const Vector2D& end, con
 
 void CRenderer::DrawOutlinedLine(int x, int y, int x2, int y2, const color_t& color, const color_t& outlineColor, int thickness)
 {
+	
 	Vector2D start(x, y);
 	Vector2D end(x2, y2);
 
 	DrawOutlinedLine(start, end, color, thickness, outlineColor);
+}
+
+void CRenderer::LinearGradient(int x, int y, int w, int h, const color_t& color1, const color_t& color2, bool isVertical)
+{
+	ImVec2 gradientStart(x, y);
+	ImVec2 gradientEnd = isVertical ? ImVec2(x, y + h) : ImVec2(x + w, y);
+
+	ImU32 col1 = ImColor(color1.r / 255.0f, color1.g / 255.0f, color1.b / 255.0f, color1.a / 255.0f);
+	ImU32 col2 = ImColor(color2.r / 255.0f, color2.g / 255.0f, color2.b / 255.0f, color2.a / 255.0f);
+
+	if (isVertical)
+	{
+		pDrawList->AddRectFilledMultiColor(
+			gradientStart, ImVec2(x + w, y + h),
+			col1, col1, col2, col2
+		);
+	}
+	else
+	{
+		pDrawList->AddRectFilledMultiColor(
+			gradientStart, ImVec2(x + w, y + h),
+			col1, col2, col2, col1
+		);
+	}
 }

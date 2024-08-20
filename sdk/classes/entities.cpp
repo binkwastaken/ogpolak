@@ -137,12 +137,27 @@ C_PlayerItemServices* C_PlayerPawn::GetItemServices()
 	return g_pSchemaManager->GetOffset<C_PlayerItemServices*>("C_BasePlayerPawn", "m_pItemServices", this);
 }
 
+float& C_PlayerPawn::GetViewModelFOV()
+{
+	return g_pSchemaManager->GetOffset<float>("C_CSPlayerPawn", "m_flViewModelFOV", this);
+}
+
 long long C_PlayerController::GetPlayerSteamID()
 {
-	return *(long long*)(this + 0x6B8);
+	return *(long long*)(this + 0x6C8);
 }
 
 C_BaseHandle C_BaseEntity::GetHandleEntity()
 {
 	return g_pSchemaManager->GetOffset<C_BaseHandle>("C_BaseEntity", "m_hOwnerEntity", this);
+}
+
+Vector3D C_BaseEntity::GetVecViewOffset()
+{
+	return g_pSchemaManager->GetOffset<Vector3D>("C_BaseModelEntity", "m_vecViewOffset", this);
+}
+
+Vector3D C_BaseEntity::GetEyePosition()
+{
+	return this->GetVecViewOffset() + this->GetGameSceneNode()->GetVecOrigin();
 }
