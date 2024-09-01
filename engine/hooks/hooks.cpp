@@ -115,7 +115,6 @@ bool CHooksManager::Init()
 	
 	//CreateHook(TestSig2, reinterpret_cast<void*>(&ReduceAimPunch), reinterpret_cast<void**>(&oReduceAimPunch), "TestSig2");
 
-	//CreateHook(gownotest, reinterpret_cast<void*>(&Gowno), reinterpret_cast<void**>(&oGowno), "gownotest");
 
 	MH_EnableHook(MH_ALL_HOOKS);
 
@@ -142,14 +141,13 @@ void __fastcall CHooksManager::CreateMove::Hook(CGameInput* input, int edx, char
 	if (!Globals::LocalPlayerPawn)
 		return oCreateMove(input, edx, a2);
 
-
 	C_UserCmd* cmd = nullptr;
 
 	g_pFeatures->m_Aimbot.Run(cmd);
 
 }
 
-HRESULT __fastcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
+HRESULT __stdcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
 	if (!g_pHooksManager->m_PresentScene.init)
 	{
@@ -162,7 +160,7 @@ HRESULT __fastcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain,
 			g_pHooksManager->m_PresentScene.outputWindow = sd.OutputWindow;
 			g_pHooksManager->m_WindowProc.WndProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(g_pHooksManager->m_PresentScene.outputWindow, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(g_pHooksManager->m_WindowProc.Hook)));
 
-			ID3D11Texture2D* pBackBuffer;
+			ID3D11Texture2D* pBackBuffer = nullptr;
 			pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 
 			if (pBackBuffer) {
@@ -179,27 +177,32 @@ HRESULT __fastcall CHooksManager::PresentScene::Hook(IDXGISwapChain* pSwapChain,
 			return oPresentScene(pSwapChain, SyncInterval, Flags);
 	}
 
+	if (g_pHooksManager->m_PresentScene.context)
+		g_pHooksManager->m_PresentScene.context->OMSetRenderTargets(1, &g_pHooksManager->m_PresentScene.renderTargetView, NULL);
+
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	g_pFeatures->m_ESP.m_World.Draw();
-	g_pFeatures->m_ESP.m_Players.Draw();
+
+	ImDrawList* pBackgroundDrawList = ImGui::GetBackgroundDrawList();
+	g_pRenderer->RenderDrawData(pBackgroundDrawList);
 
 	g_pFeatures->m_ESP.m_OthersVisuals.Watermark();
-
 	g_pFeatures->m_ESP.m_OthersVisuals.SniperScopeOverlay();
+
 
 	g_pGui->DrawGui();
 
 
+
 	ImGui::EndFrame();
+
+
 	ImGui::Render();
 
-	if (g_pHooksManager->m_PresentScene.context)
-		g_pHooksManager->m_PresentScene.context->OMSetRenderTargets(1, &g_pHooksManager->m_PresentScene.renderTargetView, NULL);
-
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 
 	return oPresentScene(pSwapChain, SyncInterval, Flags);
 }
@@ -353,39 +356,22 @@ void __fastcall CHooksManager::RenderStart::Hook(CViewSetup* pSetup)
 {
 	oRenderStart(pSetup);
 
-	//std::unique_lock<std::shared_mutex> lock(Globals::mtx);
-	//Globals::LocalPlayerOrigin = Globals::LocalPlayerPawn->GetBaseEntity()->GetGameSceneNode()->GetVecOrigin();
-	//lock.unlock();
+	if (g_pRenderer->Initialized)
+	{
+		g_pRenderer->ClearDrawData();
+
+		g_pFeatures->m_ESP.m_Players.Draw();
+
+		g_pRenderer->SwapDrawData();
+	}
 }
 
-void* __fastcall CHooksManager::FrameStage::Hook(void* rcx, int stage)
+void __fastcall CHooksManager::FrameStage::Hook(void* rcx, int stage)
 {
-	auto original = oFrameStage(rcx,stage);
 
 	if (!Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
-		return original;
-
-	switch (stage)
-	{
-	case FRAME_NET_FULL_FRAME_UPDATE_ON_REMOVE:
-	{
-		//if (Globals::LocalPlayerPawn->IsAlive())
-		//{
-
-
-		//	//Globals::LocalPlayerPawn->GetBaseEntity()->GetGameSceneNode()->CalcBones(Globals::LocalPlayerPawn->GetBaseEntity()->GetGameSceneNode()->nBoneCount);
-
-		//	//auto localBoneKesz = Globals::LocalPlayerPawn->GetBaseEntity()->GetGameSceneNode()->pBoneCache;
-
-		//	//std::memcpy(localBoneKesz, Globals::LocalPlayerPawn->GetBaseEntity()->GetGameSceneNode()->pBoneCache, sizeof(localBoneKesz));
-
-
-		//}
-	}
-		break;
-	}
-
-	return original;
+		return;
+	oFrameStage(rcx, stage);
 }
 
 bool __fastcall CHooksManager::ForceCrosshair::Hook(__int64* a1)
@@ -479,23 +465,26 @@ void __fastcall CHooksManager::OverrideView::Hook(void* a1, CViewSetup* a2)
 
 float __fastcall CHooksManager::FovObject::Hook(void* a1)
 {
-	if(!g_pInterfaces->m_Interfaces.pEngineClient->IsInGame() || !Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
+	if (!g_pInterfaces->m_Interfaces.pEngineClient->IsInGame() || !Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
 		return oFovObject(a1);
 
 
 	if (g_pGui->m_Vars.m_View.fovchanger)
 	{
-		float fov = g_pGui->m_Vars.m_View.fov;
-
-		bool IsPlayerScoped = Globals::LocalPlayerPawn->IsScoped();
-
-		if (!IsPlayerScoped)
+		if (Globals::LocalPlayerPawn->IsAlive())
 		{
-			return fov;
-		}
-		else if (g_pGui->m_Vars.m_View.fovwhilescoped && IsPlayerScoped)
-		{
-			return fov;
+			float fov = g_pGui->m_Vars.m_View.fov;
+
+			bool IsPlayerScoped = Globals::LocalPlayerPawn->IsScoped();
+
+			if (!IsPlayerScoped)
+			{
+				return fov;
+			}
+			else if (g_pGui->m_Vars.m_View.fovwhilescoped && IsPlayerScoped)
+			{
+				return fov;
+			}
 		}
 	}
 

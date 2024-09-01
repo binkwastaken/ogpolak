@@ -80,7 +80,7 @@ public:
 		public:
 			bool lighting = false , worldcolor = false;
 			ImVec4 LightingColor = ImVec4(1.f, 1.f, 1.f, 1.f);
-			int LightingIntensity = 1;
+			int LightingIntensity = 0;
 			ImVec4 WorldColor = ImVec4(1.f, 1.f, 1.f, 1.f);
 			int	WorldIntensity = 1;
 		};
@@ -103,8 +103,8 @@ public:
 		class Configuration {
 		public:
 			int SelectedIndexConfig = 0;
-			std::vector<std::string> ConfigNames = { "Default" };
-			char CustomNameConfig[256] = "";  // Adjust the size as needed
+			std::vector<std::string> ConfigNames = { "default" };
+			char CustomNameConfig[256] = "";
 		};
 		Configuration m_Configuration;
 
@@ -122,12 +122,12 @@ public:
 		public:
 			bool fovchanger = false;
 			bool fovwhilescoped = false;
-			int fov = 90;
+			int fov = 0;
 			bool viewmodelchanger = false;
 			int viewmodelx = 0;
 			int viewmodely = 0;
 			int viewmodelz = 0;
-			int viewmodelfov = 90;
+			int viewmodelfov = 0;
 		};
 		View m_View;
 

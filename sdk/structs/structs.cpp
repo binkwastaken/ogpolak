@@ -4,7 +4,7 @@
 
 const Vector3D CGameSceneNode::GetVecOrigin()
 {
-	return g_pSchemaManager->GetOffset<const Vector3D>("CGameSceneNode", "m_vecAbsOrigin", this);
+	return g_pSchemaManager->GetOffset<const Vector3D>("CGameSceneNode", "m_vecOrigin", this);
 }
 
 void CGameSceneNode::CalcBones(unsigned int bone)

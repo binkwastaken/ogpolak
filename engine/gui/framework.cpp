@@ -2,53 +2,53 @@
 
 void CFramework::CreatePolygon(int x, int y, int w, int h)
 {
-        bool IsCustomThemeToogle = g_pGui->m_Vars.m_OtherVisuals.CustomMenuTheme;
+    bool IsCustomThemeToogle = g_pGui->m_Vars.m_OtherVisuals.CustomMenuTheme;
 
-        g_pRenderer->DrawFilledRect(x, y, w, h, color_t(9, 9, 9, 255));
+    g_pRenderer->m_RenderType.m_Safe.DrawFilledRect(x, y, w, h, color_t(9, 9, 9, 255));
 
-        g_pRenderer->DrawRect(x, y, w, h, color_t(9, 9, 9, 255));
 
-        g_pRenderer->DrawRect(x + 1, y + 1, w - 2, h - 2, color_t(46, 46, 46));
-        g_pRenderer->DrawRect(x + 1, y + 1, w - 2, h - 499, color_t(46, 46, 46, 255));
 
-        if (IsCustomThemeToogle)
-        {
-            color_t coulour = color_t(g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.x * 255, g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.y * 255, g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.z * 255, 255);
-            g_pRenderer->DrawLine(x + 2, y + h - 499 + 2, x + w - 2, y + h - 499 + 2, color_t(coulour));
+    g_pRenderer->m_RenderType.m_Safe.DrawRect(x, y, w, h, color_t(9, 9, 9, 255));
 
-            g_pRenderer->DrawLine(x + 2, y + h - 4, x + w - 2, y + h - 4, color_t(coulour));
-        }
-        else
-        {
-            g_pRenderer->DrawLine(x + 2, y + h - 499 + 2, x + w - 2, y + h - 499 + 2, color_t(120, 150, 255, 255));
-            g_pRenderer->DrawLine(x + 2, y + h - 4, x + w - 2, y + h - 4, color_t(120, 150, 255, 255));
-        }
+    g_pRenderer->m_RenderType.m_Safe.DrawRect(x + 1, y + 1, w - 2, h - 2, color_t(46, 46, 46));
+    g_pRenderer->m_RenderType.m_Safe.DrawRect(x + 1, y + 1, w - 2, h - 499, color_t(46, 46, 46, 255));
 
-        ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
-        g_pRenderer->DrawOutlinedString("poseidon.pw", Vector2D(x + 5, y + 6), color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
+    if (IsCustomThemeToogle)
+    {
+        color_t coulour = color_t(g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.x * 255, g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.y * 255, g_pGui->m_Vars.m_OtherVisuals.MenuThemeColor.z * 255, 255);
+        g_pRenderer->m_RenderType.m_Safe.DrawLine(x + 2, y + h - 499 + 2, x + w - 2, y + h - 499 + 2, color_t(coulour), 0);
 
-        ImVec2 poseidonTextSize = ImGui::CalcTextSize("poseidon.pw");
-        float poseidonTextX = x + 5 + poseidonTextSize.x;
-        float poseidonTextY = y + 6;
+        g_pRenderer->m_RenderType.m_Safe.DrawLine(x + 2, y + h - 4, x + w - 2, y + h - 4, color_t(coulour), 0);
+    }
+    else
+    {
+        g_pRenderer->m_RenderType.m_Safe.DrawLine(x + 2, y + h - 499 + 2, x + w - 2, y + h - 499 + 2, color_t(120, 150, 255, 255), 0);
+        g_pRenderer->m_RenderType.m_Safe.DrawLine(x + 2, y + h - 4, x + w - 2, y + h - 4, color_t(120, 150, 255, 255), 0);
+    }
 
-        ImVec2 dateTextSize = ImGui::CalcTextSize("Sunday, 11 August 2024");
-        float dateTextX = x + w - 5 - dateTextSize.x;
-        float dateTextY = poseidonTextY;
+    ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
+    g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined(Vector2D(x + 5, y + 6), "poseidon.pw", color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
 
-        g_pRenderer->DrawOutlinedString("Sunday, 11 August 2024",Vector2D(dateTextX, dateTextY), color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
+    ImVec2 poseidonTextSize = ImGui::CalcTextSize("poseidon.pw");
+    float poseidonTextX = x + 5 + poseidonTextSize.x;
+    float poseidonTextY = y + 6;
 
-        ImGui::PopFont();
+    ImVec2 dateTextSize = ImGui::CalcTextSize("Sunday, 01 September 2024");
+    float dateTextX = x + w - 5 - dateTextSize.x;
+    float dateTextY = poseidonTextY;
+
+    g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined(Vector2D(dateTextX, dateTextY), "Sunday, 01 September 2024", color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
+
+    ImGui::PopFont();
 }
-
-
 
 void CFramework::GroupBox(const char* label, ImVec2 size, const std::vector<std::string>& strings, int& clickedItem, int spacing)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     ImVec2 Position = window->DC.CursorPos;
 
-    g_pRenderer->DrawFilledRect(Position.x, Position.y, size.x, size.y, color_t(9, 9, 9));
-    g_pRenderer->DrawRect(Position.x, Position.y, size.x, size.y, color_t(46, 46, 46));
+    g_pRenderer->m_RenderType.m_Safe.DrawFilledRect(Position.x, Position.y, size.x, size.y, color_t(9, 9, 9));
+    g_pRenderer->m_RenderType.m_Safe.DrawRect(Position.x, Position.y, size.x, size.y, color_t(46, 46, 46));
 
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
 
@@ -98,13 +98,13 @@ void CFramework::GroupBox(const char* label, ImVec2 size, const std::vector<std:
             rectColor = color_t(80, 80, 80, 255);
         }
 
-        g_pRenderer->DrawRect(Position.x - 3, Position.y + 1, 80, textSize.y + 3, rectColor);
+        g_pRenderer->m_RenderType.m_Safe.DrawRect(Position.x - 3, Position.y + 1, 80, textSize.y + 3, rectColor);
 
-        g_pRenderer->DrawLine(Vector2D(Position.x - 1, Position.y + 2), Vector2D(Position.x - 1, Position.y + 3 + textSize.y), lineColor, 2);
+        g_pRenderer->m_RenderType.m_Safe.DrawLine(Vector2D(Position.x - 1, Position.y + 2), Vector2D(Position.x - 1, Position.y + 3 + textSize.y), lineColor, 2);
        
         float textPosX = Position.x + (size.x - textSize.x - 10) / 2;
 
-        g_pRenderer->DrawOutlinedString(strings[i].c_str(), Vector2D(textPosX, Position.y + 2), textColor, color_t(0, 0, 0, 255), false);
+        g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined(Vector2D(textPosX, Position.y + 2), strings[i].c_str(), textColor, color_t(0, 0, 0, 255), false);
 
         Position.y += textSize.y + spacing;
     }
@@ -133,8 +133,8 @@ void CFramework::Tab(const char* name, ImVec2 size)
         rectColor = color_t(40, 40, 40, 255);
     }
 
-    g_pRenderer->DrawFilledRect(Position.x, Position.y, size.x, size.y, color_t(9, 9, 9));
-    g_pRenderer->DrawRect(Position.x, Position.y, size.x, size.y, rectColor);
+    g_pRenderer->m_RenderType.m_Safe.DrawFilledRect(Position.x, Position.y, size.x, size.y, color_t(9, 9, 9));
+    g_pRenderer->m_RenderType.m_Safe.DrawRect(Position.x, Position.y, size.x, size.y, rectColor);
 
 
     ImVec2 textSize = ImGui::CalcTextSize(name);
@@ -143,7 +143,7 @@ void CFramework::Tab(const char* name, ImVec2 size)
     float textY = Position.y - 4;
 
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
-    g_pRenderer->DrawOutlinedString(name,Vector2D(textX, textY), color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
+    g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined(Vector2D(textX, textY), name, color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
     ImGui::PopFont();
 }
 
@@ -192,11 +192,11 @@ void CFramework::CheckBox(const char* label, bool* v)
         textColor = color_t(150,150,150);
     }
 
-    g_pRenderer->DrawFilledRect(checkboxPos.x, checkboxPos.y, checkboxSize.x, checkboxSize.y, fillColor);
-    g_pRenderer->DrawRect(checkboxPos.x, checkboxPos.y, checkboxSize.x, checkboxSize.y, color_t(46, 46, 46));
+    g_pRenderer->m_RenderType.m_Safe.DrawFilledRect(checkboxPos.x, checkboxPos.y, checkboxSize.x, checkboxSize.y, fillColor);
+    g_pRenderer->m_RenderType.m_Safe.DrawRect(checkboxPos.x, checkboxPos.y, checkboxSize.x, checkboxSize.y, color_t(46, 46, 46));
 
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
-    g_pRenderer->DrawOutlinedString(label,Vector2D(textPos.x + 10, textPos.y), textColor, color_t(0, 0, 0, 255), false);
+    g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined(Vector2D(textPos.x + 10, textPos.y), label, textColor, color_t(0, 0, 0, 255), false);
     ImGui::PopFont();
 
     ImGui::SetCursorPosY(position.y + checkboxSize.y + ImGui::GetStyle().ItemSpacing.y);
@@ -204,6 +204,7 @@ void CFramework::CheckBox(const char* label, bool* v)
     ImGui::ItemSize(checkboxRect);
     ImGui::ItemAdd(checkboxRect, ImGui::GetID(label));
 }
+
 
 void CFramework::SliderInt(const char* label, int* v, int min, int max, bool enabled)
 {
@@ -224,11 +225,11 @@ void CFramework::SliderInt(const char* label, int* v, int min, int max, bool ena
     color_t labelColor = enabled ? color_t(255, 255, 255, 255) : color_t(100, 100, 100, 255);
 
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
-    g_pRenderer->DrawOutlinedString(label, Vector2D(position.x + 23, position.y), labelColor, color_t(0, 0, 0, 255), false);
+    g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined(Vector2D(position.x + 23, position.y), label, labelColor, color_t(0, 0, 0, 255), false);
 
     ImRect comboRect(ImVec2(position.x + 65, position.y + 1), ImVec2(position.x + 65 + comboRectSize.x, position.y + comboRectSize.y));
 
-    g_pRenderer->DrawRect(comboRect.Min.x - 1, comboRect.Min.y - 1, comboRectSize.x + 2, comboRectSize.y + 2, color_t(46, 46, 46, 255));
+   g_pRenderer->m_RenderType.m_Safe.DrawRect(comboRect.Min.x - 1, comboRect.Min.y - 1, comboRectSize.x + 2, comboRectSize.y + 2, color_t(46, 46, 46, 255));
 
     bool mouseHovering = ImGui::IsMouseHoveringRect(comboRect.Min, comboRect.Max);
 
@@ -267,14 +268,14 @@ void CFramework::SliderInt(const char* label, int* v, int min, int max, bool ena
     float fillWidth = (*v - min) / float(max - min) * comboRectSize.x;
     fillWidth = ImMin(fillWidth, comboRectSize.x);
 
-    g_pRenderer->DrawFilledRect(comboRect.Min.x, comboRect.Min.y, fillWidth, comboRectSize.y, color_t(20, 20, 20, 255));
+    g_pRenderer->m_RenderType.m_Safe.DrawFilledRect(comboRect.Min.x, comboRect.Min.y, fillWidth, comboRectSize.y, color_t(20, 20, 20, 255));
 
     ImVec2 textSize = ImGui::CalcTextSize(std::to_string(*v).c_str());
     float textX = comboRect.Min.x + (comboRectSize.x - textSize.x) / 2;
     float textY = comboRect.Min.y + (comboRectSize.y - textSize.y) / 2;
 
     // Use the same label color for the slider value
-    g_pRenderer->DrawOutlinedString(std::to_string(*v).c_str(), Vector2D(textX, textY), labelColor, color_t(0, 0, 0, 255), false);
+    g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined( Vector2D(textX, textY), std::to_string(*v).c_str(), labelColor, color_t(0, 0, 0, 255), false);
 
     ImGui::PopFont();
 }
@@ -292,11 +293,11 @@ void CFramework::ComboConfig(const char* label, int* item_current, std::vector<s
     color_t labelColor = enabled ? color_t(255, 255, 255, 255) : color_t(100, 100, 100, 255);
 
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
-    g_pRenderer->DrawOutlinedString(label, Vector2D(position.x + 2, position.y), labelColor, color_t(0, 0, 0, 255), false);
+    g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined(Vector2D(position.x + 2, position.y), label, labelColor, color_t(0, 0, 0, 255), false);
 
     ImRect comboRect(ImVec2(position.x + 109, position.y), ImVec2(position.x + 109 + ComboRectSize.x, position.y + ComboRectSize.y));
 
-    g_pRenderer->DrawRect(comboRect.Min.x, comboRect.Min.y, ComboRectSize.x, ComboRectSize.y, color_t(46, 46, 46));
+   g_pRenderer->m_RenderType.m_Safe.DrawRect(comboRect.Min.x, comboRect.Min.y, ComboRectSize.x, ComboRectSize.y, color_t(46, 46, 46));
 
     ImVec2 textSize = ImGui::CalcTextSize(items[*item_current].c_str());
 
@@ -322,7 +323,7 @@ void CFramework::ComboConfig(const char* label, int* item_current, std::vector<s
         colour = enabled ? color_t(255, 255, 255, 255) : color_t(100, 100, 100, 255);
     }
 
-    g_pRenderer->DrawOutlinedString(items[*item_current].c_str(), Vector2D(textX, textY), colour, color_t(0, 0, 0, 255), false);
+    g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined( Vector2D(textX, textY), items[*item_current].c_str(), colour, color_t(0, 0, 0, 255), false);
     ImGui::PopFont();
 
     if (enabled && ImGui::IsMouseHoveringRect(comboRect.Min, comboRect.Max) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
@@ -349,11 +350,11 @@ void CFramework::Combo(const char* label, int* item_current, std::vector<std::st
     color_t labelColor = enabled ? color_t(255, 255, 255, 255) : color_t(100, 100, 100, 255);
 
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
-    g_pRenderer->DrawOutlinedString(label, Vector2D(position.x + 23, position.y), labelColor, color_t(0, 0, 0, 255), false);
+    g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined( Vector2D(position.x + 23, position.y), label, labelColor, color_t(0, 0, 0, 255), false);
 
     ImRect comboRect(ImVec2(position.x + 109, position.y), ImVec2(position.x + 109 + ComboRectSize.x, position.y + ComboRectSize.y));
 
-    g_pRenderer->DrawRect(comboRect.Min.x, comboRect.Min.y, ComboRectSize.x, ComboRectSize.y, color_t(46, 46, 46));
+   g_pRenderer->m_RenderType.m_Safe.DrawRect(comboRect.Min.x, comboRect.Min.y, ComboRectSize.x, ComboRectSize.y, color_t(46, 46, 46));
 
     ImVec2 textSize = ImGui::CalcTextSize(items[*item_current].c_str());
 
@@ -379,7 +380,7 @@ void CFramework::Combo(const char* label, int* item_current, std::vector<std::st
         colour = enabled ? color_t(255, 255, 255, 255) : color_t(100, 100, 100, 255);
     }
 
-    g_pRenderer->DrawOutlinedString(items[*item_current].c_str(), Vector2D(textX, textY), colour, color_t(0, 0, 0, 255), false);
+    g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined( Vector2D(textX, textY), items[*item_current].c_str(), colour, color_t(0, 0, 0, 255), false);
     ImGui::PopFont();
 
     if (enabled && ImGui::IsMouseHoveringRect(comboRect.Min, comboRect.Max) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
@@ -407,11 +408,11 @@ bool CFramework::InputText(const char* label, char* buf, size_t buffer)
     color_t labelColor = color_t(255, 255, 255, 255);
 
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
-    g_pRenderer->DrawOutlinedString(label, Vector2D(position.x + 3, position.y), labelColor, color_t(0, 0, 0, 255), false);
+    g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined( Vector2D(position.x + 3, position.y), label, labelColor, color_t(0, 0, 0, 255), false);
 
     ImRect InputRect(ImVec2(position.x + 109, position.y), ImVec2(position.x + 109 + InputRectSize.x, position.y + InputRectSize.y));
 
-    g_pRenderer->DrawRect(InputRect.Min.x, InputRect.Min.y, InputRectSize.x, InputRectSize.y, color_t(46, 46, 46));
+   g_pRenderer->m_RenderType.m_Safe.DrawRect(InputRect.Min.x, InputRect.Min.y, InputRectSize.x, InputRectSize.y, color_t(46, 46, 46));
 
     bool hovered = ImGui::IsMouseHoveringRect(InputRect.Min, InputRect.Max);
 
@@ -462,12 +463,12 @@ bool CFramework::InputText(const char* label, char* buf, size_t buffer)
                 }
             }
         }
-        g_pRenderer->DrawOutlinedString(buf, Vector2D(InputRect.Min.x + 3, InputRect.Min.y), color_t(100,100,100, 255), color_t(0, 0, 0, 255), false);
+        g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined(Vector2D(InputRect.Min.x + 3, InputRect.Min.y),buf, color_t(100,100,100, 255), color_t(0, 0, 0, 255), false);
 
     }
     else
     {
-        g_pRenderer->DrawOutlinedString(buf, Vector2D(InputRect.Min.x + 3, InputRect.Min.y), color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
+        g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined( Vector2D(InputRect.Min.x + 3, InputRect.Min.y), buf, color_t(255, 255, 255, 255), color_t(0, 0, 0, 255), false);
     }
 
     ImGui::PopFont();
@@ -499,8 +500,8 @@ bool CFramework::Button(const char* label)
     ) : color_t(46, 46, 46, 255)) : color_t(255, 255, 255, 255);
 
     // Draw button background and border
-    g_pRenderer->DrawFilledRect(position.x, position.y, buttonRectSize.x, buttonRectSize.y, fillColor);
-    g_pRenderer->DrawRect(position.x, position.y, buttonRectSize.x, buttonRectSize.y, color_t(46, 46, 46));
+    g_pRenderer->m_RenderType.m_Safe.DrawFilledRect(position.x, position.y, buttonRectSize.x, buttonRectSize.y, fillColor);
+   g_pRenderer->m_RenderType.m_Safe.DrawRect(position.x, position.y, buttonRectSize.x, buttonRectSize.y, color_t(46, 46, 46));
 
     ImGui::PushFont(g_pRenderer->m_Fonts.Pixel);
     ImVec2 textSize = ImGui::CalcTextSize(label);
@@ -512,7 +513,7 @@ bool CFramework::Button(const char* label)
     float textY = buttonRect.Min.y + (buttonRectSize.y - textSize.y) / 2.0f;
 
 
-    g_pRenderer->DrawOutlinedString(label, Vector2D(textX, textY), textColor, color_t(0, 0, 0, 255), false);
+    g_pRenderer->m_RenderType.m_Safe.DrawStringOutlined( Vector2D(textX, textY), label, textColor, color_t(0, 0, 0, 255), false);
 
     ImGui::PopFont();
 

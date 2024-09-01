@@ -3,6 +3,8 @@
 #include "../../engine/interfaces/manager.h"
 #include "../../engine/utils/utils.h"
 
+#include "../globals.h"
+
 int IEngineClient::GetMaxClients()
 {
 	return g_pUtils->m_VMT.CallVMT<int, 34>(this);
@@ -29,7 +31,7 @@ void IEntityListSystem::UpdateEntities(std::vector<EntityListInfo>& entities)
 {
 	const int maxClients = g_pInterfaces->m_Interfaces.pEngineClient->GetMaxClients();
 
-	for (int i = 0; i < maxClients; i++)
+	for (int i = 0; i <= maxClients; i++)
 	{
 		C_BaseEntity* Entity = g_pInterfaces->m_Interfaces.pEntityList->GetClientEntity(i);
 		if (!Entity)
@@ -40,6 +42,7 @@ void IEntityListSystem::UpdateEntities(std::vector<EntityListInfo>& entities)
 		C_PlayerPawn* Pawn = reinterpret_cast<C_PlayerPawn*>(g_pInterfaces->m_Interfaces.pEntityList->GetClientEntityFromHandle(Controller->GetHandlePawn()));
 		if (!Pawn)
 			continue;
+
 		entities.push_back({ Controller, Pawn,Entity,i });
 	}
 }

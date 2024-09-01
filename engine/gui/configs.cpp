@@ -6,11 +6,11 @@ CConfig* ConfigSystem = new CConfig();
 void CConfig::Setup()
 {
     // ESP Variables
-    SetupValue(g_pGui->m_Vars.m_ESP.players, false, "esp_player", "enable");
-    SetupValue(g_pGui->m_Vars.m_ESP.name, false, "esp_player", "name");
+    SetupValue(g_pGui->m_Vars.m_ESP.players,true, "esp_player", "enable");
+    SetupValue(g_pGui->m_Vars.m_ESP.name,true, "esp_player", "name");
     SetupValue(g_pGui->m_Vars.m_ESP.team, false, "esp_player", "team");
-    SetupValue(g_pGui->m_Vars.m_ESP.localplayer, false, "esp_player", "localplayer");
-    SetupValue(g_pGui->m_Vars.m_ESP.boxes, false, "esp_player", "boxes");
+    SetupValue(g_pGui->m_Vars.m_ESP.localplayer, true, "esp_player", "localplayer");
+    SetupValue(g_pGui->m_Vars.m_ESP.boxes, true, "esp_player", "boxes");
     SetupValue(g_pGui->m_Vars.m_ESP.health, false, "esp_player", "health");
     SetupValue(g_pGui->m_Vars.m_ESP.weapon, false, "esp_player", "weapon");
     SetupValue(g_pGui->m_Vars.m_ESP.distance, false, "esp_player", "distance");
@@ -146,28 +146,24 @@ void CConfig::Setup()
     SetupValue(g_pGui->m_Vars.m_Removals.nosmoke, false, "removals", "nosmoke");
     SetupValue(g_pGui->m_Vars.m_Removals.nolegspreview, false, "removals", "nolegspreview");
     SetupValue(g_pGui->m_Vars.m_Removals.nozoom, false, "removals", "nozoom");
+    SetupValue(g_pGui->m_Vars.m_Removals.noflash, false, "removals", "noflash");
+	SetupValue(g_pGui->m_Vars.m_Removals.norecoil, false, "removals", "norecoil");
 
     // View
     SetupValue(g_pGui->m_Vars.m_View.fovchanger, false, "view", "fovchanger");
     SetupValue(g_pGui->m_Vars.m_View.fovwhilescoped, false, "view", "fovwhilescoped");
-    SetupValue(g_pGui->m_Vars.m_View.fov, 120, "view", "fov");
+    SetupValue(g_pGui->m_Vars.m_View.fov,0, "view", "fov");
     SetupValue(g_pGui->m_Vars.m_View.viewmodelchanger, false, "view", "viewmodelchanger");
     SetupValue(g_pGui->m_Vars.m_View.viewmodelx, 0, "view", "viewmodelx");
     SetupValue(g_pGui->m_Vars.m_View.viewmodely, 0, "view", "viewmodely");
     SetupValue(g_pGui->m_Vars.m_View.viewmodelz, 0, "view", "viewmodelz");
-    SetupValue(g_pGui->m_Vars.m_View.viewmodelfov, 120, "view", "viewmodelfov");
+    SetupValue(g_pGui->m_Vars.m_View.viewmodelfov, 0, "view", "viewmodelfov");
 
     // Movement
     SetupValue(g_pGui->m_Vars.m_Movement.bunnyhop, false, "movement", "bunnyhop");
     SetupValue(g_pGui->m_Vars.m_Movement.autostrafe, false, "movement", "autostrafe");
     SetupValue(g_pGui->m_Vars.m_Movement.duckinair, false, "movement", "duckinair");
     SetupValue(g_pGui->m_Vars.m_Movement.crouchjump, false, "movement", "crouchjump");
-
-
-    // Configuration Variables
-   // SetupValue(g_pGui->m_Vars.m_Configuration.SelectedIndexConfig, 0, "configuration", "selected_index");
-    //SetupValue(g_pGui->m_Vars.m_Configuration.ConfigNames, std::vector<std::string>{"Default"}, "configuration", "config_names"); // This may require a custom handler for vectors
-   // SetupValue(g_pGui->m_Vars.m_Configuration.CustomNameConfig, "", "configuration", "custom_name"); // Note: This may need special handling for char arrays
 }
 
 void CConfig::SetupValue(int& value, int def, std::string category, std::string name)

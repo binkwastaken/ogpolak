@@ -35,9 +35,9 @@ private:
 
 	class PresentScene {
 	public:
-		typedef HRESULT(__fastcall* oPresentSceneFn) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
+		typedef HRESULT(__stdcall* oPresentSceneFn) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
 		static oPresentSceneFn oPresentScene;
-		static HRESULT __fastcall Hook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
+		static HRESULT __stdcall Hook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
 		HWND outputWindow = nullptr;
 
 		bool init{ };
@@ -108,9 +108,9 @@ private:
 
 	class FrameStage {
 	public:
-		typedef void*(__fastcall* oFrameStageFn)(void* rcx,int stage);
+		typedef void(__fastcall* oFrameStageFn)(void* rcx,int stage);
 		static oFrameStageFn oFrameStage;
-		static void* __fastcall Hook(void* rcx,int stage);
+		static void __fastcall Hook(void* rcx,int stage);
 	};
 	FrameStage m_FrameStage;
 

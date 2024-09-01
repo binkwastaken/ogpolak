@@ -25,7 +25,9 @@ public:
 		class Players {
 		public:
 			void Draw();
+			void Update();
 		private:
+			std::vector<std::pair<EntityListInfo, Vector3D>> m_EntitiesData;
 			void Box(CMath::BoundingBox bbox);
 			void Name(CMath::BoundingBox& pos, const EntityListInfo& player);
 			void HealthBar(CMath::BoundingBox& bbox, const EntityListInfo& player);

@@ -26,61 +26,53 @@ bool CMath::WorldToScreen(Vector3D& Position, Vector2D& ScreenPosition)
     return true;
 }
 
-bool CMath::GetPlayerBoundingBox(C_PlayerPawn* ent, BoundingBox& in)
+bool CMath::GetPlayerBoundingBox(C_PlayerPawn* ent, BoundingBox& in,const Vector3D& origin)
 {
-	Vector3D worldPoints[8];
+    Vector3D worldPoints[8];
 
-	C_BaseEntity* BaseEntity = (C_BaseEntity*)ent;
-	if (!BaseEntity)
-		return false;
+    C_BaseEntity* BaseEntity = (C_BaseEntity*)ent;
+    if (!BaseEntity)
+        return false;
 
+    auto min = BaseEntity->GetCollision()->VecMins() + origin;
+    auto max = BaseEntity->GetCollision()->VecMaxs() + origin;
 
-	Vector3D origin;
-	//std::unique_lock<std::shared_mutex> lock(Globals::mtx);
-	origin = ent->GetBaseEntity()->GetGameSceneNode()->GetVecOrigin();
-	//lock.unlock();
+    worldPoints[0] = Vector3D(min.x, min.y, min.z);
+    worldPoints[1] = Vector3D(min.x, max.y, min.z);
+    worldPoints[2] = Vector3D(max.x, max.y, min.z);
+    worldPoints[3] = Vector3D(max.x, min.y, min.z);
+    worldPoints[4] = Vector3D(max.x, max.y, max.z);
+    worldPoints[5] = Vector3D(min.x, max.y, max.z);
+    worldPoints[6] = Vector3D(min.x, min.y, max.z);
+    worldPoints[7] = Vector3D(max.x, min.y, max.z);
 
-	const auto min = BaseEntity->GetCollision()->VecMins() + origin;
-	const auto max = BaseEntity->GetCollision()->VecMaxs() + origin;
+    Vector2D screenPoints[8];
 
-	worldPoints[0] = Vector3D(min.x, min.y, min.z);
-	worldPoints[1] = Vector3D(min.x, max.y, min.z);
-	worldPoints[2] = Vector3D(max.x, max.y, min.z);
-	worldPoints[3] = Vector3D(max.x, min.y, min.z);
-	worldPoints[4] = Vector3D(max.x, max.y, max.z);
-	worldPoints[5] = Vector3D(min.x, max.y, max.z);
-	worldPoints[6] = Vector3D(min.x, min.y, max.z);
-	worldPoints[7] = Vector3D(max.x, min.y, max.z);
+    for (int i = 0; i < 8; ++i)
+    {
+        if (!WorldToScreen(worldPoints[i], screenPoints[i]))
+            return false;
+    }
 
-	Vector2D screenPoints[8];
+    float left = screenPoints[0].x;
+    float top = screenPoints[0].y;
+    float right = screenPoints[0].x;
+    float bottom = screenPoints[0].y;
 
-	for (int i = 0; i < 8; ++i)
-	{
-		if (!WorldToScreen(worldPoints[i], screenPoints[i]))
-			return false;
-	}
+    for (int i = 1; i < 8; ++i)
+    {
+        left = min(left, screenPoints[i].x);
+        top = min(top, screenPoints[i].y);
+        right = max(right, screenPoints[i].x);
+        bottom = max(bottom, screenPoints[i].y);
+    }
 
-	// Calculate bounding box dimensions
-	float left = screenPoints[0].x;
-	float top = screenPoints[0].y;
-	float right = screenPoints[0].x;
-	float bottom = screenPoints[0].y;
+    in.x = static_cast<int>(left);
+    in.y = static_cast<int>(top);
+    in.w = static_cast<int>(right - left);
+    in.h = static_cast<int>(bottom - top);
 
-	for (int i = 1; i < 8; ++i)
-	{
-		left = min(left, screenPoints[i].x);
-		top = min(top, screenPoints[i].y);
-		right = max(right, screenPoints[i].x);
-		bottom = max(bottom, screenPoints[i].y);
-	}
-
-	// Set bounding box dimensions
-	in.x = static_cast<int>(left);
-	in.y = static_cast<int>(top);
-	in.w = static_cast<int>(right - left);
-	in.h = static_cast<int>(bottom - top);
-
-	return true;
+    return true;
 }
 
 Vector3D CMath::CalcAngle(const Vector3D& vecSource, const Vector3D& vecDestination)

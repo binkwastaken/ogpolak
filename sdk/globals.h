@@ -11,6 +11,6 @@ class Globals {
 public:
 	static C_PlayerPawn* LocalPlayerPawn;
 	static C_PlayerController* LocalPlayerController;
-	static Vector3D LocalPlayerOrigin;
+	static std::vector<Vector3D> LocalPlayerOrigin;
 	static std::shared_mutex mtx;
 };

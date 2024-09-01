@@ -230,7 +230,7 @@ void CGui::DrawGui()
         ImGui::SetCursorPos(ImVec2(459, 213));
         ImGui::ColorEdit4("##LightingColor", reinterpret_cast<float*>(&g_pGui->m_Vars.m_WorldModulation.LightingColor), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueBar);
         ImGui::SetCursorPos(ImVec2(320, 228));
-        g_pFramework->SliderInt("Shine", &g_pGui->m_Vars.m_WorldModulation.LightingIntensity, 1, 10, g_pGui->m_Vars.m_WorldModulation.lighting);
+        g_pFramework->SliderInt("Shine", &g_pGui->m_Vars.m_WorldModulation.LightingIntensity, 0, 10, g_pGui->m_Vars.m_WorldModulation.lighting);
         ImGui::SetCursorPos(ImVec2(320, 243));
         g_pFramework->CheckBox("World", &g_pGui->m_Vars.m_WorldModulation.worldcolor);
         ImGui::SetCursorPos(ImVec2(459, 243));
@@ -290,13 +290,13 @@ void CGui::DrawGui()
         ImGui::SetCursorPos(ImVec2(107, 139));
         g_pFramework->CheckBox("Fov Changer", &g_pGui->m_Vars.m_View.fovchanger);
         ImGui::SetCursorPos(ImVec2(107, 154));
-        g_pFramework->SliderInt("Value", &g_pGui->m_Vars.m_View.fov, 90, 180, g_pGui->m_Vars.m_View.fovchanger);
+        g_pFramework->SliderInt("Value", &g_pGui->m_Vars.m_View.fov, 0, 180, g_pGui->m_Vars.m_View.fovchanger);
         ImGui::SetCursorPos(ImVec2(107, 169));
         g_pFramework->CheckBox("While Zoomed", &g_pGui->m_Vars.m_View.fovwhilescoped);
         ImGui::SetCursorPos(ImVec2(107, 184));
         g_pFramework->CheckBox("Viewmodel Changer", &g_pGui->m_Vars.m_View.viewmodelchanger);
         ImGui::SetCursorPos(ImVec2(107, 199));
-        g_pFramework->SliderInt("FOV", &g_pGui->m_Vars.m_View.viewmodelfov, 90, 180, g_pGui->m_Vars.m_View.viewmodelchanger);
+        g_pFramework->SliderInt("FOV", &g_pGui->m_Vars.m_View.viewmodelfov, 0, 180, g_pGui->m_Vars.m_View.viewmodelchanger);
         ImGui::SetCursorPos(ImVec2(107, 214));
         g_pFramework->SliderInt("Value X", &g_pGui->m_Vars.m_View.viewmodelx, -10, 10, g_pGui->m_Vars.m_View.viewmodelchanger);
         ImGui::SetCursorPos(ImVec2(107, 229));
