@@ -19,6 +19,7 @@ CHooksManager::FovObject::oFovObjectFn CHooksManager::FovObject::oFovObject = nu
 CHooksManager::ViewModel::oViewModelFn CHooksManager::ViewModel::oViewModel = nullptr;
 CHooksManager::CalcViewModelAngles::oViewModelCalcFn CHooksManager::CalcViewModelAngles::oViewModelCalc = nullptr;
 CHooksManager::NoFlashbangEffect::oNoFlashbangEffectFn CHooksManager::NoFlashbangEffect::oNoFlashbangEffect = nullptr;
+CHooksManager::IsRelativeMouseMode::oIsRelativeMouseModeFn CHooksManager::IsRelativeMouseMode::oIsRelativeMouseMode = nullptr;
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -55,22 +56,25 @@ bool __fastcall ReduceAimPunch(__int64 a1, float* a2, float* a3)
 
 bool CHooksManager::Init()
 {
+
+	uint8_t* IsRelativeMouseModeVtable =  reinterpret_cast<uint8_t*>(g_pUtils->m_VMT.GetVMT(g_pInterfaces->m_Interfaces.pSystemInput, 78));
+
 	uint8_t* CreateMoveAddress = FindAddress("client.dll", "85 D2 0F 85 ? ? ? ? 48 8B C4 44 88 40", "CreateMove");
 	uint8_t* GameOverlayAddress = FindAddress("GameOverlayRenderer64.dll", "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC ? 41 8B E8", "PresentScene");
 	uint8_t* GlowObjectAddress = g_pUtils->m_Memory.ResolveRip(FindAddress("client.dll", "E8 ? ? ? ? F3 0F 10 BE ? ? ? ? 48 8B CF", "GlowObject"), 1, 5);
 	uint8_t* IsGlowingAddress = g_pUtils->m_Memory.ResolveRip(FindAddress("client.dll", "E8 ? ? ? ? 33 DB 84 C0 0F 84 ? ? ? ? 48 8B 4F", "IsGlowing"),1,5);
-	uint8_t* LightingOverrideAddress = FindAddress("scenesystem.dll","48 89 54 24 ? 53 55 41 57", "LightingOverride");
-	uint8_t* WorldOverrideAddress = FindAddress("scenesystem.dll", "48 89 5C 24 18 48 89 6C 24 20 56 57 41 55", "ModulateWorldColor");
-	uint8_t* DrawObjectAddress = FindAddress("scenesystem.dll", "48 8B C4 53 41 54 41 55 48 81 EC ? ? ? ? 4D 63 E1", "DrawObject");
-	uint8_t* OnRenderStart = FindAddress("client.dll", "48 89 5C 24 10 48 89 6C 24 18 56 57 41 56 48 83 EC 70", "OnRenderStart");
+	uint8_t* LightingOverrideAddress = FindAddress("scenesystem.dll","48 89 54 24 ? 53 41 56 41 57", "LightingOverride");
+	uint8_t* WorldOverrideAddress = FindAddress("scenesystem.dll", "48 89 5C 24 ? 48 89 6C 24 ? 56 57 41 54 41 56 41 57 48 83 EC ? 4C 8B F9", "ModulateWorldColor");
+	uint8_t* DrawObjectAddress = FindAddress("scenesystem.dll", "48 8B C4 48 89 50 ? 53", "DrawObject");
+	uint8_t* OnRenderStart = FindAddress("client.dll", "48 89 5C 24 ? 48 89 6C 24 ? 56 57 41 56 48 81 EC ? ? ? ? 4C 8B F1 48 8D 94 24", "OnRenderStart");
 	uint8_t* FrameStageAddress = FindAddress("client.dll", "48 89 5C 24 ? 56 48 83 EC ? 8B 05 ? ? ? ? 8D 5A", "FrameStageNotify");
 	uint8_t* ForceCrosshairAddress = FindAddress("client.dll", "48 89 5C 24 ? 57 48 83 EC ? 48 8B D9 E8 ? ? ? ? 48 85 C0", "ForceCrosshair");
-	uint8_t* RemoveScopeOverlayAddress = FindAddress("client.dll", "40 56 57 48 83 EC 68", "RemoveScopeOverlay");
+	uint8_t* RemoveScopeOverlayAddress = FindAddress("client.dll", "4C 8B DC 53 56 57 48 83 EC", "RemoveScopeOverlay");
 	uint8_t* NoSmokeAddress = FindAddress("client.dll","48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC ? 48 8B 9C 24 ? ? ? ? 4D 8B F8", "NoSmoke");
 	uint8_t* RemoveLegsAddress = FindAddress("client.dll", "48 89 5C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 55 41 54 41 55 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 8B 01", "RemoveLegs");
 	uint8_t* OverrideViewAddress = FindAddress("client.dll","48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC ? 48 8B FA E8", "OverrideView");
-	uint8_t* ChangeFovAddress = FindAddress("client.dll","40 53 48 81 EC 80 00 00 00 48 8B D9 E8 ?? ?? ?? ?? 48 85", "FovObject");
-	uint8_t* ChangeViewmodelAddress = FindAddress("client.dll","48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 49 8B E8 48 8B DA 48 8B F1", "ChangeViewmodel");
+	uint8_t* ChangeFovAddress = FindAddress("client.dll","40 53 48 83 EC ? 48 8B D9 E8 ? ? ? ? 48 85 C0 74 ? 48 8B C8 48 83 C4", "FovObject");
+	uint8_t* ChangeViewmodelAddress = FindAddress("client.dll","48 89 5C 24 ? 55 56 57 41 56 41 57 48 83 EC ? 49 8B E8", "ChangeViewmodel");
 	uint8_t* NoShootingPunchAddress = FindAddress("client.dll", "48 89 5C 24 ? 55 56 57 48 8D 6C 24 ? 48 81 EC ? ? ? ? F2 41 0F 10 01", "NoShootingPunch");
 	uint8_t* NoFlashbangEffectAddress = FindAddress("client.dll","48 89 5C 24 ? 57 48 83 EC ? 49 8B D8 48 8B F9 E8", "NoFlashbangEffect");
 	//uint8_t* TestSig2 = FindAddress("client.dll", "48 89 5C 24 ? 48 89 74 24 ? 57 48 81 EC ? ? ? ? 48 8B FA 48 8B D9", "TestSig");
@@ -104,15 +108,16 @@ bool CHooksManager::Init()
 
 	CreateHook(OverrideViewAddress, reinterpret_cast<void*>(&CHooksManager::OverrideView::Hook), reinterpret_cast<void**>(&CHooksManager::OverrideView::oOverrideView), "OverrideView");
 
-	CreateHook(ChangeFovAddress, reinterpret_cast<void*>(&CHooksManager::FovObject::Hook), reinterpret_cast<void**>(&CHooksManager::FovObject::oFovObject), "FovObject");
+	//CreateHook(ChangeFovAddress, reinterpret_cast<void*>(&CHooksManager::FovObject::Hook), reinterpret_cast<void**>(&CHooksManager::FovObject::oFovObject), "FovObject");
 
 	CreateHook(ChangeViewmodelAddress, reinterpret_cast<void*>(&CHooksManager::ViewModel::Hook), reinterpret_cast<void**>(&CHooksManager::ViewModel::oViewModel), "ViewModel");
 
 	CreateHook(NoShootingPunchAddress, reinterpret_cast<void*>(&CHooksManager::CalcViewModelAngles::Hook), reinterpret_cast<void**>(&CHooksManager::CalcViewModelAngles::oViewModelCalc), "ViewModelCalc");
-	
+
 	CreateHook(NoFlashbangEffectAddress, reinterpret_cast<void*>(&CHooksManager::NoFlashbangEffect::Hook), reinterpret_cast<void**>(&CHooksManager::NoFlashbangEffect::oNoFlashbangEffect), "NoFlashbangEffect");
 
-	
+	//CreateHook(IsRelativeMouseModeVtable, reinterpret_cast<void*>(&CHooksManager::IsRelativeMouseMode::Hook), reinterpret_cast<void**>(&CHooksManager::IsRelativeMouseMode::oIsRelativeMouseMode), "IsRelativeMouseMode");
+
 	//CreateHook(TestSig2, reinterpret_cast<void*>(&ReduceAimPunch), reinterpret_cast<void**>(&oReduceAimPunch), "TestSig2");
 
 
@@ -213,7 +218,12 @@ LRESULT CALLBACK CHooksManager::WindowProc::Hook(HWND hWnd, UINT uMsg, WPARAM wP
 		g_pGui->IsOpen = !g_pGui->IsOpen;
 		if (g_pInterfaces->m_Interfaces.pEngineClient->IsInGame()) {
 			if (g_pInterfaces->m_Interfaces.pSystemInput->IsRelativeMouseMode()) {
-				g_pUtils->m_Memory.fnSetRelativeMouseMode(!g_pGui->IsOpen);
+
+				//g_pHooksManager->m_IsRelativeMouseMode.oIsRelativeMouseMode(g_pInterfaces->m_Interfaces.pSystemInput, !g_pGui->IsOpen);
+
+
+				//g_pUtils->m_Memory.fnSetRelativeMouseMode(!g_pGui->IsOpen);
+
 				SetCursorPos(GetSystemMetrics(SM_CXSCREEN) / 2, GetSystemMetrics(SM_CYSCREEN) / 2);
 			}
 		}
@@ -535,4 +545,14 @@ void* __fastcall CHooksManager::NoFlashbangEffect::Hook(__int64 a1, __int64 a2, 
 		return NULL;
 
 	return oNoFlashbangEffect(a1, a2, a3);
+}
+
+void* __fastcall CHooksManager::IsRelativeMouseMode::Hook(void* a1, bool a2)
+{
+	const auto original = oIsRelativeMouseMode(a1, a2);
+
+	if (g_pGui->IsOpen)
+		return oIsRelativeMouseMode(a1, false);
+
+	return oIsRelativeMouseMode(a1,a2);
 }

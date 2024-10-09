@@ -46,7 +46,7 @@ int C_BaseWeapon::GetClip1()
 
 CCSWeaponData* C_BaseWeapon::GetWeaponDataInfo()
 {
-	auto weapondataddress = reinterpret_cast<std::uintptr_t>(this) + 0x360;
+	auto weapondataddress = reinterpret_cast<std::uintptr_t>(this) + 0x380;
 	return *reinterpret_cast<CCSWeaponData**>(weapondataddress);
 }
 

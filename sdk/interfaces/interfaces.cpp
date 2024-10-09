@@ -23,7 +23,7 @@ bool IEngineClient::IsConnected()
 int IEngineClient::GetLocalPlayerIndex()
 {
 	int nIndex = -1;
-	g_pUtils->m_VMT.CallVMT<void, 47>(this, std::ref(nIndex), 0);
+	g_pUtils->m_VMT.CallVMT<void, 49>(this, std::ref(nIndex), 0);
 	return nIndex + 1;
 }
 

@@ -188,5 +188,14 @@ private:
 	};
 	NoFlashbangEffect m_NoFlashbangEffect;
 
+
+	class IsRelativeMouseMode {
+	public:
+		typedef void*(__fastcall* oIsRelativeMouseModeFn)(void* a1,bool a2);
+		static oIsRelativeMouseModeFn oIsRelativeMouseMode;
+		static void* __fastcall Hook(void* a1, bool a2);
+	};
+	IsRelativeMouseMode m_IsRelativeMouseMode;
+
 };
 inline CHooksManager* g_pHooksManager = new CHooksManager();
