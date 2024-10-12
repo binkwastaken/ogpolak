@@ -57,7 +57,7 @@ bool __fastcall ReduceAimPunch(__int64 a1, float* a2, float* a3)
 bool CHooksManager::Init()
 {
 
-	uint8_t* IsRelativeMouseModeVtable =  reinterpret_cast<uint8_t*>(g_pUtils->m_VMT.GetVMT(g_pInterfaces->m_Interfaces.pSystemInput, 78));
+	uint8_t* IsRelativeMouseModeVtable =  reinterpret_cast<uint8_t*>(g_pUtils->m_VMT.GetVMT(g_pInterfaces->m_Interfaces.pSystemInput, 76));
 
 	uint8_t* CreateMoveAddress = FindAddress("client.dll", "85 D2 0F 85 ? ? ? ? 48 8B C4 44 88 40", "CreateMove");
 	uint8_t* GameOverlayAddress = FindAddress("GameOverlayRenderer64.dll", "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC ? 41 8B E8", "PresentScene");
@@ -116,7 +116,7 @@ bool CHooksManager::Init()
 
 	CreateHook(NoFlashbangEffectAddress, reinterpret_cast<void*>(&CHooksManager::NoFlashbangEffect::Hook), reinterpret_cast<void**>(&CHooksManager::NoFlashbangEffect::oNoFlashbangEffect), "NoFlashbangEffect");
 
-	//CreateHook(IsRelativeMouseModeVtable, reinterpret_cast<void*>(&CHooksManager::IsRelativeMouseMode::Hook), reinterpret_cast<void**>(&CHooksManager::IsRelativeMouseMode::oIsRelativeMouseMode), "IsRelativeMouseMode");
+	CreateHook(IsRelativeMouseModeVtable, reinterpret_cast<void*>(&CHooksManager::IsRelativeMouseMode::Hook), reinterpret_cast<void**>(&CHooksManager::IsRelativeMouseMode::oIsRelativeMouseMode), "IsRelativeMouseMode");
 
 	//CreateHook(TestSig2, reinterpret_cast<void*>(&ReduceAimPunch), reinterpret_cast<void**>(&oReduceAimPunch), "TestSig2");
 
@@ -219,10 +219,10 @@ LRESULT CALLBACK CHooksManager::WindowProc::Hook(HWND hWnd, UINT uMsg, WPARAM wP
 		if (g_pInterfaces->m_Interfaces.pEngineClient->IsInGame()) {
 			if (g_pInterfaces->m_Interfaces.pSystemInput->IsRelativeMouseMode()) {
 
-				//g_pHooksManager->m_IsRelativeMouseMode.oIsRelativeMouseMode(g_pInterfaces->m_Interfaces.pSystemInput, !g_pGui->IsOpen);
-
-
-				//g_pUtils->m_Memory.fnSetRelativeMouseMode(!g_pGui->IsOpen);
+				if (g_pHooksManager->m_IsRelativeMouseMode.oIsRelativeMouseMode)
+				{
+					g_pHooksManager->m_IsRelativeMouseMode.oIsRelativeMouseMode(g_pInterfaces->m_Interfaces.pSystemInput, !g_pGui->IsOpen);
+				}
 
 				SetCursorPos(GetSystemMetrics(SM_CXSCREEN) / 2, GetSystemMetrics(SM_CYSCREEN) / 2);
 			}
@@ -551,8 +551,8 @@ void* __fastcall CHooksManager::IsRelativeMouseMode::Hook(void* a1, bool a2)
 {
 	const auto original = oIsRelativeMouseMode(a1, a2);
 
-	if (g_pGui->IsOpen)
-		return oIsRelativeMouseMode(a1, false);
+	//if (g_pGui->IsOpen)
+	//	return oIsRelativeMouseMode(a1, false);
 
 	return oIsRelativeMouseMode(a1,a2);
 }
