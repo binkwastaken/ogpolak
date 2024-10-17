@@ -478,12 +478,13 @@ float __fastcall CHooksManager::FovObject::Hook(void* a1)
 	if (!g_pInterfaces->m_Interfaces.pEngineClient->IsInGame() || !Globals::LocalPlayerPawn || !Globals::LocalPlayerController)
 		return oFovObject(a1);
 
+	auto fov = g_pGui->m_Vars.m_View.fov;
 
 	if (g_pGui->m_Vars.m_View.fovchanger)
 	{
+
 		if (Globals::LocalPlayerPawn->IsAlive())
 		{
-			float fov = g_pGui->m_Vars.m_View.fov;
 
 			bool IsPlayerScoped = Globals::LocalPlayerPawn->IsScoped();
 
@@ -550,9 +551,6 @@ void* __fastcall CHooksManager::NoFlashbangEffect::Hook(__int64 a1, __int64 a2, 
 void* __fastcall CHooksManager::IsRelativeMouseMode::Hook(void* a1, bool a2)
 {
 	const auto original = oIsRelativeMouseMode(a1, a2);
-
-	//if (g_pGui->IsOpen)
-	//	return oIsRelativeMouseMode(a1, false);
 
 	return oIsRelativeMouseMode(a1,a2);
 }
