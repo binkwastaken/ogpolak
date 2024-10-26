@@ -39,7 +39,7 @@ public:
 	}
 	int GetHighestEntityIndex()
 	{
-		return *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(this) + 0x1510);
+		return *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(this) + 0x1520);
 	}
 
 	void UpdateEntities(std::vector<EntityListInfo>& entities);
