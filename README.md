@@ -1,6 +1,6 @@
 Counter Strike 2 Base (C++)
 
-This repository contains an incomplete base for a Counter-Strike 2 project written in C++. It serves as a foundation for implementing features such as:
+This repository contains an incomplete base for a Counter-Strike 2 project written in C++ , I have been working on it for 4 months. It serves as a foundation for implementing features such as:
 
     Aimbot
     Anti-Aim
