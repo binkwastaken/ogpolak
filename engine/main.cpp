@@ -2,6 +2,7 @@
 #include "hooks/hooks.h"
 #include "interfaces/manager.h"
 #include "schema/schema.h"
+
 unsigned long EntryPoint(void* entryPoint)
 {
 #ifdef _DEBUG

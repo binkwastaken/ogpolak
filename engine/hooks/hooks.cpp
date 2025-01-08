@@ -56,9 +56,7 @@ bool __fastcall ReduceAimPunch(__int64 a1, float* a2, float* a3)
 
 bool CHooksManager::Init()
 {
-
 	uint8_t* IsRelativeMouseModeVtable =  reinterpret_cast<uint8_t*>(g_pUtils->m_VMT.GetVMT(g_pInterfaces->m_Interfaces.pSystemInput, 76));
-
 	uint8_t* CreateMoveAddress = FindAddress("client.dll", "85 D2 0F 85 ? ? ? ? 48 8B C4 44 88 40", "CreateMove");
 	uint8_t* GameOverlayAddress = FindAddress("GameOverlayRenderer64.dll", "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC ? 41 8B E8", "PresentScene");
 	uint8_t* GlowObjectAddress = g_pUtils->m_Memory.ResolveRip(FindAddress("client.dll", "E8 ? ? ? ? F3 0F 10 BE ? ? ? ? 48 8B CF", "GlowObject"), 1, 5);

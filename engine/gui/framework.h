@@ -12,7 +12,6 @@ public:
     void SliderInt(const char* label, int* v, int min, int max, bool enabled);
     void ComboConfig(const char* label, int* item_current, std::vector<std::string> items, bool enabled);
     void Combo(const char* label, int* item_current, std::vector<std::string> items, bool enabled);
-
     bool InputText(const char* label, char* buf, size_t buf_size);
     bool Button(const char* label);
 };
